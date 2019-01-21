@@ -7,7 +7,9 @@
  *
  */
 public class Scheduler {
-
+	
+	
+	public Scheduler() {}
 	/**
 	 * @param args
 	 */
