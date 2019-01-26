@@ -3,11 +3,16 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 public class ElevatorSubsystem 
 
 {
-
+	// Tareq 
+	public int numberOfElevators;
+	public ArrayList<Elevator> Elevators;
+	//end 
+	
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
 	
@@ -22,6 +27,15 @@ public class ElevatorSubsystem
 			se.printStackTrace();
 			System.exit(1);
 		}
+		
+		// Tareq
+		this.Elevators = new ArrayList<Elevator>();
+		/*Elevator(timeBtwFloors, doorDelay, elevatorNumber)*/
+		Elevators.add(new Elevator(60, 5, 1));
+		// end by tareq
+		
+		
+		
 	}
 	
 	

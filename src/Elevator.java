@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class Elevator {
-
+	
+	private int elevatorNumber; 
 	public ArrayList<Boolean> buttonList;
 	public ArrayList<Boolean> specialButtonList;
 	public ArrayList<Boolean> elevatorLamp;
@@ -18,7 +19,7 @@ public class Elevator {
 	public int nextFloor;
 	private int motorDelay;
 
-	public Elevator(int timeBtwFloors, int doorDelay) {
+	public Elevator(int timeBtwFloors, int doorDelay, int elevatorNumber ) {
 
 		// create buttonList for 13 floor and Initialize as FALSE
 		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
@@ -35,7 +36,7 @@ public class Elevator {
 		this.timeBtwFloors = timeBtwFloors;
 		this.doorDelay = doorDelay;
 		this.dooropen = false;
-
+		this.elevatorNumber = elevatorNumber;
 	}
 
 	/**
@@ -58,9 +59,9 @@ public class Elevator {
 
 		try {
 			if (currentFloor > nextFloor) {
-				this.motorDelay = currentFloor - nextFloor;
+				this.motorDelay = timeBtwFloors*(currentFloor - nextFloor);
 			} else {
-				this.motorDelay = nextFloor - currentFloor;
+				this.motorDelay = timeBtwFloors*( nextFloor - currentFloor);
 			}
 		} catch (NullPointerException e) {
 			// TODO: handle exception
@@ -197,6 +198,14 @@ public class Elevator {
 
 	public void setMotorDelay(int motorDelay) {
 		this.motorDelay = motorDelay;
+	}
+
+	public int getElevatorNumber() {
+		return elevatorNumber;
+	}
+
+	public void setElevatorNumber(int elevatorNumber) {
+		this.elevatorNumber = elevatorNumber;
 	}
 
 }
