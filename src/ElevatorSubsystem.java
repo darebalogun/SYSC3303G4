@@ -27,19 +27,49 @@ public class ElevatorSubsystem
 	
 	public void receiveAndSendToScheduler()
 	{
+		
 		//we have to add here that we receiving from scheduler and what we sending to scheduler
+		
+		byte[] data = null;
+		receivePacket = new DatagramPacket(data, data.length);
 		
 		  try
 		  {
 			  receiveSocket.receive(receivePacket);								//receiving packets from the host
-	       } 
+	      } 
 	       catch (IOException e) 
 	        {
 	    	   e.printStackTrace();
-	            System.exit(1);
-	         }
-
+	           System.exit(1);
+	        }
+		  
+		  
+		  
+		  try
+		  {
+			  sendSocket = new DatagramSocket();
+		  }
+		  catch(SocketException se)
+		  {
+			  se.printStackTrace();
+			  System.exit(1);;
+		  }
+		  
+		  try
+		  {
+			  sendSocket.send(sendPacket);
+		  }
+		  catch(IOException e)
+		  {
+			  e.printStackTrace();
+			  System.exit(1);
+		  }
+		  
+		  sendSocket.close();
+		  
+		  
 	}
+	
 	
 	
 	
@@ -60,7 +90,8 @@ public class ElevatorSubsystem
 	public static void main(String[] args) 
 	
 	{
-		
+		ElevatorSubsystem s = new ElevatorSubsystem();
+		s.receiveAndSendToScheduler();
 
 	}
 
