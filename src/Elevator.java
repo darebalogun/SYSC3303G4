@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Elevator {
 	
-	public ArrayList<Boolean> ButtonList; 
-	public ArrayList<Boolean> Elevatorlamp; 
+	public ArrayList<Boolean> buttonList; 
+	public ArrayList<Boolean> elevatorLamp; 
 	public int timeBtwFloors;
 	public int doorDelay;
 	public Boolean dooropen;
@@ -12,24 +12,28 @@ public class Elevator {
 	
 	
 	
-	//test del folder
+	
 
 
 
 
 	public Elevator(int timeBtwFloors, int doorDelay, Boolean dooropen, int currentFloor, int nextFloor) {
 		
-		this.ButtonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
-		Collections.fill(ButtonList, Boolean.FALSE);
+		// create ButtonList for 13 floor and Initialize as FALSE 
+		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
+		Collections.fill(buttonList, Boolean.FALSE);
 		
-		this.Elevatorlamp = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
-		Collections.fill(ButtonList, Boolean.FALSE);
+		// create Elevatorlamp for 13 floor and Initialize as FALSE 
+		this.elevatorLamp = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
+		Collections.fill(buttonList, Boolean.FALSE);
 		
 		this.timeBtwFloors = timeBtwFloors;
+		
 		this.doorDelay = doorDelay;
-		this.dooropen = dooropen;
-		this.currentFloor = currentFloor;
-		this.nextFloor = nextFloor;
+		
+		this.dooropen = false;
+		
+		
 	}
 	
 }
