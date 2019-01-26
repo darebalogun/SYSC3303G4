@@ -42,9 +42,9 @@ public class Elevator {
 	/**
 	 * @param motorDelay comes from timeNeed
 	 */
-	public void runMotor(int motorDelay) {
+	public void runMotor() {
 		try {
-			TimeUnit.SECONDS.sleep(1 * motorDelay +(2*doorDelay));
+			TimeUnit.SECONDS.sleep(1 * this.motorDelay +(2*doorDelay));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
