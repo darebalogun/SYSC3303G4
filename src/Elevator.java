@@ -16,7 +16,7 @@ public class Elevator {
 	public Boolean dooropen;
 	public int currentFloor;
 	public int nextFloor;
-	public int motorDelay;
+	private int motorDelay;
 
 	public Elevator(int timeBtwFloors, int doorDelay) {
 
@@ -43,7 +43,7 @@ public class Elevator {
 	 */
 	public void runMotor(int motorDelay) {
 		try {
-			TimeUnit.SECONDS.sleep(1 * motorDelay);
+			TimeUnit.SECONDS.sleep(1 * motorDelay +(2*doorDelay));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
