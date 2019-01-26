@@ -1,12 +1,12 @@
 import java.util.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths; 
-import java.lang.*;
+import java.nio.file.Paths;
 
 public class FloorSubsystem {
 	
@@ -28,6 +28,9 @@ public class FloorSubsystem {
 	// Current line in input file
 	private int currentLine;
 	
+	// List of Events to be sent to the Scheduler
+	private ArrayList<InputEvent> eventList;
+	
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
 		
@@ -41,51 +44,107 @@ public class FloorSubsystem {
 		
 		this.currentLine = 0; 
 		
+		this.eventList = new ArrayList<InputEvent>();
+		
 	}
 	
-	public InputEvent readInputEvent() {
+	public void readInputEvent() {
 		Path path = Paths.get(INPUT_PATH);
 		
-		String inputEvent = null;
+		List<String> inputEventList = null;
+		 
+		// Read the input file line by line into a list of strings
 		try {
-			inputEvent = Files.readAllLines(path).get(currentLine);
+			inputEventList = Files.readAllLines(path);
 		} catch (IOException e) { // Unable to read the input text file
 			e.printStackTrace();
 		}
 		
-		String[] inputEvents = inputEvent.split(" ");
+		int i;
 		
-		String time = inputEvents[0];
-		
-		Integer currentFloor = Integer.parseInt(inputEvents[1]);
-		
-		if (currentFloor < 1 | currentFloor > floors.size()) {
-			throw new IllegalArgumentException("Floor read from input file is not valid");
-		}
-		
-		Boolean up;
-		
-		if (inputEvents[2].equalsIgnoreCase("up")) {
-			up = true;
-		} else if (inputEvents[2].equalsIgnoreCase("down")) {
-			up = false;
-		} else {
-			throw new IllegalArgumentException("Floor Button read form input file is not valid");
-		}
-		
-		Integer destinationFloor = Integer.parseInt(inputEvents[3]);
-		
-		if (destinationFloor < 1 | destinationFloor > floors.size()) {
-			throw new IllegalArgumentException("Floor read from input file is not valid");
-		} else if (destinationFloor == currentFloor) {
+		// Starting from the current line saved in the floor subsystem read and parse the string
+		for (i = this.currentLine; i < inputEventList.size(); i++ ) {
+				
+			String inputEvent = inputEventList.get(i);
 			
+			String[] inputEvents = inputEvent.split(" ");
+			
+			// Input event starts with a string of the time log followed by whitespace
+			String time = inputEvents[0];
+			
+			// Then an integer representing the floor on which the passenger is making a request
+			Integer currentFloor = Integer.parseInt(inputEvents[1]);
+			
+			// Check that the current floor read from the file is a valid floor
+			if (currentFloor < 1 | currentFloor > floors.size()) {
+				throw new IllegalArgumentException("Floor read from input file is not valid");
+			}
+			
+			// True if the request was for an elevator going up and false otherwise
+			Boolean up;
+			
+			if (inputEvents[2].equalsIgnoreCase("up")) {
+				up = true;
+			} else if (inputEvents[2].equalsIgnoreCase("down")) {
+				up = false;
+			} else {
+				throw new IllegalArgumentException("Floor button read form input file is not valid");
+			}
+			
+			// Finally an integer representing the requested destination
+			Integer destinationFloor = Integer.parseInt(inputEvents[3]);
+			
+			if (destinationFloor < 1 | destinationFloor > floors.size()) {
+				throw new IllegalArgumentException("Floor read from input file is not valid");
+				
+			// If passenger has requested the current floor then do nothing and go to next event
+			} else if (destinationFloor == currentFloor) {
+				continue;
+			}
+			
+			// Create event object
+			InputEvent event = new InputEvent(time, currentFloor, up, destinationFloor);
+			
+			// Add to event object list
+			eventList.add(event);
 		}
 		
-		InputEvent event = new InputEvent(time, currentFloor, up, );
-		
-		return null;
+		this.currentLine = i;
+		return;
 		
 	}
+	
+	public byte[] eventListToByteArray() {
+		if (!this.eventList.isEmpty()) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(6400);
+			
+			ObjectOutputStream oos = null;
+			
+			try {
+				oos = new ObjectOutputStream(baos);
+			} catch (IOException e1) {
+				// Unable to create object output stream
+				e1.printStackTrace();
+			}
+			
+			try {
+				oos.writeObject(this.eventList);
+			} catch (IOException e) {
+				// Unable to write eventList in bytes
+				e.printStackTrace();
+			}
+			
+			byte[] data = baos.toByteArray();
+			
+			this.eventList.clear();
+			
+			return data;
+		} else {
+			throw new IllegalArgumentException("The eventlist must not be empty before being converted to byte array");
+		}
+	}
+	
+	// Send data method
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
