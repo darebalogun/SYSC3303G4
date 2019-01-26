@@ -1,4 +1,17 @@
 import java.util.*;
+/*
+ * Floor.java
+ * SYSC3303G4
+ * 
+ * Iteration 1
+ * 
+ * The floor provides information needed by the FloorSubsystem 
+ * and Scheduler.
+ * The responsibilities of the floor class includes providing the current floor
+ * number, checking if the Up/Down buttons are pressed and if the Up/Down lamps are 
+ * lit.
+ * 
+ */
 
 public class Floor {
 
@@ -19,8 +32,16 @@ public class Floor {
 			
 	public Floor() {
 		
+		// Initializing all boolean variables
+		this.upButton = true ;
+		this.downButton= true;
+		this.elevatorPresent = true;
+		this.doorOpen = true;
+		this.doorClosed= true;
+		this.upLamp = true;
+		this.downLamp = true;
 
-	 
+		
 	}	
 	
 /** get the current floor that the elevator is on */
