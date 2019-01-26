@@ -30,7 +30,7 @@ public class ElevatorSubsystem
 		
 		// Tareq
 		this.Elevators = new ArrayList<Elevator>();
-		/*Elevator(timeBtwFloors, doorDelay, elevatorNumber)*/
+		/*Elevator(timeBtwFloors in sec , doorDelay in sec, elevatorNumber)*/
 		Elevators.add(new Elevator(60, 5, 1));
 		// end by tareq
 		
