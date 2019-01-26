@@ -2,8 +2,11 @@ import java.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +33,8 @@ public class FloorSubsystem {
 	
 	// List of Events to be sent to the Scheduler
 	private ArrayList<InputEvent> eventList;
+	
+	private static final int BYTE_SIZE = 6400;
 	
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
@@ -116,7 +121,7 @@ public class FloorSubsystem {
 	
 	public byte[] eventListToByteArray() {
 		if (!this.eventList.isEmpty()) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(6400);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
 			
 			ObjectOutputStream oos = null;
 			
@@ -144,7 +149,31 @@ public class FloorSubsystem {
 		}
 	}
 	
-	// Send data method
+	public void sendEventList() {
+		DatagramPacket sendPacket = null;
+
+		if (!eventList.isEmpty()) {
+			
+			byte[] data = eventListToByteArray();
+			
+			// Create Datagram packet containing byte array of event list information
+			try {
+			     sendPacket = new DatagramPacket(data,
+			                                     data.length, InetAddress.getLocalHost(), SEND_PORT);
+			  } catch (UnknownHostException e) {
+			     e.printStackTrace();
+			     System.exit(1);
+			  }
+			
+			// Send event list to scheduler
+			try {
+		         sendReceive.send(sendPacket);
+		      } catch (IOException e) {
+		         e.printStackTrace();
+		         System.exit(1);
+		      }
+		}
+	}
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
