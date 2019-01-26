@@ -74,6 +74,13 @@ public class FloorSubsystem {
 		}
 		
 		Integer destinationFloor = Integer.parseInt(inputEvents[3]);
+		
+		if (destinationFloor < 1 | destinationFloor > floors.size()) {
+			throw new IllegalArgumentException("Floor read from input file is not valid");
+		} else if (destinationFloor == currentFloor) {
+			
+		}
+		
 		InputEvent event = new InputEvent(time, currentFloor, up, );
 		
 		return null;
