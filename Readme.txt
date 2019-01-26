@@ -3,8 +3,8 @@ Project Group 4
 Member: 
 
 	1. Muhammad Tarequzzaman | 100954008 
-	2.
-	3.
+	2. Sama Adil Sheikh | 101060020
+	3. Anannya Bhatia | 100989250
 	4.
 	5.
 
@@ -12,9 +12,9 @@ Member:
 Objective of Iteration:
  
 	Work Products for Iteration #0:
-		ï None your first submission is Iteration #1 (below) which includes Iteration #0.
+		‚Ä¢ None your first submission is Iteration #1 (below) which includes Iteration #0.
 	
-	Iteration 1 ñ Adding the Scheduler and Elevator Subsystems.
+	Iteration 1 ‚Äì Adding the Scheduler and Elevator Subsystems.
 		The goal of this iteration is to add the state machines for the scheduler and elevator subsystems assuming that
 		there is only one elevator. However, you should bear in mind that for the next iteration, your system is
 		expected to coordinate between the elevators in order to maximize the number of passengers carried over time
@@ -24,12 +24,12 @@ Objective of Iteration:
 		single event list or have separate tasks for each elevator. Perhaps you can think of another way of doing it too.
 	
 	Work Products for Iteration #1:
-		*ï ìREADME.txtî file explaining the names of your files, set up instructions, etc.
-		ï Breakdown of responsibilities of each team member for this iteration
-		ï UML class diagram
-		ï State machine diagram for the scheduler and elevator subsystems.
-		ï Detailed set up and test instructions, including test files used
-		ï Code (.java files, all required Eclipse files, etc.)
+		*‚Ä¢ ‚ÄúREADME.txt‚Äù file explaining the names of your files, set up instructions, etc.
+		‚Ä¢ Breakdown of responsibilities of each team member for this iteration
+		‚Ä¢ UML class diagram
+		‚Ä¢ State machine diagram for the scheduler and elevator subsystems.
+		‚Ä¢ Detailed set up and test instructions, including test files used
+		‚Ä¢ Code (.java files, all required Eclipse files, etc.)
 	
 	
 	
