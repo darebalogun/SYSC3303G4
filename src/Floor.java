@@ -52,7 +52,6 @@ public boolean upButtonPressed() {
 public boolean downButtonPressed() {
 	return downButton;
 }
-<<<<<<< HEAD
 
 /** true if the up direction lamp is lit **/
 public boolean upLampLit() {
@@ -69,6 +68,3 @@ public boolean downLampLit() {
 }
 
 
-
-=======
->>>>>>> d81aa9434adfeaa50402008e909c5a03e8db5468
