@@ -1,8 +1,12 @@
 import java.util.*;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths; 
+import java.lang.*;
 
 public class FloorSubsystem {
 	
@@ -19,7 +23,10 @@ public class FloorSubsystem {
 	private static final int SEND_PORT = 5000, RECEIVE_PORT = 5001;
 	
 	// Text file containing events to be sent to scheduler
-	private static final String = "/Inp"
+	private static final String INPUT_PATH = "InputEvents.txt";
+	
+	// Current line in input file
+	private int currentLine;
 	
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
@@ -32,10 +39,44 @@ public class FloorSubsystem {
 	         System.exit(1);
 	      }
 		
+		this.currentLine = 0; 
 		
 	}
 	
-	public Event readInputEvent(File: file) {
+	public InputEvent readInputEvent() {
+		Path path = Paths.get(INPUT_PATH);
+		
+		String inputEvent = null;
+		try {
+			inputEvent = Files.readAllLines(path).get(currentLine);
+		} catch (IOException e) { // Unable to read the input text file
+			e.printStackTrace();
+		}
+		
+		String[] inputEvents = inputEvent.split(" ");
+		
+		String time = inputEvents[0];
+		
+		Integer currentFloor = Integer.parseInt(inputEvents[1]);
+		
+		if (currentFloor < 1 | currentFloor > floors.size()) {
+			throw new IllegalArgumentException("Floor read from input file is not valid");
+		}
+		
+		Boolean up;
+		
+		if (inputEvents[2].equalsIgnoreCase("up")) {
+			up = true;
+		} else if (inputEvents[2].equalsIgnoreCase("down")) {
+			up = false;
+		} else {
+			throw new IllegalArgumentException("Floor Button read form input file is not valid");
+		}
+		
+		Integer destinationFloor = Integer.parseInt(inputEvents[3]);
+		InputEvent event = new InputEvent(time, currentFloor, up, );
+		
+		return null;
 		
 	}
 	
