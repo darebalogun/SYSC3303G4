@@ -10,7 +10,7 @@ public class Elevator {
 	public int currentFloor;
 	public int nextFloor;
 
-	public Elevator(int timeBtwFloors, int doorDelay, Boolean dooropen, int currentFloor, int nextFloor) {
+	public Elevator(int timeBtwFloors, int doorDelay,  int currentFloor, int nextFloor) {
 
 		// create buttonList for 13 floor and Initialize as FALSE
 		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
@@ -27,5 +27,7 @@ public class Elevator {
 		this.dooropen = false;
 
 	}
+	
+	
 
 }
