@@ -88,20 +88,6 @@ public class ElevatorSubsystem
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	public static void main(String[] args) 
 	
 	{
