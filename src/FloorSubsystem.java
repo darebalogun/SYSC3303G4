@@ -73,6 +73,28 @@ public class FloorSubsystem {
 			System.exit(1);
 		}
 		
+		try
+		{
+			sendReceive.send(sendPacket);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+	        System.exit(1);	
+		}
+		
+		
+		try
+		{
+			sendReceive.receive(receivePacket);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		
 	}
 	
 	
