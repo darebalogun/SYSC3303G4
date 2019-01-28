@@ -3,23 +3,23 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Muhammad Tarequzzaman | 100954008 
+ * @author Muhammad Tarequzzaman | 100954008
  *
  */
 public class Elevator {
-	
-	private int elevatorNumber; 
+
+	private int elevatorNumber;
 	public ArrayList<Boolean> buttonList;
-	public ArrayList<Boolean> specialButtonList;
+	public ArrayList<Boolean> specialButtonList;// leave for Iteration # 4
 	public ArrayList<Boolean> elevatorLamp;
-	public int timeBtwFloors;
-	public int doorDelay;
+	private int timeBtwFloors = 3;
+	private int doorDelay = 1;
 	public Boolean dooropen;
 	public int currentFloor;
 	public int nextFloor;
 	private int motorDelay;
 
-	public Elevator(int timeBtwFloors, int doorDelay, int elevatorNumber ) {
+	public Elevator(int elevatorNumber) {
 
 		// create buttonList for 13 floor and Initialize as FALSE
 		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
@@ -33,8 +33,6 @@ public class Elevator {
 		this.specialButtonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[3]));
 		Collections.fill(specialButtonList, Boolean.FALSE);
 
-		this.timeBtwFloors = timeBtwFloors;
-		this.doorDelay = doorDelay;
 		this.dooropen = false;
 		this.elevatorNumber = elevatorNumber;
 	}
@@ -44,88 +42,45 @@ public class Elevator {
 	 */
 	public void runMotor() {
 		try {
-			TimeUnit.SECONDS.sleep(1 * this.motorDelay +(2*doorDelay));
-		} catch (InterruptedException e) {
+			timeNeed();
+			int delaytime = 1 * this.motorDelay + (2 * doorDelay);
+			System.out.printf(" Motor running for %d ", delaytime);
+			TimeUnit.SECONDS.sleep(delaytime);
+
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			// timeNeed();
+			System.out.println("Some Error in runMotor");
 			e.printStackTrace();
 		}
 
 	}
 
 	/**
-	 * 
+	 * Time need to move between source to destination floors set up here. - Tareq
 	 */
 	public void timeNeed() {
 
 		try {
 			if (currentFloor > nextFloor) {
-				this.motorDelay = timeBtwFloors*(currentFloor - nextFloor);
+				this.motorDelay = timeBtwFloors * (currentFloor - nextFloor);
 			} else {
-				this.motorDelay = timeBtwFloors*( nextFloor - currentFloor);
+				this.motorDelay = timeBtwFloors * (nextFloor - currentFloor);
 			}
 		} catch (NullPointerException e) {
 			// TODO: handle exception
+			System.out.println("Error in timeNeed methode");
 			e.printStackTrace();
 		}
 
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((buttonList == null) ? 0 : buttonList.hashCode());
-		result = prime * result + currentFloor;
-		result = prime * result + doorDelay;
-		result = prime * result + ((dooropen == null) ? 0 : dooropen.hashCode());
-		result = prime * result + ((elevatorLamp == null) ? 0 : elevatorLamp.hashCode());
-		result = prime * result + motorDelay;
-		result = prime * result + nextFloor;
-		result = prime * result + timeBtwFloors;
-		return result;
+	public void elevatorUp() {
+
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Elevator other = (Elevator) obj;
-		if (buttonList == null) {
-			if (other.buttonList != null)
-				return false;
-		} else if (!buttonList.equals(other.buttonList))
-			return false;
-		if (currentFloor != other.currentFloor)
-			return false;
-		if (doorDelay != other.doorDelay)
-			return false;
-		if (dooropen == null) {
-			if (other.dooropen != null)
-				return false;
-		} else if (!dooropen.equals(other.dooropen))
-			return false;
-		if (elevatorLamp == null) {
-			if (other.elevatorLamp != null)
-				return false;
-		} else if (!elevatorLamp.equals(other.elevatorLamp))
-			return false;
-		if (motorDelay != other.motorDelay)
-			return false;
-		if (nextFloor != other.nextFloor)
-			return false;
-		if (timeBtwFloors != other.timeBtwFloors)
-			return false;
-		return true;
+	public void elevatorDown() {
+
 	}
 
 	public ArrayList<Boolean> getButtonList() {
@@ -206,6 +161,68 @@ public class Elevator {
 
 	public void setElevatorNumber(int elevatorNumber) {
 		this.elevatorNumber = elevatorNumber;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((buttonList == null) ? 0 : buttonList.hashCode());
+		result = prime * result + currentFloor;
+		result = prime * result + doorDelay;
+		result = prime * result + ((dooropen == null) ? 0 : dooropen.hashCode());
+		result = prime * result + ((elevatorLamp == null) ? 0 : elevatorLamp.hashCode());
+		result = prime * result + motorDelay;
+		result = prime * result + nextFloor;
+		result = prime * result + timeBtwFloors;
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Elevator other = (Elevator) obj;
+		if (buttonList == null) {
+			if (other.buttonList != null)
+				return false;
+		} else if (!buttonList.equals(other.buttonList))
+			return false;
+		if (currentFloor != other.currentFloor)
+			return false;
+		if (doorDelay != other.doorDelay)
+			return false;
+		if (dooropen == null) {
+			if (other.dooropen != null)
+				return false;
+		} else if (!dooropen.equals(other.dooropen))
+			return false;
+		if (elevatorLamp == null) {
+			if (other.elevatorLamp != null)
+				return false;
+		} else if (!elevatorLamp.equals(other.elevatorLamp))
+			return false;
+		if (motorDelay != other.motorDelay)
+			return false;
+		if (nextFloor != other.nextFloor)
+			return false;
+		if (timeBtwFloors != other.timeBtwFloors)
+			return false;
+		return true;
 	}
 
 }

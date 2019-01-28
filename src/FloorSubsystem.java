@@ -32,6 +32,25 @@ public class FloorSubsystem {
 	
 	// Provides the floor number		
 	public int floorNum;
+
+	public FloorSubsystem() {
+
+	      try 
+	      {
+	    	  this.sendReceive = new DatagramSocket();							
+	      } 
+	      catch (SocketException se) 													
+	      {   
+	         se.printStackTrace();
+	         System.exit(1);
+	      }
+
+		
+		this.currentLine = 0; 
+		
+		this.eventList = new ArrayList<InputEvent>();
+		
+	}
 	
 	// Up and Down buttons on the floor's elevator
 	public boolean upButton, downButton; 
