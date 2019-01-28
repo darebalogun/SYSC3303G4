@@ -13,15 +13,8 @@ import java.nio.file.Paths;
 
 public class FloorSubsystem {
 	
-	// This array list contains all the floor objects in this floor subsystem
-	private ArrayList<Floor> floors;
-	
-	// This is the number of floors serviced by the elevator
-	private static final int FLOOR_COUNT = 6;
-	
 	// Datagram sockets used to send and receive packets to the Scheduler
 	private DatagramSocket sendReceive;
-	private DatagramPacket sendPacket, receivePacket;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
 	private static final int SEND_PORT = 7000, RECEIVE_PORT = 5001;
@@ -36,10 +29,12 @@ public class FloorSubsystem {
 	private ArrayList<InputEvent> eventList;
 	
 	private static final int BYTE_SIZE = 6400;
-
 	
+	// Provides the floor number		
+	public int floorNum;
+
 	public FloorSubsystem() {
-		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
+
 	      try 
 	      {
 	    	  this.sendReceive = new DatagramSocket();							
@@ -57,50 +52,35 @@ public class FloorSubsystem {
 		
 	}
 	
+	// Up and Down buttons on the floor's elevator
+	public boolean upButton, downButton; 
 	
+	// to check if elevator is currently present on the floor
+	public boolean elevatorPresent;
+
 	
-	public void sendAndReceiveFromScheduler()
-	{
+	public FloorSubsystem(int n) {
 		
-		byte[] data = null;
+		this.currentLine = 0; 
 		
+		this.eventList = new ArrayList<InputEvent>();
 		
-		
-		try
-		{
-			sendPacket = new DatagramPacket(data, 0, InetAddress.getLocalHost(), SEND_PORT);
-		}
-		catch(UnknownHostException e)
-		{
-			e.printStackTrace();
+		try {
+			this.sendReceive = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
 			System.exit(1);
 		}
 		
-		try
-		{
-			sendReceive.send(sendPacket);
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-	        System.exit(1);	
-		}
+		this.floorNum = n;
 		
+		this.upButton = false;
 		
-		try
-		{
-			sendReceive.receive(receivePacket);
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-			System.exit(1);
-		}
+		this.downButton = false;
 		
-		sendReceive.close();
+		this.elevatorPresent = false; 
 		
 	}
-	
 	
 	public void readInputEvent() {
 		Path path = Paths.get(INPUT_PATH);
@@ -129,12 +109,6 @@ public class FloorSubsystem {
 			// Then an integer representing the floor on which the passenger is making a request
 			Integer currentFloor = Integer.parseInt(inputEvents[1]);
 			
-			// Check that the current floor read from the file is a valid floor
-			if (currentFloor < 1 | currentFloor > FLOOR_COUNT) {
-
-				throw new IllegalArgumentException("Floor read from input file is not valid");
-			}
-			
 			// True if the request was for an elevator going up and false otherwise
 			Boolean up;
 			
@@ -148,14 +122,6 @@ public class FloorSubsystem {
 			
 			// Finally an integer representing the requested destination
 			Integer destinationFloor = Integer.parseInt(inputEvents[3]);
-			
-			if (destinationFloor < 1 | destinationFloor > FLOOR_COUNT) {
-				throw new IllegalArgumentException("Destination floor read from input file is not valid");
-				
-			// If passenger has requested the current floor then do nothing and go to next event
-			} else if (destinationFloor == currentFloor) {
-				continue;
-			}
 			
 			// Create event object
 			InputEvent event = new InputEvent(time, currentFloor, up, destinationFloor);
@@ -225,11 +191,4 @@ public class FloorSubsystem {
 		}
 	}
 	
-	public static void main(String[] args) {
-		FloorSubsystem fs = new FloorSubsystem();
-		fs.readInputEvent();
-		fs.sendEventList();
-	}
-
-
 }
