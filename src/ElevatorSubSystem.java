@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Muhammad Tarequzzaman | 100954008
+ * 
  * This Class represent Elevator Car as a unit. 
  * Has basic functionality such as Button and lamp for floors to go , 
  * Door and door delay, Delay for between floors 
