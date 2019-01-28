@@ -29,4 +29,8 @@ public class InputEvent implements Serializable {
 		return time;
 	}
 
+	public Boolean getUp() {
+		return up;
+	}
+
 }
