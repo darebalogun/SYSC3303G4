@@ -21,6 +21,7 @@ public class FloorSubsystem {
 	
 	// Datagram sockets used to send and receive packets to the Scheduler
 	private DatagramSocket sendReceive;
+	private DatagramPacket sendPacket, receivePacket;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
 	private static final int SEND_PORT = 7000, RECEIVE_PORT = 5001;
@@ -35,23 +36,63 @@ public class FloorSubsystem {
 	private ArrayList<InputEvent> eventList;
 	
 	private static final int BYTE_SIZE = 6400;
+
 	
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
 		
-		try {
-	         // Create send socket and bind it to the 
-	         this.sendReceive = new DatagramSocket();
-	      } catch (SocketException se) {   // Can't create the socket.
-	         se.printStackTrace();
-	         System.exit(1);
-	      }
+
 		
 		this.currentLine = 0; 
 		
 		this.eventList = new ArrayList<InputEvent>();
 		
 	}
+	
+	
+	
+	public void sendAndReceiveFromScheduler()
+	{
+		
+		byte[] data = null;
+		
+		
+		
+		try
+		{
+			sendPacket = new DatagramPacket(data, 0, InetAddress.getLocalHost(), SEND_PORT);
+		}
+		catch(UnknownHostException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		try
+		{
+			sendReceive.send(sendPacket);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+	        System.exit(1);	
+		}
+		
+		
+		try
+		{
+			sendReceive.receive(receivePacket);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		sendReceive.close();
+		
+	}
+	
 	
 	public void readInputEvent() {
 		Path path = Paths.get(INPUT_PATH);
@@ -180,7 +221,7 @@ public class FloorSubsystem {
 		FloorSubsystem fs = new FloorSubsystem();
 		fs.readInputEvent();
 		fs.sendEventList();
-
 	}
+
 
 }
