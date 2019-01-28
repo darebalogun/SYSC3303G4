@@ -8,12 +8,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Muhammad Tarequzzaman | 100954008
  * 
- * This Class represent Elevator Car as a unit. 
- * Has basic functionality such as Button and lamp for floors to go , 
- * Door and door delay, Delay for between floors 
+ *         This Class represent Elevator Car as a unit. Has basic functionality
+ *         such as Button and lamp for floors to go , Door and door delay, Delay
+ *         for between floors
  * 
- * Scheduler input numberOfFloor as to run motor for the delay function. 
- * DatagramPacket 
+ *         Scheduler input numberOfFloor as to run motor for the delay function.
+ *         DatagramPacket
  */
 public class ElevatorSubSystem {
 
@@ -40,7 +40,7 @@ public class ElevatorSubSystem {
 		this.elevatorLamp = new ArrayList<Boolean>(Arrays.asList(new Boolean[13]));
 		Collections.fill(elevatorLamp, Boolean.FALSE);
 
-		// basic implementation 
+		// basic implementation
 		this.dooropen = false;
 		this.elevatorNumber = elevatorNumber;
 
@@ -71,12 +71,14 @@ public class ElevatorSubSystem {
 		}
 
 	}
-	// from update after 28th January 
+
+	// from update after 28th January
 	/**
-	 * Send and receive data from Scheduler system.  
+	 * Send and receive data from Scheduler system.
 	 */
-	
-	// Please use setNumberOfFloor(int numberOfFloor) to update numberOfFloor from the packet --Tareq 
+
+	// Please use setNumberOfFloor(int numberOfFloor) to update numberOfFloor from
+	// the packet --Tareq
 	public void receiveAndSendToScheduler() {
 
 		// we have to add here that we receiving from scheduler and what we sending to
@@ -198,11 +200,11 @@ public class ElevatorSubSystem {
 	public void setElevatorNumber(int elevatorNumber) {
 		this.elevatorNumber = elevatorNumber;
 	}
-
+	
+	
 	/*
-	 * To print information of the current ElevatorSubSystem. 
+	 * To print information of the current ElevatorSubSystem.
 	 * 
-	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
