@@ -74,6 +74,8 @@ public class ElevatorSubSystem {
 	/**
 	 * Send and receive data from Scheduler system.  
 	 */
+	
+	// Please use setNumberOfFloor(int numberOfFloor) to update numberOfFloor from the packet --Tareq 
 	public void receiveAndSendToScheduler() {
 
 		// we have to add here that we receiving from scheduler and what we sending to
