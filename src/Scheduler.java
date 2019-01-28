@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * 
@@ -27,9 +28,15 @@ public class Scheduler {
 	
 	private ArrayList<InputEvent> downRequests;
 	
-	private ArrayList<ArrayList<Integer>> eventQueue;
+	private ArrayList<ArrayList<Integer>> elevatorTaskQueue;
 	
 	private ArrayList<Integer> currentPositionList;
+	
+	private enum Direction{
+		UP, DOWN, IDLE
+	}
+	
+	private ArrayList<Direction> directionList;
 	
 	// Default byte array size for datagram packets
 	private static final int BYTE_SIZE = 6400;
@@ -41,13 +48,24 @@ public class Scheduler {
 	private static final int ELEVATOR_RECEIVE_PORT = 70001;
 	
 	
+	
 	public Scheduler() {
 		
-		this.eventQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
+		this.elevatorTaskQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
 		
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
 		
+		for (Integer elevatorPosition : this.currentPositionList) {
+			elevatorPosition = 1;
+		}
+		
 		this.eventList = new ArrayList<InputEvent>();
+		
+		this.directionList = new ArrayList<Direction>(ELEVATOR_COUNT);
+		
+		for (Direction direction: directionList) {
+			direction = Direction.IDLE;
+		}
 		
 		try {
 			floorReceiveSocket = new DatagramSocket(FLOOR_RECEIVE_PORT);
@@ -124,8 +142,50 @@ public class Scheduler {
 				this.downRequests.add(event);
 			}
 		}
+		
+		Collections.sort(upRequests);
+		Collections.sort(downRequests);
+		
+		if (!upRequests.isEmpty()) {
+			for (Direction direction : this.directionList) {
+				if (direction == Direction.IDLE) {
+					direction = Direction.UP;
+					break;
+				}
+			}
+		} else if (!downRequests.isEmpty()) {
+			for (Direction direction : this.directionList) {
+				if (direction == Direction.IDLE) {
+					direction = Direction.DOWN;
+					break;
+				}
+			}
+		}
+		
+		for (InputEvent upEvent: upRequests) {
+			for (int i = 0; i < ELEVATOR_COUNT; i++) {
+				if (this.directionList.get(i) == Direction.UP & this.currentPositionList.get(i) <= upEvent.getCurrentFloor()) {
+					this.elevatorTaskQueue.get(i).add(upEvent.getDestinationFloor());
+					upRequests.remove(upEvent);
+					break;
+				}
+			}
+		}
+		
+		for (InputEvent downEvent: upRequests) {
+			for (int i = 0; i < ELEVATOR_COUNT; i++) {
+				if (this.directionList.get(i) == Direction.DOWN & this.currentPositionList.get(i) >= downEvent.getCurrentFloor()) {
+					this.elevatorTaskQueue.get(i).add(downEvent.getDestinationFloor());
+					break;
+				}
+			}
+		}
+		
+		
 	}
 	
+
+
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
 		s.receiveInputEventList();

@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class InputEvent implements Serializable {
+public class InputEvent implements Serializable,Comparable<InputEvent> {
 	// Event time log
 	private final String time;
 	
@@ -31,6 +31,19 @@ public class InputEvent implements Serializable {
 
 	public Boolean getUp() {
 		return up;
+	}
+	
+	public Integer getDestinationFloor() {
+		return destinationFloor;
+	}
+
+	@Override
+	public int compareTo(InputEvent event) {
+		return (this.getDestinationFloor() < event.getDestinationFloor() ? -1 : (this.getDestinationFloor() == event.getDestinationFloor() ? 0 : 1));
+	}
+
+	public Integer getCurrentFloor() {
+		return currentFloor;
 	}
 
 }
