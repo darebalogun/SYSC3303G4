@@ -40,13 +40,7 @@ public class FloorSubsystem {
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
 		
-		try {
-	         // Create send socket and bind it to the 
-	         this.sendReceive = new DatagramSocket();
-	      } catch (SocketException se) {   // Can't create the socket.
-	         se.printStackTrace();
-	         System.exit(1);
-	      }
+
 		
 		this.currentLine = 0; 
 		
@@ -94,6 +88,7 @@ public class FloorSubsystem {
 			System.exit(1);
 		}
 		
+		sendReceive.close();
 		
 	}
 	
@@ -220,8 +215,10 @@ public class FloorSubsystem {
 		}
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) 
+	{
+		FloorSubsystem f = new FloorSubsystem();
+		f.sendAndReceiveFromScheduler();
 
 	}
 
