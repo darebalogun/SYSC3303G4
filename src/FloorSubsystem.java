@@ -40,7 +40,15 @@ public class FloorSubsystem {
 	
 	public FloorSubsystem() {
 		this.floors = new ArrayList<Floor>(FLOOR_COUNT);
-		
+	      try 
+	      {
+	    	  this.sendReceive = new DatagramSocket();							
+	      } 
+	      catch (SocketException se) 													
+	      {   
+	         se.printStackTrace();
+	         System.exit(1);
+	      }
 
 		
 		this.currentLine = 0; 
