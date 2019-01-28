@@ -12,19 +12,19 @@ import java.util.concurrent.TimeUnit;
  *         such as Button and lamp for floors to go , Door and door delay, Delay
  *         for between floors
  * 
- *         Scheduler input numberOfFloor as to run motor for the delay function.
+ *         Scheduler input numberOfFloorDelayRunning as to run motor for the delay function.
  *         DatagramPacket
  */
 public class ElevatorSubSystem {
 
-	private int elevatorNumber;
+	private int elevatorNumber; // nth Elevator number, DO NOT PUT Same number as some other instance;  
 	public ArrayList<Boolean> buttonList;
-
 	public ArrayList<Boolean> elevatorLamp;
-	private int timeBtwFloors = 3;
-	private int doorDelay = 1;
-	public Boolean dooropen;
-	private int numberOfFloor;
+
+	static private int timeBtwFloors = 3;
+	static private int doorDelay = 1;
+	private Boolean dooropen;
+	private int numberOfFloorDelayRunning;
 
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
@@ -54,30 +54,78 @@ public class ElevatorSubSystem {
 	}
 
 	/**
-	 * @param numberOfFloor, which comes from Scheduler
+	 * @param numberOfFloorDelayRunning, which comes from Scheduler
 	 */
 	public void runMotor() {
 		try {
 
-			int delaytime = (timeBtwFloors * this.numberOfFloor) + (2 * doorDelay);
+			int delaytime = (timeBtwFloors * this.numberOfFloorDelayRunning) + (2 * doorDelay);
 			System.out.printf(" Motor will run for %d sec", delaytime);
 			TimeUnit.SECONDS.sleep(delaytime);
+			// send scheduler that its Done. 
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block-
 
-			System.out.println("Some Error in runMotor");
+			System.out.println("Some Error in runMotor \n");
 			e.printStackTrace();
 		}
 
 	}
+	
+	/**
+	 * Elevator Door open function
+	*/
+	public void openDoor() {
+		this.setDooropen(true); 
+		System.out.println("ElevatorDoor Open \n");
+	}
+	
+	/*
+	 * Elevator Door Close function
+	*/
+	public void closeDoor() {
+		this.setDooropen(false); 
+		System.out.println("ElevatorDoor Close \n");
+	}
+	
+	/*
+	 * Elevator inside button Pushed function
+	*/
+	public void buttonPushed(int n) {
+		
+		getButtonList().set(n, true); 
+		getElevatorLamp().set(n, true);	
+	}
+	
+	/*
+	 * Elevator Door Opened at a Floor function
+	*/
+	
+	public void elevatorOpendDoorAtFloor(int n) {
+		getButtonList().set(n, false); 
+		getElevatorLamp().set(n, false);	
+		openDoor();
+		
+	}
+	/*
+	 * Elevator Door Closed at a Floor function
+	*/
+	
+	public void elevatorCloseDoorAtFloor(int n) {
+		getButtonList().set(n, false); 
+		getElevatorLamp().set(n, false);	
+		closeDoor();
+		
+	}
+
 
 	// from update after 28th January
 	/**
 	 * Send and receive data from Scheduler system.
 	 */
 
-	// Please use setNumberOfFloor(int numberOfFloor) to update numberOfFloor from
+	// Please use setNumberOfFloor(int numberOfFloorDelayRunning) to update numberOfFloorDelayRunning from
 	// the packet --Tareq
 	public void receiveAndSendToScheduler() {
 
@@ -165,17 +213,7 @@ public class ElevatorSubSystem {
 		return timeBtwFloors;
 	}
 
-	public void setTimeBtwFloors(int timeBtwFloors) {
-		this.timeBtwFloors = timeBtwFloors;
-	}
 
-	public int getDoorDelay() {
-		return doorDelay;
-	}
-
-	public void setDoorDelay(int doorDelay) {
-		this.doorDelay = doorDelay;
-	}
 
 	public Boolean getDooropen() {
 		return dooropen;
@@ -186,11 +224,11 @@ public class ElevatorSubSystem {
 	}
 
 	public int getNumberOfFloor() {
-		return numberOfFloor;
+		return numberOfFloorDelayRunning;
 	}
 
 	public void setNumberOfFloor(int numberOfFloor) {
-		this.numberOfFloor = numberOfFloor;
+		this.numberOfFloorDelayRunning = numberOfFloor;
 	}
 
 	public int getElevatorNumber() {
@@ -210,7 +248,7 @@ public class ElevatorSubSystem {
 	public String toString() {
 		return "ElevatorSubSystem [elevatorNumber=" + elevatorNumber + ", buttonList=" + buttonList + ", elevatorLamp="
 				+ elevatorLamp + ", timeBtwFloors=" + timeBtwFloors + ", doorDelay=" + doorDelay + ", dooropen="
-				+ dooropen + ", numberOfFloor=" + numberOfFloor + ", sendPacket=" + sendPacket + ", receivePacket="
+				+ dooropen + ", numberOfFloorDelayRunning=" + numberOfFloorDelayRunning + ", sendPacket=" + sendPacket + ", receivePacket="
 				+ receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket + "]";
 	}
 
