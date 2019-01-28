@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class InputEvent {
+public class InputEvent implements Serializable {
 	// Event time log
 	private final String time;
 	
@@ -22,6 +23,10 @@ public class InputEvent {
 		
 		this.destinationFloor = destinationFloor;
 		
+	}
+
+	public String getTime() {
+		return time;
 	}
 
 }

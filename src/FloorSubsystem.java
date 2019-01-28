@@ -17,13 +17,13 @@ public class FloorSubsystem {
 	private ArrayList<Floor> floors;
 	
 	// This is the number of floors serviced by the elevator
-	private static final int FLOOR_COUNT = 1;
+	private static final int FLOOR_COUNT = 6;
 	
 	// Datagram sockets used to send and receive packets to the Scheduler
 	private DatagramSocket sendReceive;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
-	private static final int SEND_PORT = 5000, RECEIVE_PORT = 5001;
+	private static final int SEND_PORT = 7000, RECEIVE_PORT = 5001;
 	
 	// Text file containing events to be sent to scheduler
 	private static final String INPUT_PATH = "InputEvents.txt";
@@ -81,7 +81,8 @@ public class FloorSubsystem {
 			Integer currentFloor = Integer.parseInt(inputEvents[1]);
 			
 			// Check that the current floor read from the file is a valid floor
-			if (currentFloor < 1 | currentFloor > floors.size()) {
+			if (currentFloor < 1 | currentFloor > FLOOR_COUNT) {
+
 				throw new IllegalArgumentException("Floor read from input file is not valid");
 			}
 			
@@ -99,8 +100,8 @@ public class FloorSubsystem {
 			// Finally an integer representing the requested destination
 			Integer destinationFloor = Integer.parseInt(inputEvents[3]);
 			
-			if (destinationFloor < 1 | destinationFloor > floors.size()) {
-				throw new IllegalArgumentException("Floor read from input file is not valid");
+			if (destinationFloor < 1 | destinationFloor > FLOOR_COUNT) {
+				throw new IllegalArgumentException("Destination floor read from input file is not valid");
 				
 			// If passenger has requested the current floor then do nothing and go to next event
 			} else if (destinationFloor == currentFloor) {
@@ -176,7 +177,9 @@ public class FloorSubsystem {
 	}
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		FloorSubsystem fs = new FloorSubsystem();
+		fs.readInputEvent();
+		fs.sendEventList();
 
 	}
 
