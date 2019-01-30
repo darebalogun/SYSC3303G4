@@ -256,7 +256,7 @@ public class ElevatorSubSystem {
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
-			;
+			
 		}
 
 		try {
