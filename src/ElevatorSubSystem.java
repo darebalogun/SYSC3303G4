@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
  *                    functionality such as Button and lamp for floors to go ,
  *                    Door and door delay, Delay for between floors.
  * 
- *                    Scheduler input nextFloor to run Elevator and can get current floor status for event log. 
+ *                    Scheduler input nextFloor to run Elevator and can get
+ *                    current floor status for event log.
  * 
  */
 public class ElevatorSubSystem {
@@ -29,15 +30,15 @@ public class ElevatorSubSystem {
 	private Boolean goingUP;
 	private Boolean goingDOWN;
 
-
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
 
-	
 	/**
-	 * @param elevatorNumber : Unique number to represent unique Elevator in the system
-	 * @param buttons : number of button had to be install inside the elevator for floors. 
+	 * @param elevatorNumber : Unique number to represent unique Elevator in the
+	 *                       system
+	 * @param buttons        : number of button had to be install inside the
+	 *                       elevator for floors.
 	 */
 	public ElevatorSubSystem(int elevatorNumber, int buttons) {
 
@@ -66,7 +67,7 @@ public class ElevatorSubSystem {
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
-	public void ElevatorRun() {
+	public void runElevator() {
 		// Prepare to run for target floor
 		updateNextFloor();
 		elevatorCloseDoorAtFloor(currentFloor);
@@ -329,7 +330,6 @@ public class ElevatorSubSystem {
 		this.dooropen = dooropen;
 	}
 
-	
 	public int getElevatorNumber() {
 		return elevatorNumber;
 	}
@@ -362,7 +362,6 @@ public class ElevatorSubSystem {
 		this.goingUP = goingUP;
 	}
 
-	
 	public Boolean isGoingDOWN() {
 		return goingDOWN;
 	}
@@ -371,7 +370,9 @@ public class ElevatorSubSystem {
 		this.goingDOWN = goingDOWN;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -382,7 +383,5 @@ public class ElevatorSubSystem {
 				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
 				+ "]";
 	}
-
-	
 
 }
