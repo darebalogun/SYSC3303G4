@@ -32,7 +32,7 @@ public class FloorSubsystem {
 	
 	// Provides the floor number		
 	public int floorNum;
-
+	
 	public FloorSubsystem() {
 
 	      try 
@@ -80,6 +80,16 @@ public class FloorSubsystem {
 		
 		this.elevatorPresent = false; 
 		
+	}
+	
+	/** get the current floor that the elevator is on */
+	public int getCurrentFloor() {
+		return floorNum;
+		}
+
+	/** true if the elevator is present on the current floor **/
+	public boolean isElevatorPresent() {
+		return elevatorPresent;
 	}
 	
 	public void readInputEvent() {
