@@ -29,19 +29,23 @@ public class ElevatorSubSystem {
 	private Boolean goingUP;
 	private Boolean goingDOWN;
 
-	private int numberOfFloorDelayRunning;
 
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
 
+	
+	/**
+	 * @param elevatorNumber : Unique number to represent unique Elevator in the system
+	 * @param buttons : number of button had to be install inside the elevator for floors. 
+	 */
 	public ElevatorSubSystem(int elevatorNumber, int buttons) {
 
-		// create buttonList for 13 floor and Initialize as FALSE
+		// create buttonList for buttons floor and Initialize as FALSE
 		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[buttons]));
 		Collections.fill(buttonList, Boolean.FALSE);
 
-		// create elevatorLamp for 13 floor and Initialize as FALSE
+		// create elevatorLamp for buttons floor and Initialize as FALSE
 		this.elevatorLamp = new ArrayList<Boolean>(Arrays.asList(new Boolean[buttons]));
 		Collections.fill(elevatorLamp, Boolean.FALSE);
 
@@ -325,14 +329,7 @@ public class ElevatorSubSystem {
 		this.dooropen = dooropen;
 	}
 
-	public int getNumberOfFloor() {
-		return numberOfFloorDelayRunning;
-	}
-
-	public void setNumberOfFloor(int numberOfFloor) {
-		this.numberOfFloorDelayRunning = numberOfFloor;
-	}
-
+	
 	public int getElevatorNumber() {
 		return elevatorNumber;
 	}
@@ -365,19 +362,7 @@ public class ElevatorSubSystem {
 		this.goingUP = goingUP;
 	}
 
-	/*
-	 * To print information of the current ElevatorSubSystem.
-	 * 
-	 */
-	@Override
-	public String toString() {
-		return "ElevatorSubSystem [elevatorNumber=" + elevatorNumber + ", buttonList=" + buttonList + ", elevatorLamp="
-				+ elevatorLamp + ", timeBtwFloors=" + timeBtwFloors + ", doorDelay=" + doorDelay + ", dooropen="
-				+ dooropen + ", numberOfFloorDelayRunning=" + numberOfFloorDelayRunning + ", sendPacket=" + sendPacket
-				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
-				+ "]";
-	}
-
+	
 	public Boolean isGoingDOWN() {
 		return goingDOWN;
 	}
@@ -385,5 +370,19 @@ public class ElevatorSubSystem {
 	public void setGoingDOWN(Boolean goingDOWN) {
 		this.goingDOWN = goingDOWN;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ElevatorSubSystem [elevatorNumber=" + elevatorNumber + ", buttonList=" + buttonList + ", elevatorLamp="
+				+ elevatorLamp + ", dooropen=" + dooropen + ", currentFloor=" + currentFloor + ", nextFloor="
+				+ nextFloor + ", goingUP=" + goingUP + ", goingDOWN=" + goingDOWN + ", sendPacket=" + sendPacket
+				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
+				+ "]";
+	}
+
+	
 
 }
