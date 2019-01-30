@@ -32,6 +32,8 @@ public class FloorSubsystem {
 	
 	// Provides the floor number		
 	public int floorNum;
+	
+	public boolean upButton, downButton;
 
 	public FloorSubsystem() {
 
