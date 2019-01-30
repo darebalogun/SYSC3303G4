@@ -79,14 +79,14 @@ public class ElevatorSubSystem {
 			updateNextFloor();
 			updateGoing_UPorDOWN();
 
-			if (isGoingUP().equals(true)) {
+			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
 				currentFloor++;
-			} else if (isGoingDOWN().equals(true)) {
+			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				currentFloor--;
 			}
-			if (currentFloor == nextFloor) {
+			if (currentFloor == nextFloor) { // later we will use  here 
 				break;
 			}
 		}
