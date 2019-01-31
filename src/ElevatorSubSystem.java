@@ -75,7 +75,12 @@ public class ElevatorSubSystem {
 			System.exit(1);
 		}
 	}
-
+	
+	public enum State {
+		
+		
+		
+	}
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
