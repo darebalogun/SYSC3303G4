@@ -50,9 +50,9 @@ public class Scheduler {
 	
 	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
 	
-	private static final int FLOOR_RECEIVE_PORT = 50001;
+	private static final int FLOOR_RECEIVE_PORT = 60001;
 	
-	private static final int ELEVATOR_RECEIVE_PORT = 50002;
+	private static final int ELEVATOR_RECEIVE_PORT = 60009;
 	
 	private static final int RECEIVE_PORT = 7000;
 	
