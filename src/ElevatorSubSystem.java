@@ -84,9 +84,9 @@ public class ElevatorSubSystem {
 		String state = " START";
 		Boolean ACTIVE = true;
 		while (ACTIVE) {
-			
+
 			switch (state) {
-			
+
 			case "START":
 				elevatorCloseDoorAtFloor(currentFloor);
 				state = "IDEL";
@@ -333,7 +333,7 @@ public class ElevatorSubSystem {
 		}
 
 		nextFloorList = byteArrayToList(data);
-		
+		// no need to update nextFloor here
 
 	}
 
