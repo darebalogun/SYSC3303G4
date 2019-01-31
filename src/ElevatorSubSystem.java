@@ -80,62 +80,56 @@ public class ElevatorSubSystem {
 	}
 
 	public void elevatorState() {
-
-		String state = " START";
+		System.out.print("\n BREAK point 1 \n");
+		String nextSTATE = "START";
 		Boolean ACTIVE = true;
 		while (ACTIVE) {
 
-			switch (state) {
+			System.out.printf("\n Next stat is : " + nextSTATE + "\n");
+			switch (nextSTATE) {
 
 			case "START":
-				elevatorCloseDoorAtFloor(currentFloor);
-				state = "IDEL";
+				
+				nextSTATE = "IDEL";
+				System.out.print("\n Finish START");
+
 				break;
 
 			case "IDEL":
-				if (nextFloorList.isEmpty() == true) {
-					state = "IDEL";
-					break;
+				elevatorCloseDoorAtFloor(currentFloor);
+				if (nextFloorList.size()!= 0) {
+					nextSTATE = "reciveInput";
+
 				} else {
-					state = "reciveInput";
+					
+					ACTIVE = false; 
+					System.out.print("\n Schedulers is not sending any more packets");
+					
 				}
-				break;
+				System.out.print("\n Finish IDEL");
+				break;// end IDEL
 
 			case "reciveInput":
+				//receiveTaskList();
 				updateNextFloor();
-				updateGoing_UPorDOWN();
-				state = "GO";
-				break;
+				
+				nextSTATE = "GO";
+				System.out.print("\n BREAK point reciveInput");
+				break;// end reciveInput
+
 			case "GO":
-				elevatorCloseDoorAtFloor(currentFloor);
-				while (currentFloor != nextFloor) {
-					System.out.printf(" Current Floor %d \n", currentFloor);
-
-					if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
-						runMotor();
-						currentFloor++;
-						// System.out.printf(" Current Floor %d ", currentFloor);
-					} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
-						runMotor();
-						currentFloor--;
-						// System.out.printf(" Current Floor %d ", currentFloor);
-					}
-					if (currentFloor == nextFloor) { // later we will use here
-						System.out.printf(" Current Floor %d ", currentFloor);
-
-						break;
-
-					}
-				}
-				state = "ARRIVED";
-				break;
+				 runElevator();
+				
+				nextSTATE = "ARRIVED";
+				System.out.print("\n Finish state GO");
+				break; // end GO
 
 			case "ARRIVED":
 				elevatorOpendDoorAtFloor(currentFloor);
-				state = "ARRIVED";
-				break;
-			default:
-				break;
+				nextSTATE = "START";
+				System.out.print("\n BREAK point ARRIVED");
+				break;// end ARRIVED
+
 			}
 		}
 
@@ -175,7 +169,7 @@ public class ElevatorSubSystem {
 		if (currentFloor == nextFloor) {
 			nextFloor = nextFloorList.remove(0);
 			// updateNextFloor();
-			elevatorOpendDoorAtFloor(currentFloor);
+			//elevatorOpendDoorAtFloor(currentFloor);
 		}
 
 	}
@@ -257,8 +251,8 @@ public class ElevatorSubSystem {
 	 */
 
 	public void elevatorOpendDoorAtFloor(int n) {
-		getButtonList().set(n, false);
-		getElevatorLamp().set(n, false);
+		getButtonList().set(n-1, false);
+		getElevatorLamp().set(n-1, false);
 		openDoor();
 
 	}
@@ -268,8 +262,8 @@ public class ElevatorSubSystem {
 	 */
 
 	public void elevatorCloseDoorAtFloor(int n) {
-		getButtonList().set(n, false);
-		getElevatorLamp().set(n, false);
+		getButtonList().set(n-1, false);
+		getElevatorLamp().set(n-1, false);
 		closeDoor();
 
 	}
@@ -280,7 +274,7 @@ public class ElevatorSubSystem {
 	 */
 	public void updateGoing_UPorDOWN() {
 
-		if (currentFloor < nextFloor) {
+		if (currentFloor <= nextFloor) {
 			setGoingUP(true);
 			setGoingDOWN(false);
 			System.out.println("Elevator Going UP \n");
@@ -297,9 +291,7 @@ public class ElevatorSubSystem {
 		} else if (isGoingUP() == isGoingDOWN()) {
 			setGoingUP(false);
 			setGoingDOWN(false);
-		} else {
-			;
-		}
+		} 
 
 	}
 
@@ -307,8 +299,10 @@ public class ElevatorSubSystem {
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
 	public void updateNextFloor() {// change accordingly
+		if(nextFloorList.size()>0) {
 		setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor packet command
 		System.out.printf(" NEXT Floor %d \n", nextFloor);
+		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.println("Elevator Cureent Floor Number out of the range \n");
 
@@ -481,7 +475,7 @@ public class ElevatorSubSystem {
 	public static void main(String[] args) {
 		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
-		e.runElevator();
+		e.elevatorState();
 
 	}
 
