@@ -20,7 +20,7 @@ public class FloorSubsystem {
 	private static final int SEND_PORT = 60001, RECEIVE_PORT = 60004;
 	
 	// Text file containing events to be sent to scheduler
-	private static final String INPUT_PATH = "InputEvents.txt";
+	private static final String INPUT_PATH = "src/InputEvents.txt";
 	
 	// Current line in input file
 	private int currentLine;
