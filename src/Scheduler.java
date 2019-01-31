@@ -115,7 +115,7 @@ public class Scheduler {
 	     
 	}
 	
-	public void receiveElevatorLocation() {
+	public void receiveFromElevator() {
 		byte[] data = new byte[BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 		
@@ -250,8 +250,7 @@ public class Scheduler {
 	         e.printStackTrace();
 	         System.exit(1);
 	      }
-	}
-	
+	}	
 
 
 	public static void main(String[] args) {

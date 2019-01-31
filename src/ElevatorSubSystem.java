@@ -36,6 +36,7 @@ public class ElevatorSubSystem {
 	private int nextFloor;
 	private Boolean goingUP;
 	private Boolean goingDOWN;
+	private static final int GROUND_FLOOR = 1;
 
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
@@ -62,6 +63,8 @@ public class ElevatorSubSystem {
 		// basic implementation
 		this.dooropen = false;
 		this.elevatorNumber = elevatorNumber;
+		
+		this.currentFloor = GROUND_FLOOR;
 
 		// from update after 28th January
 		try {
