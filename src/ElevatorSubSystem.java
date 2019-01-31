@@ -4,7 +4,9 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * 
  *                    Scheduler input nextFloor to run Elevator and can get
  *                    current floor status for event log.
- *                    
+ * 
  * 
  */
 public class ElevatorSubSystem {
@@ -24,9 +26,9 @@ public class ElevatorSubSystem {
 	private int elevatorNumber; // nth Elevator number, DO NOT PUT Same number as some other instance;
 	public ArrayList<Boolean> buttonList;
 	public ArrayList<Boolean> elevatorLamp;
-	
+
 	private static final int BYTE_SIZE = 6400;
-	
+
 	private ArrayList<Integer> nextFloorList;
 
 	static private int timeBtwFloors = 3;
@@ -41,8 +43,9 @@ public class ElevatorSubSystem {
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
-	
-	private static int RECEIVE_PORT = 50002;
+
+	// private static int RECEIVE_PORT = 50002;
+	private static int RECEIVE_PORT = 60009;
 
 	/**
 	 * @param elevatorNumber : Unique number to represent unique Elevator in the
@@ -53,42 +56,103 @@ public class ElevatorSubSystem {
 	public ElevatorSubSystem(int elevatorNumber, int buttons) {
 
 		// create buttonList for buttons floor and Initialize as FALSE
-		this.buttonList = new ArrayList<Boolean>(Arrays.asList(new Boolean[buttons]));
+		buttonList = new ArrayList<>(Arrays.asList(new Boolean[buttons]));
 		Collections.fill(buttonList, Boolean.FALSE);
 
 		// create elevatorLamp for buttons floor and Initialize as FALSE
-		this.elevatorLamp = new ArrayList<Boolean>(Arrays.asList(new Boolean[buttons]));
+		elevatorLamp = new ArrayList<>(Arrays.asList(new Boolean[buttons]));
 		Collections.fill(elevatorLamp, Boolean.FALSE);
 
 		// basic implementation
-		this.dooropen = false;
+		dooropen = false;
 		this.elevatorNumber = elevatorNumber;
-		
-		this.currentFloor = GROUND_FLOOR;
+
+		currentFloor = ElevatorSubSystem.GROUND_FLOOR;
 
 		// from update after 28th January
 		try {
-			receiveSocket = new DatagramSocket(RECEIVE_PORT);
+			receiveSocket = new DatagramSocket(ElevatorSubSystem.RECEIVE_PORT);
 		} catch (SocketException se) {
 			System.out.println("Some Error in reciveSocket creation \n");
 			se.printStackTrace();
 			System.exit(1);
 		}
 	}
-	
+
+	public void elevatorState() {
+
+		String state = " START";
+		Boolean ACTIVE = true;
+		while (ACTIVE) {
+			
+			switch (state) {
+			
+			case "START":
+				elevatorCloseDoorAtFloor(currentFloor);
+				state = "IDEL";
+				break;
+
+			case "IDEL":
+				if (nextFloorList.isEmpty() == true) {
+					state = "IDEL";
+					break;
+				} else {
+					state = "reciveInput";
+				}
+				break;
+
+			case "reciveInput":
+				updateNextFloor();
+				updateGoing_UPorDOWN();
+				state = "GO";
+				break;
+			case "GO":
+				elevatorCloseDoorAtFloor(currentFloor);
+				while (currentFloor != nextFloor) {
+					System.out.printf(" Current Floor %d \n", currentFloor);
+
+					if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
+						runMotor();
+						currentFloor++;
+						// System.out.printf(" Current Floor %d ", currentFloor);
+					} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
+						runMotor();
+						currentFloor--;
+						// System.out.printf(" Current Floor %d ", currentFloor);
+					}
+					if (currentFloor == nextFloor) { // later we will use here
+						System.out.printf(" Current Floor %d ", currentFloor);
+
+						break;
+
+					}
+				}
+				state = "ARRIVED";
+				break;
+
+			case "ARRIVED":
+				elevatorOpendDoorAtFloor(currentFloor);
+				state = "ARRIVED";
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
 
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
 	public void runElevator() {
 		// Prepare to run for target floor
-		
+
 		updateNextFloor();
 		elevatorCloseDoorAtFloor(currentFloor);
 
 		// running until next floor
 		while (currentFloor != nextFloor) {
-			System.out.printf(" Current Floor %d ", currentFloor);
+			System.out.printf(" Current Floor %d \n", currentFloor);
 
 			updateNextFloor();
 			updateGoing_UPorDOWN();
@@ -96,17 +160,21 @@ public class ElevatorSubSystem {
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
 				currentFloor++;
+				// System.out.printf(" Current Floor %d ", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				currentFloor--;
+				// System.out.printf(" Current Floor %d ", currentFloor);
 			}
-			if (currentFloor == nextFloor) { // later we will use  here 
+			if (currentFloor == nextFloor) { // later we will use here
+				System.out.printf(" Current Floor %d ", currentFloor);
 				break;
 			}
 		}
 
 		if (currentFloor == nextFloor) {
-			//nextFloor = this.nextFloorList.remove(0);
+			nextFloor = nextFloorList.remove(0);
+			// updateNextFloor();
 			elevatorOpendDoorAtFloor(currentFloor);
 		}
 
@@ -129,7 +197,7 @@ public class ElevatorSubSystem {
 	public void runMotor() {
 		try {
 
-			TimeUnit.SECONDS.sleep(timeBtwFloors);
+			TimeUnit.SECONDS.sleep(ElevatorSubSystem.timeBtwFloors);
 
 		} catch (Exception e) {
 
@@ -144,8 +212,8 @@ public class ElevatorSubSystem {
 	 */
 	public void openDoor() {
 		try {
-			TimeUnit.SECONDS.sleep(doorDelay);
-			this.setDooropen(true);
+			TimeUnit.SECONDS.sleep(ElevatorSubSystem.doorDelay);
+			setDooropen(true);
 			System.out.println("ElevatorDoor Open \n");
 		} catch (InterruptedException e) {
 
@@ -161,8 +229,8 @@ public class ElevatorSubSystem {
 	 */
 	public void closeDoor() {
 		try {
-			TimeUnit.SECONDS.sleep(doorDelay);
-			this.setDooropen(false);
+			TimeUnit.SECONDS.sleep(ElevatorSubSystem.doorDelay);
+			setDooropen(false);
 			System.out.println("ElevatorDoor Close \n");
 		} catch (InterruptedException e) {
 			System.out.println("Some Error in Closing Door \n");
@@ -178,9 +246,9 @@ public class ElevatorSubSystem {
 	 */
 	public void buttonPushed(int n) {
 
-		this.getButtonList().set(n, true);
-		this.getElevatorLamp().set(n, true);
-		this.setNextFloor(n);
+		getButtonList().set(n, true);
+		getElevatorLamp().set(n, true);
+		setNextFloor(n);
 
 	}
 
@@ -213,24 +281,25 @@ public class ElevatorSubSystem {
 	public void updateGoing_UPorDOWN() {
 
 		if (currentFloor < nextFloor) {
-			this.setGoingUP(true);
-			this.setGoingDOWN(false);
+			setGoingUP(true);
+			setGoingDOWN(false);
 			System.out.println("Elevator Going UP \n");
 
 		} else if (currentFloor > nextFloor) {
-			this.setGoingUP(false);
-			this.setGoingDOWN(true);
+			setGoingUP(false);
+			setGoingDOWN(true);
 			System.out.println("Elevator Going DOWN \n");
 
 		} else if (currentFloor == nextFloor) {
-			this.setGoingUP(false);
-			this.setGoingDOWN(false);
+			setGoingUP(false);
+			setGoingDOWN(false);
 			System.out.println("Elevator Standby \n");
 		} else if (isGoingUP() == isGoingDOWN()) {
-			this.setGoingUP(false);
-			this.setGoingDOWN(false);
-		} else
+			setGoingUP(false);
+			setGoingDOWN(false);
+		} else {
 			;
+		}
 
 	}
 
@@ -238,9 +307,9 @@ public class ElevatorSubSystem {
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
 	public void updateNextFloor() {// change accordingly
-		setNextFloor(this.nextFloorList.remove(0));// <-- here use schedulers sent next floor packet command
-		
-		if (currentFloor < 0 || buttonList.size() < currentFloor) { // check current floor is valid or not.
+		setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor packet command
+		System.out.printf(" NEXT Floor %d \n", nextFloor);
+		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.println("Elevator Cureent Floor Number out of the range \n");
 
 		}
@@ -250,29 +319,29 @@ public class ElevatorSubSystem {
 	/**
 	 * Send and receive data from Scheduler system.
 	 */
-	
+
 	public void receiveTaskList() {
-		 byte[] data = new byte[BYTE_SIZE];
-	     DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-	     
-	     // Receive datagram socket from floor subsystem
-	     try {  
-	         receiveSocket.receive(receivePacket);
-	      } catch(IOException e) {
-	         e.printStackTrace();
-	         System.exit(1);
-	      }
-	     
-	     this.nextFloorList = byteArrayToList(data);
-	     this.nextFloor = this.nextFloorList.remove(0);
-	     
-	}
-	
-	@SuppressWarnings("unchecked")
-	private ArrayList<Integer> byteArrayToList(byte[] data){
+		byte[] data = new byte[ElevatorSubSystem.BYTE_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+
+		// Receive datagram socket from floor subsystem
+		try {
+			receiveSocket.receive(receivePacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		nextFloorList = byteArrayToList(data);
 		
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Integer> byteArrayToList(byte[] data) {
+
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
-	    ObjectInputStream objStream = null;
+		ObjectInputStream objStream = null;
 		try {
 			objStream = new ObjectInputStream(byteStream);
 		} catch (IOException e1) {
@@ -280,8 +349,7 @@ public class ElevatorSubSystem {
 			e1.printStackTrace();
 		}
 
-		
-	    try {
+		try {
 			return (ArrayList<Integer>) objStream.readObject();
 		} catch (ClassNotFoundException e) {
 			// Class not found
@@ -290,9 +358,9 @@ public class ElevatorSubSystem {
 			// Could not red object from stream
 			e.printStackTrace();
 		}
-	    
+
 		return null;
-		
+
 	}
 
 	// getter and setter
@@ -345,7 +413,7 @@ public class ElevatorSubSystem {
 	}
 
 	public int getTimeBtwFloors() {
-		return timeBtwFloors;
+		return ElevatorSubSystem.timeBtwFloors;
 	}
 
 	public Boolean getDooropen() {
@@ -409,12 +477,12 @@ public class ElevatorSubSystem {
 				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
 				+ "]";
 	}
-	
+
 	public static void main(String[] args) {
 		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
 		e.runElevator();
-		
+
 	}
 
 }
