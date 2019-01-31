@@ -42,7 +42,7 @@ public class ElevatorSubSystem {
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
 	
-	private static int RECEIVE_PORT = 50002;
+	private static int RECEIVE_PORT = 60009;
 
 	/**
 	 * @param elevatorNumber : Unique number to represent unique Elevator in the
