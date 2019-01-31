@@ -104,13 +104,13 @@ public class Scheduler {
 	         System.exit(1);
 	      }
 	     
-	     this.eventList = byteArrayToList(data);
+	     this.eventList.addAll(byteArrayToList(data));
+	     
+	     System.out.println("\nReceived request from floor: " + this.eventList.get(this.eventList.size() - 1).getCurrentFloor());
 	     
 	     for (InputEvent event : this.eventList) {
 	     
-	    	 System.out.println("Received event at " + event.getTime() + " \n" 
-	    			 			+ "from floor: " + event.getCurrentFloor() + "\n"
-	    			 			+ " to floor: "+ event.getDestinationFloor());
+	    	 System.out.println("Destination: " + event.getDestinationFloor());
 	     }
 	     
 	}
@@ -173,8 +173,6 @@ public class Scheduler {
 			Collections.sort(downRequests);
 		}
 		
-		System.out.println(upRequests.size());
-		
 		if (!upRequests.isEmpty()) {
 			for (Direction direction : this.directionList) {
 				if (direction == Direction.IDLE) {
@@ -191,8 +189,6 @@ public class Scheduler {
 			}
 		}
 		
-		System.out.println(upRequests.size());
-		
 		Iterator<InputEvent> i = upRequests.iterator();
 		
 		while(i.hasNext()) {
@@ -200,9 +196,6 @@ public class Scheduler {
 			this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 			i.remove();
 		}
-
-		System.out.println(upRequests.size());
-		System.out.println(this.elevatorTaskQueue);
 		
 		
 	}

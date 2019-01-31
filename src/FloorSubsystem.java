@@ -66,6 +66,8 @@ public class FloorSubsystem {
 		
 		this.elevatorPresent = false; 
 		
+		System.out.println("\nStarting Floor Number: " + this.floorNum);
+		
 	}
 	
 	/** get the current floor that the elevator is on */
@@ -125,6 +127,12 @@ public class FloorSubsystem {
 				
 				// Add to event object list
 				eventList.add(event);
+				
+				if (i == this.currentLine) {
+					System.out.println("\nFloor " + this.floorNum + ": Requests read from file: ");
+				}
+				System.out.print("Time: " + time);
+				System.out.println(" Destination: "+ destinationFloor);
 			}
 		}
 		
@@ -155,8 +163,6 @@ public class FloorSubsystem {
 			
 			byte[] data = baos.toByteArray();
 			
-			this.eventList.clear();
-			
 			return data;
 		} else {
 			throw new IllegalArgumentException("The eventlist must not be empty before being converted to byte array");
@@ -186,6 +192,8 @@ public class FloorSubsystem {
 		         e.printStackTrace();
 		         System.exit(1);
 		      }
+			
+			System.out.println("\nFloor " + this.floorNum + ": Sent " + this.eventList.size() + " requests to scheduler");
 		}
 
 		this.eventList.clear();

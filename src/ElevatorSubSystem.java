@@ -406,7 +406,7 @@ public class ElevatorSubSystem {
 	}
 	
 	public static void main(String[] args) {
-		ElevatorSubSystem e = new ElevatorSubSystem(1, 2);
+		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
 		e.runElevator();
 		
