@@ -17,7 +17,7 @@ public class FloorSubsystem {
 	private DatagramSocket sendReceive;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
-	private static final int SEND_PORT = 7000, RECEIVE_PORT = 7001;
+	private static final int SEND_PORT = 50001, RECEIVE_PORT = 50004;
 	
 	// Text file containing events to be sent to scheduler
 	private static final String INPUT_PATH = "InputEvents.txt";
@@ -44,28 +44,7 @@ public class FloorSubsystem {
 	// to check if elevator is currently present on the floor
 	public boolean elevatorPresent;
 
-
-	public FloorSubsystem() {
-
-	      try 
-	      {
-	    	  this.sendReceive = new DatagramSocket();							
-	      } 
-	      catch (SocketException se) 													
-	      {   
-	         se.printStackTrace();
-	         System.exit(1);
-	      }
-
 		
-		this.currentLine = 0; 
-		
-		this.eventList = new ArrayList<InputEvent>();
-		
-	}
-	
-
-	
 	public FloorSubsystem(int n) {
 		
 		this.currentLine = 0; 
@@ -208,6 +187,14 @@ public class FloorSubsystem {
 		         System.exit(1);
 		      }
 		}
+
+		this.eventList.clear();
+	}
+	
+	public static void main(String[] args) {
+		FloorSubsystem s = new FloorSubsystem(1);
+		s.readInputEvent();
+		s.sendEventList();
 	}
 	
 }

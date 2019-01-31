@@ -1,6 +1,11 @@
 import java.io.Serializable;
 
 public class InputEvent implements Serializable,Comparable<InputEvent> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Event time log
 	private final String time;
 	

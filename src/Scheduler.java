@@ -1,11 +1,16 @@
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * 
@@ -32,6 +37,8 @@ public class Scheduler {
 	
 	private ArrayList<Integer> currentPositionList;
 	
+	private DatagramPacket sendPacket;
+	
 	private enum Direction{
 		UP, DOWN, IDLE
 	}
@@ -41,19 +48,27 @@ public class Scheduler {
 	// Default byte array size for datagram packets
 	private static final int BYTE_SIZE = 6400;
 	
-	private DatagramSocket floorReceiveSocket, elevatorReceiveSocket;
+	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
 	
-	private static final int FLOOR_RECEIVE_PORT = 7000;
+	private static final int FLOOR_RECEIVE_PORT = 50001;
 	
-	private static final int ELEVATOR_RECEIVE_PORT = 70001;
+	private static final int ELEVATOR_RECEIVE_PORT = 50002;
+	
+	private static final int RECEIVE_PORT = 7000;
 	
 	
 	
 	public Scheduler() {
 		
 		this.elevatorTaskQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
+		this.elevatorTaskQueue.add(new ArrayList<Integer>());
 		
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
+		Collections.fill(this.currentPositionList, 1);
+		
+		this.upRequests = new ArrayList<InputEvent>();
+		
+		this.downRequests = new ArrayList<InputEvent>();
 		
 		for (Integer elevatorPosition : this.currentPositionList) {
 			elevatorPosition = 1;
@@ -69,7 +84,7 @@ public class Scheduler {
 		
 		try {
 			floorReceiveSocket = new DatagramSocket(FLOOR_RECEIVE_PORT);
-			elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
+			//elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
 		} catch (SocketException se) {
 	        se.printStackTrace();
 	        System.exit(1);
@@ -90,6 +105,13 @@ public class Scheduler {
 	      }
 	     
 	     this.eventList = byteArrayToList(data);
+	     
+	     for (InputEvent event : this.eventList) {
+	     
+	    	 System.out.println("Received event at " + event.getTime() + " \n" 
+	    			 			+ "from floor: " + event.getCurrentFloor() + "\n"
+	    			 			+ " to floor: "+ event.getDestinationFloor());
+	     }
 	     
 	}
 	
@@ -143,8 +165,15 @@ public class Scheduler {
 			}
 		}
 		
-		Collections.sort(upRequests);
-		Collections.sort(downRequests);
+		if (!upRequests.isEmpty()) {
+			Collections.sort(upRequests);
+		}
+		
+		if (!downRequests.isEmpty()) {
+			Collections.sort(downRequests);
+		}
+		
+		System.out.println(upRequests.size());
 		
 		if (!upRequests.isEmpty()) {
 			for (Direction direction : this.directionList) {
@@ -162,26 +191,72 @@ public class Scheduler {
 			}
 		}
 		
-		for (InputEvent upEvent: upRequests) {
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				if (this.directionList.get(i) == Direction.UP & this.currentPositionList.get(i) <= upEvent.getCurrentFloor()) {
-					this.elevatorTaskQueue.get(i).add(upEvent.getDestinationFloor());
-					upRequests.remove(upEvent);
-					break;
-				}
-			}
+		System.out.println(upRequests.size());
+		
+		Iterator<InputEvent> i = upRequests.iterator();
+		
+		while(i.hasNext()) {
+			InputEvent e = i.next();
+			this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			i.remove();
+		}
+
+		System.out.println(upRequests.size());
+		System.out.println(this.elevatorTaskQueue);
+		
+		
+	}
+	
+	public byte[] taskListToByteArray(int elevatorNumber) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
+		
+		ObjectOutputStream oos = null;
+		
+		try {
+			oos = new ObjectOutputStream(baos);
+		} catch (IOException e1) {
+			// Unable to create object output stream
+			e1.printStackTrace();
 		}
 		
-		for (InputEvent downEvent: upRequests) {
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				if (this.directionList.get(i) == Direction.DOWN & this.currentPositionList.get(i) >= downEvent.getCurrentFloor()) {
-					this.elevatorTaskQueue.get(i).add(downEvent.getDestinationFloor());
-					break;
-				}
-			}
+		try {
+			oos.writeObject(this.elevatorTaskQueue.get(0));
+		} catch (IOException e) {
+			// Unable to write eventList in bytes
+			e.printStackTrace();
 		}
 		
+		return baos.toByteArray();
 		
+		
+	}
+	
+	public void sendTask(int elevatorNumber) {
+		
+		byte[] data = taskListToByteArray(elevatorNumber);
+		
+		// Create Datagram packet containing byte array of event list information
+		try {
+		     sendPacket = new DatagramPacket(data,
+		                                     data.length, InetAddress.getLocalHost(), ELEVATOR_RECEIVE_PORT);
+		  } catch (UnknownHostException e) {
+		     e.printStackTrace();
+		     System.exit(1);
+		  }
+		
+		try {
+			this.sendSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
+		
+		try {
+	         sendSocket.send(sendPacket);
+	      } catch (IOException e) {
+	         e.printStackTrace();
+	         System.exit(1);
+	      }
 	}
 	
 
@@ -189,7 +264,8 @@ public class Scheduler {
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
 		s.receiveInputEventList();
-		System.out.println(s.eventList.get(1).getTime());
+		s.processRequests();
+		s.sendTask(1);
 	}
 
 }

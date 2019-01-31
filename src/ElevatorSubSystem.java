@@ -1,4 +1,6 @@
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -21,6 +23,10 @@ public class ElevatorSubSystem {
 	private int elevatorNumber; // nth Elevator number, DO NOT PUT Same number as some other instance;
 	public ArrayList<Boolean> buttonList;
 	public ArrayList<Boolean> elevatorLamp;
+	
+	private static final int BYTE_SIZE = 6400;
+	
+	private ArrayList<Integer> nextFloorList;
 
 	static private int timeBtwFloors = 3;
 	static private int doorDelay = 1;
@@ -33,6 +39,8 @@ public class ElevatorSubSystem {
 	// from update after 28th January
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
+	
+	private static int RECEIVE_PORT = 50002;
 
 	/**
 	 * @param elevatorNumber : Unique number to represent unique Elevator in the
@@ -56,7 +64,7 @@ public class ElevatorSubSystem {
 
 		// from update after 28th January
 		try {
-			receiveSocket = new DatagramSocket(69);
+			receiveSocket = new DatagramSocket(RECEIVE_PORT);
 		} catch (SocketException se) {
 			System.out.println("Some Error in reciveSocket creation \n");
 			se.printStackTrace();
@@ -92,6 +100,7 @@ public class ElevatorSubSystem {
 		}
 
 		if (currentFloor == nextFloor) {
+			nextFloor = this.nextFloorList.remove(0);
 			elevatorOpendDoorAtFloor(currentFloor);
 		}
 
@@ -235,38 +244,49 @@ public class ElevatorSubSystem {
 	/**
 	 * Send and receive data from Scheduler system.
 	 */
-
-	public void receiveAndSendToScheduler() {
-
-		// we have to add here that we receiving from scheduler and what we sending to
-		// scheduler
-
-		byte[] data = null;
-		receivePacket = new DatagramPacket(data, data.length);
-
+	
+	public void receiveTaskList() {
+		 byte[] data = new byte[BYTE_SIZE];
+	     DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+	     
+	     // Receive datagram socket from floor subsystem
+	     try {  
+	         receiveSocket.receive(receivePacket);
+	      } catch(IOException e) {
+	         e.printStackTrace();
+	         System.exit(1);
+	      }
+	     
+	     this.nextFloorList = byteArrayToList(data);
+	     this.nextFloor = this.nextFloorList.remove(0);
+	     
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ArrayList<Integer> byteArrayToList(byte[] data){
+		
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+	    ObjectInputStream objStream = null;
 		try {
-			receiveSocket.receive(receivePacket); // receiving packets from the host
-		} catch (IOException e) {
+			objStream = new ObjectInputStream(byteStream);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+	    try {
+			return (ArrayList<Integer>) objStream.readObject();
+		} catch (ClassNotFoundException e) {
+			// Class not found
 			e.printStackTrace();
-			System.exit(1);
-		}
-
-		try {
-			sendSocket = new DatagramSocket();
-		} catch (SocketException se) {
-			se.printStackTrace();
-			System.exit(1);
-			
-		}
-
-		try {
-			sendSocket.send(sendPacket);
 		} catch (IOException e) {
+			// Could not red object from stream
 			e.printStackTrace();
-			System.exit(1);
 		}
-
-		sendSocket.close();
+	    
+		return null;
+		
 	}
 
 	// getter and setter
@@ -382,6 +402,13 @@ public class ElevatorSubSystem {
 				+ nextFloor + ", goingUP=" + goingUP + ", goingDOWN=" + goingDOWN + ", sendPacket=" + sendPacket
 				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
 				+ "]";
+	}
+	
+	public static void main(String[] args) {
+		ElevatorSubSystem e = new ElevatorSubSystem(1, 2);
+		e.receiveTaskList();
+		e.runElevator();
+		
 	}
 
 }
