@@ -42,7 +42,7 @@ public class ElevatorSubSystem {
 	private DatagramPacket sendPacket, receivePacket;
 	private DatagramSocket sendSocket, receiveSocket;
 	
-	private static int RECEIVE_PORT = 60009;
+	private static int RECEIVE_PORT = 50002;
 
 	/**
 	 * @param elevatorNumber : Unique number to represent unique Elevator in the
@@ -75,12 +75,14 @@ public class ElevatorSubSystem {
 			System.exit(1);
 		}
 	}
+	
 
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
 	public void runElevator() {
 		// Prepare to run for target floor
+		
 		updateNextFloor();
 		elevatorCloseDoorAtFloor(currentFloor);
 
@@ -104,7 +106,7 @@ public class ElevatorSubSystem {
 		}
 
 		if (currentFloor == nextFloor) {
-			nextFloor = this.nextFloorList.remove(0);
+			//nextFloor = this.nextFloorList.remove(0);
 			elevatorOpendDoorAtFloor(currentFloor);
 		}
 
@@ -236,8 +238,8 @@ public class ElevatorSubSystem {
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
 	public void updateNextFloor() {// change accordingly
-		setNextFloor(getNextFloor());// <-- here use schedulers sent next floor packet command
-
+		setNextFloor(this.nextFloorList.remove(0));// <-- here use schedulers sent next floor packet command
+		
 		if (currentFloor < 0 || buttonList.size() < currentFloor) { // check current floor is valid or not.
 			System.out.println("Elevator Cureent Floor Number out of the range \n");
 
