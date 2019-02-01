@@ -85,7 +85,7 @@ public class ElevatorSubSystem {
 		Boolean ACTIVE = true;
 		while (ACTIVE) {
 
-			System.out.printf("\n Next stat is : " + nextSTATE + "\n");
+			System.out.printf("\n Next state is : " + nextSTATE + "\n");
 			switch (nextSTATE) {
 
 			case "START":
