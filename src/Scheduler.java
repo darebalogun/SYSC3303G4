@@ -21,9 +21,10 @@ import java.util.Set;
  * 
  * Iteration 1
  * 
- * This Class represents an Elevator Car as a unit. Has basic functionality such as
- * Button and lamp for floors to go, Door and door delay, delay for between floors.
- * Scheduler input nextFloor to run Elevator and can get current floor status for event log.
+ * This class is to receive the information/requests from the FloorSubsystem and send
+ * them to ElevatorSubSystem and send response back to the FloorSubsystem.
+ * The scheduler accepts inputs from the InputEvent class and send the requests to 
+ * ElevatorSubSystem. The Scheduler is also updated when an Elevator reaches it's desired floor
  * 
  */
 public class Scheduler {
