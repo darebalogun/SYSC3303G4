@@ -6,7 +6,7 @@ Member:
 	2. Sama Adil Sheikh | 101060020
 	3. Anannya Bhatia | 100989250
 	4. Dare Balogun | 
-	5. Mrunal Patel |
+	5. Mrunal Patel | 101001748
 
 
 Included files and setup instructions are as under:-
@@ -35,13 +35,19 @@ ElevatorSubSystem.java:-
 -> It receives and send Datagram packets to the Scheduler using UDP communication
 -> It's functional features include opening/closing the door, buttons and lamps for floors, 
    time delay between the opening/closing of the door and time delay in between floors.
--> It also gets updates for next floor from the Schedular
+-> It also gets updates for next floor from the Scheduler
 
 InputEvent.java:-
 
 -> This file contains the InputEvent class
 -> Reads inputs from the InputEvents test file
 -> Contains information about the current floor, destination floor, time between floors and direction of the elevator
+
+ElevatorSusSystemTest.java:-
+
+-> This file contains the ElevatorSubSystemTest class 
+-> Contains Junit tests for the system
+
 InputEvents.txt:-
 
 -> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
@@ -59,8 +65,10 @@ SetUp Instructions:-
 -> Open eclipse-java
 -> Make new project and load all the files described above in the created project
 -> Run ElevatorSubSysetm::main
+-> Wait for the class to execute fully
 -> Open new console
 -> Run Scheduler:: main
+-> Wait for the class to execute fully
 -> Open new Console
 -> Run FloorSubsystem
 -> Open different consoles to check the output
