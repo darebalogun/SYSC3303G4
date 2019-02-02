@@ -1,6 +1,8 @@
 import java.util.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -230,15 +232,44 @@ public class FloorSubsystem {
 			System.exit(1);
 		}
 		
-		String s = new String(data);
+		Pair pair = byteArrayToPair(data);
 		
-		if (s == "up") {
-			this.upLamp = false;
-		} else {
-			this.downLamp = false;
+		if (pair.getInteger() == this.floorNum) {
+			
+			String s = pair.getString();
+			if (s == "up") {
+				this.upLamp = false;
+			} else {
+				this.downLamp = false;
+			}
+			
+			System.out.println("An elevator going " + s + " has arrived\n");
 		}
 		
-		System.out.println("An elevator going " + s + " has arrived\n");
+	}
+	
+	private Pair byteArrayToPair(byte[] data) {
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+	    ObjectInputStream objStream = null;
+		try {
+			objStream = new ObjectInputStream(byteStream);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+	    try {
+			return (Pair) objStream.readObject();
+		} catch (ClassNotFoundException e) {
+			// Class not found
+			e.printStackTrace();
+		} catch (IOException e) {
+			// Could not red object from stream
+			e.printStackTrace();
+		}
+	    
+		return null;
 	}
 	
 	public static void main(String[] args) {

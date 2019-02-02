@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -297,23 +298,14 @@ public class Scheduler {
 			System.exit(1);
 		}
 		
-		Integer arrival = byteArrayToInteger(data);
+		Pair arrival = byteArrayToPair(data);
 		
-		this.currentPositionList.set(0, arrival);
+		this.currentPositionList.set(0, arrival.getInteger());
 		
-		System.out.println("The elevator has arrived at floor: " + arrival);
-		
-		String direction;
-		
-		if (this.directionList.get(0) == Direction.UP) {
-			direction = "up";
-		} else {
-			direction = "down";
-		}
-		
-		byte[] sendData = direction.getBytes();
-		
-		// Create Datagram packet containing byte array of event list information
+		System.out.println("The elevator has arrived at floor: " + arrival.getInteger());
+	
+		byte[] sendData = data;
+
 		try {
 		     sendPacket = new DatagramPacket(sendData,
 		                                     sendData.length, InetAddress.getLocalHost(), FLOOR_SEND_PORT);
@@ -339,7 +331,7 @@ public class Scheduler {
 	}
 	
 	
-	private Integer byteArrayToInteger(byte[] data) {
+	private Pair byteArrayToPair(byte[] data) {
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 	    ObjectInputStream objStream = null;
 		try {
@@ -351,7 +343,7 @@ public class Scheduler {
 
 		
 	    try {
-			return (Integer) objStream.readObject();
+			return (Pair) objStream.readObject();
 		} catch (ClassNotFoundException e) {
 			// Class not found
 			e.printStackTrace();
