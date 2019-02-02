@@ -59,9 +59,11 @@ public class Scheduler {
 	
 	private static final int FLOOR_RECEIVE_PORT = 60002;
 	
-	private static final int ELEVATOR_RECEIVE_PORT = 60008;
+	private static final int ELEVATOR_SEND_PORT = 60008;
 	
-	private static final int RECEIVE_PORT = 60006;
+	private static final int ELEVATOR_RECEIVE_PORT = 60006;
+	
+	private static final int FLOOR_SEND_PORT = 60004;
 	
 	
 	
@@ -97,7 +99,7 @@ public class Scheduler {
 		}
 	
 		try {
-			elevatorReceiveSocket = new DatagramSocket(RECEIVE_PORT);
+			elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
 			//elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
 		} catch (SocketException se) {
 	        se.printStackTrace();
@@ -119,9 +121,7 @@ public class Scheduler {
 	     
 	     this.eventList.addAll(byteArrayToList(data));
 	     
-	     System.out.println("\nReceived request from floor ");
-	     
-	     System.out.println(this.eventList.size());
+	     System.out.println("\nReceived request from floor: " + this.eventList.get(this.eventList.size() - 1).getCurrentFloor());
 	     
 	     for (InputEvent event : this.eventList) {
 	     
@@ -259,7 +259,7 @@ public class Scheduler {
 			// Create Datagram packet containing byte array of event list information
 			try {
 			     sendPacket = new DatagramPacket(data,
-			                                     data.length, InetAddress.getLocalHost(), ELEVATOR_RECEIVE_PORT);
+			                                     data.length, InetAddress.getLocalHost(), ELEVATOR_SEND_PORT);
 			  } catch (UnknownHostException e) {
 			     e.printStackTrace();
 			     System.exit(1);
@@ -299,11 +299,43 @@ public class Scheduler {
 		this.currentPositionList.set(0, arrival);
 		
 		System.out.println("The elevator has arrived at floor: " + arrival);
+		
+		String direction;
+		
+		if (this.directionList.get(0) == Direction.UP) {
+			direction = "up";
+		} else {
+			direction = "down";
+		}
+		
+		byte[] sendData = direction.getBytes();
+		
+		// Create Datagram packet containing byte array of event list information
+		try {
+		     sendPacket = new DatagramPacket(sendData,
+		                                     sendData.length, InetAddress.getLocalHost(), FLOOR_SEND_PORT);
+		  } catch (UnknownHostException e) {
+		     e.printStackTrace();
+		     System.exit(1);
+		  }
+		
+		try {
+			this.sendSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
+		
+		try {
+	         sendSocket.send(sendPacket);
+	      } catch (IOException e) {
+	         e.printStackTrace();
+	         System.exit(1);
+	      }
+		sendSocket.close();
 	}
 	
 	
-
-
 	private Integer byteArrayToInteger(byte[] data) {
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 	    ObjectInputStream objStream = null;
