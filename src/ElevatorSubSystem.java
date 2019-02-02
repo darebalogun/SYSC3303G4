@@ -234,7 +234,7 @@ public class ElevatorSubSystem {
 	public void openDoor() {
 		try {
 			TimeUnit.SECONDS.sleep(ElevatorSubSystem.doorDelay);
-			setDooropen(true);
+			setDoorState(true);
 			System.out.println(" Elevator door opening \n");
 		} catch (InterruptedException e) {
 
@@ -251,7 +251,7 @@ public class ElevatorSubSystem {
 	public void closeDoor() {
 		try {
 			TimeUnit.SECONDS.sleep(ElevatorSubSystem.doorDelay);
-			setDooropen(false);
+			setDoorState(false);
 			System.out.println(" Elevator door closing \n");
 		} catch (InterruptedException e) {
 			System.out.println(" Some Error in Closing Door \n");
@@ -506,11 +506,11 @@ public class ElevatorSubSystem {
 		return ElevatorSubSystem.timeBtwFloors;
 	}
 
-	public Boolean getDooropen() {
+	public Boolean getDoorState() {
 		return dooropen;
 	}
 
-	public void setDooropen(Boolean dooropen) {
+	public void setDoorState(Boolean dooropen) {
 		this.dooropen = dooropen;
 	}
 
