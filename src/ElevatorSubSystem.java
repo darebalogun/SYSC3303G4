@@ -13,22 +13,23 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-/** 
- * ElevatorSubSystem.java
- * SYSC3303G4
+/**
+ * ElevatorSubSystem.java SYSC3303G4
+ * @author : Muhammad Tarequzzaman | 100954008  
+ * @coauthor :  
+ * @version Iteration 1
  * 
- * Iteration 1
  * 
- * This Class represents an Elevator Car as a unit. Has basic functionality
- * such as Button and lamp for floors to go, Door and door delay, delay
- * for between floors. Scheduler input nextFloor to run Elevator and can 
- * get current floor status for event log.
+ * This Class represents an Elevator Car as a unit. Has basic functionality such
+ * as Button and lamp for floors to go, Door and door delay, delay for between
+ * floors. Scheduler input nextFloor to run Elevator and can get current floor
+ * status for event log.
  * 
  */
 public class ElevatorSubSystem {
-	
+
 	// nth Elevator number, DO NOT PUT Same number as some other instance;
-	private int elevatorNumber; 
+	private int elevatorNumber;
 	public ArrayList<Boolean> buttonList;
 	public ArrayList<Boolean> elevatorLamp;
 
@@ -52,7 +53,7 @@ public class ElevatorSubSystem {
 
 	// private static int RECEIVE_PORT = 50002;
 	private static int RECEIVE_PORT = 60008;
-	
+
 	private static int SCHEDULER_SEND_PORT = 60006;
 
 	/**
@@ -62,7 +63,7 @@ public class ElevatorSubSystem {
 	 *                       elevator for floors.
 	 */
 	public ElevatorSubSystem(int elevatorNumber, int buttons) {
-		
+
 		System.out.println("ElevatorSubSystem running...Waiting for the requests from the Scheduler \n");
 
 		// create buttonList for buttons floor and Initialize as FALSE
@@ -100,12 +101,11 @@ public class ElevatorSubSystem {
 
 		while (ACTIVE) {
 
-			
 			switch (state) {
 
 			case Ready:
 				System.out.print("\n System Ready \n");
-
+				ACTIVE = true; 
 				state = State.Idle;
 				break;
 
@@ -113,60 +113,58 @@ public class ElevatorSubSystem {
 				if (this.dooropen) {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
-				
-				if (nextFloorList.size() > 0) {
+
+				if (nextFloorList.size() > 0 || currentFloor != nextFloor ){
 					updateNextFloor();
 					state = State.Run;
 
 				} else {
 					state = State.UpdateInput;
 					System.out.printf(" Idle at floor %d \n", currentFloor);
-					
+
 				}
 
 				break;// end Idle
 
 			case UpdateInput:
-				 
-				 
-				if (nextFloorList.size() > 0 || (currentFloor != nextFloor) ) {
+
+				if (nextFloorList.size() > 0 || (currentFloor != nextFloor)) {
 					state = State.Run;
 				} else {
 					receiveTaskList();
-					//updateGoing_UPorDOWN();
+					// updateGoing_UPorDOWN();
 					state = State.Idle;
 				}
 
 				break;// end UpdateInput
 
 			case Run:
-				
-				System.out.printf(" Elevator has %d destinations to visit next\n", nextFloorList.size() + 1);
-				
+
+				System.out.printf(" Elevator's Next Destination is : %d\n", this.nextFloor);
+
 				runElevator();
-				
+
 				state = State.Arrived;
 
 				break; // end Run
 
 			case Arrived:
 				if (currentFloor == nextFloor) { // later we will use here
+
+					System.out.printf(" Elevator Arrived at floor: %d \n", currentFloor);
 					sendArrivalInfo();
-					System.out.printf(" Elevator arrived at destination floor: %d \n", currentFloor);
 					elevatorOpendDoorAtFloor(currentFloor);
 					elevatorCloseDoorAtFloor(currentFloor);
-					if(nextFloorList.size() !=0) {
-						//System.out.println(nextFloorList.size());
+					if (nextFloorList.size() != 0) {
+						// System.out.println(nextFloorList.size());
 						nextFloor = nextFloorList.remove(0);
-						state = State.Run;
-						break;
-					} else {
-						state = State.Idle;
-						break;
+						//state = State.Run;
+						//break;
 					}
-					
+
 				}
 
+				state = State.Idle;
 				break;// end ARRIVED
 
 			}
@@ -179,31 +177,27 @@ public class ElevatorSubSystem {
 	 */
 	public void runElevator() {
 		// Prepare to run for target floor
-	
-		
+
 		// running until next floor
 		while (currentFloor != nextFloor) {
 			System.out.printf(" Currently at floor: %d \n", currentFloor);
 			updateGoing_UPorDOWN();
-			//System.out.printf(" Next Floor %d \n", nextFloor);
+			// System.out.printf(" Next Floor %d \n", nextFloor);
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
 				currentFloor++;
-				//System.out.printf(" Current Floor %d \n", currentFloor);
+				// System.out.printf(" Current Floor %d \n", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				currentFloor--;
-				//System.out.printf(" Current Floor %d \n", currentFloor);
+				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
-			
-		}
 
-		
+		}
 
 	}
 
-	
 	/**
 	 * 
 	 */
@@ -320,7 +314,7 @@ public class ElevatorSubSystem {
 		if (nextFloorList.size() > 0) {
 			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
 			// packet command
-			nextFloor = nextFloorList.remove(0);
+			nextFloor = nextFloorList.get(0);
 			// System.out.printf(" NEXT Floor %d \n", nextFloor);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
@@ -328,7 +322,6 @@ public class ElevatorSubSystem {
 
 		}
 	}
-	
 
 	// from update after 28th January
 	/**
@@ -377,57 +370,56 @@ public class ElevatorSubSystem {
 		return null;
 
 	}
-	
+
 	public void sendArrivalInfo() {
 		byte[] data = IntegerToByteArray(new Integer(this.currentFloor));
-		
+
 		// Create Datagram packet containing byte array of event list information
 		try {
-		     sendPacket = new DatagramPacket(data,
-		                                     data.length, InetAddress.getLocalHost(), SCHEDULER_SEND_PORT);
-		  } catch (UnknownHostException e) {
-		     e.printStackTrace();
-		     System.exit(1);
-		  }
-		
+			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), SCHEDULER_SEND_PORT);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
 		try {
 			this.sendSocket = new DatagramSocket();
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		try {
-	         sendSocket.send(sendPacket);
-	      } catch (IOException e) {
-	         e.printStackTrace();
-	         System.exit(1);
-	      }
-		
+			sendSocket.send(sendPacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
 		sendSocket.close();
-		
+
 		System.out.println(" Arrival info sent to Scheduler\n");
 	}
 
 	private byte[] IntegerToByteArray(Integer i) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
-		
+
 		ObjectOutputStream oos = null;
-		
+
 		try {
 			oos = new ObjectOutputStream(baos);
 		} catch (IOException e1) {
 			// Unable to create object output stream
 			e1.printStackTrace();
 		}
-		
+
 		try {
 			oos.writeObject(i);
 		} catch (IOException e) {
 			// Unable to write eventList in bytes
 			e.printStackTrace();
 		}
-		
+
 		return baos.toByteArray();
 	}
 
