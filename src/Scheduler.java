@@ -67,8 +67,7 @@ public class Scheduler {
 	
 	public Scheduler() {
 		
-		//System.out.println("Scheduler running...Waiting for the requests from the FloorSubsystem \n");
-		
+	
 		this.elevatorTaskQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
 		this.elevatorTaskQueue.add(new ArrayList<Integer>());
 		
