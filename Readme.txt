@@ -35,7 +35,7 @@ ElevatorSubSystem.java:-
 -> It receives and send Datagram packets to the Scheduler using UDP communication
 -> It's functional features include opening/closing the door, buttons and lamps for floors, 
    time delay between the opening/closing of the door and time delay in between floors.
--> It also gets updates for next floor from the Schedular
+-> It also gets updates for next floor from the Scheduler
 
 InputEvent.java:-
 
