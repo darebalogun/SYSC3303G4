@@ -1,4 +1,6 @@
 Project Group 4
+L5G4_milestone_1
+
 
 Member: 
 
@@ -29,6 +31,7 @@ Scheduler.java:-
 -> The Scheduler is also updated when an Elevator reaches it's desired floor
 
 ElevatorSubSystem.java:-
+	 
 
 -> This file contains the ElevatorSubSystem class
 -> The purpose of this class is to represent the Elevator Car as a unit

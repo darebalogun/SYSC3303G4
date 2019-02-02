@@ -18,8 +18,11 @@ import java.util.Set;
 /** 
  * Scheduler.java
  * SYSC3303G4
+ *  @author 
+ *  
+ *  @version Iteration 1
+ *  
  * 
- * Iteration 1
  * 
  * This class is to receive the information/requests from the FloorSubsystem and send
  * them to ElevatorSubSystem and send response back to the FloorSubsystem.
@@ -328,6 +331,9 @@ public class Scheduler {
 		return null;
 	}
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
 		

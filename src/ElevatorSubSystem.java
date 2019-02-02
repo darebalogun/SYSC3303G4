@@ -15,16 +15,27 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ElevatorSubSystem.java SYSC3303G4
- * @author : Muhammad Tarequzzaman | 100954008  
- * @coauthor :  
- * @version Iteration 1
  * 
+ * @author : Muhammad Tarequzzaman | 100954008 | Responsible for creating
+ *         {@link Method elevatorState()},{@link Method runElevator()},
+ *         {@link Method updateGoing_UPorDown()}, {@link Method
+ *         updateNextFloor()}, {@link Method updateGoing_UPorDown()} and getters
+ *         and setters in {@link Class ElevatorSubSystem}
  * 
+ *         <pre></pre>
+ * 
+ * @co_author : Dare Balogun | 101062340 | Responsible for creating
+ *            {@link Method sendArrivalInfo()} {@link Method receiveTaskList()},
+ *            and {@link Method IntegerToByteArray(Integer i)}
+ * 
+ * @version Iteration 1 :
+ * 
+ *          <pre>
  * This Class represents an Elevator Car as a unit. Has basic functionality such
  * as Button and lamp for floors to go, Door and door delay, delay for between
  * floors. Scheduler input nextFloor to run Elevator and can get current floor
  * status for event log.
- * 
+ *          </pre>
  */
 public class ElevatorSubSystem {
 
@@ -95,6 +106,9 @@ public class ElevatorSubSystem {
 
 	}
 
+	/**
+	 * This method implants FSM Using State condition to change state
+	 */
 	public void elevatorState() {
 
 		State state = State.Ready;
@@ -103,18 +117,18 @@ public class ElevatorSubSystem {
 
 			switch (state) {
 
-			case Ready:
+			case Ready: // Ready state
 				System.out.print("\n System Ready \n");
-				ACTIVE = true; 
+				ACTIVE = true;
 				state = State.Idle;
-				break;
+				break; // end Ready
 
-			case Idle:
-				if (this.dooropen) {
+			case Idle:// Idle state
+				if (dooropen) {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
 
-				if (nextFloorList.size() > 0 || currentFloor != nextFloor ){
+				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					updateNextFloor();
 					state = State.Run;
 
@@ -126,9 +140,9 @@ public class ElevatorSubSystem {
 
 				break;// end Idle
 
-			case UpdateInput:
+			case UpdateInput: // UpdateInput
 
-				if (nextFloorList.size() > 0 || (currentFloor != nextFloor)) {
+				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					state = State.Run;
 				} else {
 					receiveTaskList();
@@ -138,9 +152,9 @@ public class ElevatorSubSystem {
 
 				break;// end UpdateInput
 
-			case Run:
+			case Run: // Run
 
-				System.out.printf(" Elevator's Next Destination is : %d\n", this.nextFloor);
+				System.out.printf(" Elevator's Next Destination is : %d\n", nextFloor);
 
 				runElevator();
 
@@ -148,7 +162,7 @@ public class ElevatorSubSystem {
 
 				break; // end Run
 
-			case Arrived:
+			case Arrived: // Arrived
 				if (currentFloor == nextFloor) { // later we will use here
 
 					System.out.printf(" Elevator Arrived at floor: %d \n", currentFloor);
@@ -158,8 +172,8 @@ public class ElevatorSubSystem {
 					if (nextFloorList.size() != 0) {
 						// System.out.println(nextFloorList.size());
 						nextFloor = nextFloorList.remove(0);
-						//state = State.Run;
-						//break;
+						// state = State.Run;
+						// break;
 					}
 
 				}
@@ -199,7 +213,7 @@ public class ElevatorSubSystem {
 	}
 
 	/**
-	 * 
+	 * runMotor for a time
 	 */
 	public void runMotor() {
 		try {
@@ -247,6 +261,7 @@ public class ElevatorSubSystem {
 	}
 
 	/**
+	 * 
 	 * @buttonPushed Elevator inside button Pushed function,
 	 * @input nth button
 	 * @Do: updates button list and lamp list status
@@ -323,7 +338,7 @@ public class ElevatorSubSystem {
 		}
 	}
 
-	// from update after 28th January
+	
 	/**
 	 * Send and receive data from Scheduler system.
 	 */
@@ -345,6 +360,12 @@ public class ElevatorSubSystem {
 
 	}
 
+	/**
+	 * @param data
+	 * @return
+	 * 
+	 * Converts bytes packets to ArrayList  
+	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Integer> byteArrayToList(byte[] data) {
 
@@ -353,7 +374,7 @@ public class ElevatorSubSystem {
 		try {
 			objStream = new ObjectInputStream(byteStream);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+
 			e1.printStackTrace();
 		}
 
@@ -371,19 +392,23 @@ public class ElevatorSubSystem {
 
 	}
 
+	/**
+	 * send arrival floor number from Elevator system to Schedulers 
+	 */
 	public void sendArrivalInfo() {
-		byte[] data = IntegerToByteArray(new Integer(this.currentFloor));
+		byte[] data = IntegerToByteArray(new Integer(currentFloor));
 
 		// Create Datagram packet containing byte array of event list information
 		try {
-			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), SCHEDULER_SEND_PORT);
+			sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(),
+					ElevatorSubSystem.SCHEDULER_SEND_PORT);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 
 		try {
-			this.sendSocket = new DatagramSocket();
+			sendSocket = new DatagramSocket();
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
@@ -401,8 +426,13 @@ public class ElevatorSubSystem {
 		System.out.println(" Arrival info sent to Scheduler\n");
 	}
 
+	/**
+	 * @param i
+	 * @return
+	 *   Byte Array from integer value  
+	 */
 	private byte[] IntegerToByteArray(Integer i) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(ElevatorSubSystem.BYTE_SIZE);
 
 		ObjectOutputStream oos = null;
 
@@ -524,20 +554,13 @@ public class ElevatorSubSystem {
 		this.goingDOWN = goingDOWN;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "ElevatorSubSystem [elevatorNumber=" + elevatorNumber + ", buttonList=" + buttonList + ", elevatorLamp="
-				+ elevatorLamp + ", dooropen=" + dooropen + ", currentFloor=" + currentFloor + ", nextFloor="
-				+ nextFloor + ", goingUP=" + goingUP + ", goingDOWN=" + goingDOWN + ", sendPacket=" + sendPacket
-				+ ", receivePacket=" + receivePacket + ", sendSocket=" + sendSocket + ", receiveSocket=" + receiveSocket
-				+ "]";
-	}
+	
 
+	/**
+	 * @param args
+	 * 
+	 * main function of ElevatorSubSystem 
+	 */
 	public static void main(String[] args) {
 		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
