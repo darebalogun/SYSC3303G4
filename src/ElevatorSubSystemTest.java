@@ -11,7 +11,7 @@ public class ElevatorSubSystemTest {
 	public static void setUpBeforeClass() throws Exception {
 		
 	}
-	@SuppressWarnings("unlikely-arg-type")
+	
 	@Test
 	public final void testElevatorSubSystem() {
 		//fail("Not yet implemented"); // TODO
