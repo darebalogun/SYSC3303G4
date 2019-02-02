@@ -46,6 +46,7 @@ InputEvent.java:-
 ElevatorSusSystemTest.java:-
 
 -> This file contains the ElevatorSubSystemTest class 
+-> Contains Junit tests for the system
 
 InputEvents.txt:-
 
