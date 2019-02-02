@@ -121,6 +121,8 @@ public class Scheduler {
 	     
 	     System.out.println("\nReceived request from floor ");
 	     
+	     System.out.println(this.eventList.size());
+	     
 	     for (InputEvent event : this.eventList) {
 	     
 	    	 System.out.println("Destination: " + event.getDestinationFloor());
@@ -329,15 +331,6 @@ public class Scheduler {
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
 		
-		Thread schedulerStateMachine = new Thread() {
-			public void run() {
-				while (true) {
-					s.processRequests();
-					s.sendTask(1);
-				}
-			}
-		};
-		
 		Thread receiveFromElevator = new Thread() {
 			public void run() {
 				while(true) {
@@ -346,17 +339,20 @@ public class Scheduler {
 			}
 		};
 		
-		Thread receiveFromFloor = new Thread() {
+		Thread runScheduler = new Thread() {
 			public void run() {
 				while(true) {
 					s.receiveInputEventList();
+					s.processRequests();
+					s.sendTask(1);
 				}
 			}
 		};
 		
+		runScheduler.start();
 		receiveFromElevator.start();
-		schedulerStateMachine.start();
-		receiveFromFloor.start();
+		
+		
 		
 
 	}
