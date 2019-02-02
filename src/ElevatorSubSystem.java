@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -99,6 +100,8 @@ public class ElevatorSubSystem {
 			se.printStackTrace();
 			System.exit(1);
 		}
+		
+		this.setGoingUP(true);
 	}
 
 	public enum State {
@@ -396,7 +399,15 @@ public class ElevatorSubSystem {
 	 * send arrival floor number from Elevator system to Schedulers 
 	 */
 	public void sendArrivalInfo() {
-		byte[] data = IntegerToByteArray(new Integer(currentFloor));
+		
+		Pair pair;
+		if (this.goingUP) {
+			pair = new Pair("up", currentFloor);
+		} else {
+			pair = new Pair("down", currentFloor);
+		}
+		
+		byte[] data = PairToByteArray(pair);
 
 		// Create Datagram packet containing byte array of event list information
 		try {
@@ -431,7 +442,7 @@ public class ElevatorSubSystem {
 	 * @return
 	 *   Byte Array from integer value  
 	 */
-	private byte[] IntegerToByteArray(Integer i) {
+	private byte[] PairToByteArray(Pair pair) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(ElevatorSubSystem.BYTE_SIZE);
 
 		ObjectOutputStream oos = null;
@@ -444,7 +455,7 @@ public class ElevatorSubSystem {
 		}
 
 		try {
-			oos.writeObject(i);
+			oos.writeObject(pair);
 		} catch (IOException e) {
 			// Unable to write eventList in bytes
 			e.printStackTrace();

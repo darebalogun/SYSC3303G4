@@ -1,6 +1,8 @@
 import java.util.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -26,7 +28,7 @@ import java.nio.file.Paths;
 public class FloorSubsystem {
 	
 	// Datagram sockets used to send and receive packets to the Scheduler
-	private DatagramSocket sendReceive;
+	private DatagramSocket sendReceive, receive;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
 	private static final int SEND_PORT = 60002, RECEIVE_PORT = 60004;
@@ -64,7 +66,14 @@ public class FloorSubsystem {
 		this.eventList = new ArrayList<InputEvent>();
 		
 		try {
-			this.sendReceive = new DatagramSocket(RECEIVE_PORT);
+			this.sendReceive = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
+		
+		try {
+			this.receive = new DatagramSocket(RECEIVE_PORT);
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
@@ -211,10 +220,80 @@ public class FloorSubsystem {
 		this.eventList.clear();
 	}
 	
+	public void receiveFromScheduler() {
+		byte[] data = new byte[BYTE_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+
+		// Receive datagram socket from floor subsystem
+		try {
+			receive.receive(receivePacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		Pair pair = byteArrayToPair(data);
+		
+		if (pair.getInteger() == this.floorNum) {
+			
+			String s = pair.getString();
+			if (s == "up") {
+				this.upLamp = false;
+			} else {
+				this.downLamp = false;
+			}
+			
+			System.out.println("An elevator going " + s + " has arrived\n");
+		}
+		
+	}
+	
+	private Pair byteArrayToPair(byte[] data) {
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+	    ObjectInputStream objStream = null;
+		try {
+			objStream = new ObjectInputStream(byteStream);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+	    try {
+			return (Pair) objStream.readObject();
+		} catch (ClassNotFoundException e) {
+			// Class not found
+			e.printStackTrace();
+		} catch (IOException e) {
+			// Could not red object from stream
+			e.printStackTrace();
+		}
+	    
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		FloorSubsystem s = new FloorSubsystem(1);
-		s.readInputEvent();
-		s.sendEventList();
+		
+		Thread readSendInput = new Thread() {
+			public void run() {
+				while(true) {
+					s.readInputEvent();
+					s.sendEventList();
+				}
+			}
+		};
+		
+		Thread receiveFromScheduler = new Thread() {
+			public void run() {
+				while (true) {
+					s.receiveFromScheduler();
+				}
+			}
+		};
+		
+		readSendInput.start();
+		receiveFromScheduler.start();
 	}
 	
 }
