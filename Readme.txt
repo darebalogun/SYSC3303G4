@@ -58,7 +58,7 @@ UML_DIAGRAM:-
 
 STATE_MACHINE_DIAGRAM:-
 
--> Contains the State diagram for the system
+-> Contains the State diagrams for the ElevatorSubSystem and Scheduler
 
 SetUp Instructions:-
 
