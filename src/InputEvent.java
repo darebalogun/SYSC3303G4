@@ -1,7 +1,13 @@
 import java.io.Serializable;
 
 public class InputEvent implements Serializable,Comparable<InputEvent> {
-	/**
+	/** 
+	 * InputEvent.java
+	 * SYSC3303G4
+	 * 
+	 * Iteration 1
+	 * 
+	 * 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
