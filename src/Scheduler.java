@@ -9,8 +9,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /** 
  * Scheduler.java
@@ -54,11 +57,11 @@ public class Scheduler {
 	
 	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
 	
-	private static final int FLOOR_RECEIVE_PORT = 60001;
+	private static final int FLOOR_RECEIVE_PORT = 60002;
 	
-	private static final int ELEVATOR_RECEIVE_PORT = 60009;
+	private static final int ELEVATOR_RECEIVE_PORT = 60008;
 	
-	private static final int RECEIVE_PORT = 7000;
+	private static final int RECEIVE_PORT = 60006;
 	
 	
 	
@@ -70,15 +73,12 @@ public class Scheduler {
 		
 		//current position of elevator is 1
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
-		Collections.fill(this.currentPositionList, 1);
+		this.currentPositionList.add(1);
+
 		
 		this.upRequests = new ArrayList<InputEvent>();
 		
 		this.downRequests = new ArrayList<InputEvent>();
-		
-		for (Integer elevatorPosition : this.currentPositionList) {
-			elevatorPosition = 1;
-		}
 		
 		this.eventList = new ArrayList<InputEvent>();
 		
@@ -96,6 +96,13 @@ public class Scheduler {
 	        System.exit(1);
 		}
 	
+		try {
+			elevatorReceiveSocket = new DatagramSocket(RECEIVE_PORT);
+			//elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
+		} catch (SocketException se) {
+	        se.printStackTrace();
+	        System.exit(1);
+		}
 	}
 	
 	public void receiveInputEventList() {
@@ -112,7 +119,7 @@ public class Scheduler {
 	     
 	     this.eventList.addAll(byteArrayToList(data));
 	     
-	     System.out.println("\nReceived request from floor: " + this.eventList.get(this.eventList.size() - 1).getCurrentFloor());
+	     System.out.println("\nReceived request from floor ");
 	     
 	     for (InputEvent event : this.eventList) {
 	     
@@ -120,20 +127,7 @@ public class Scheduler {
 	     }
 	     
 	}
-	
-	public void receiveFromElevator() {
-		byte[] data = new byte[BYTE_SIZE];
-		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-		
-	     try {  
-	         elevatorReceiveSocket.receive(receivePacket);
-	      } catch(IOException e) {
-	         e.printStackTrace();
-	         System.exit(1);
-	      }
-	     
-	     
-	}
+
 	
 	@SuppressWarnings("unchecked")
 	private ArrayList<InputEvent> byteArrayToList(byte[] data){
@@ -171,6 +165,8 @@ public class Scheduler {
 			}
 		}
 		
+		this.eventList.clear();
+		
 		if (!upRequests.isEmpty()) {
 			Collections.sort(upRequests);
 		}
@@ -199,14 +195,36 @@ public class Scheduler {
 		
 		while(i.hasNext()) {
 			InputEvent e = i.next();
-			this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			if (e.getCurrentFloor() != this.currentPositionList.get(0)) {
+				this.elevatorTaskQueue.get(0).add(e.getCurrentFloor());
+				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			} else {
+				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			}
 			i.remove();
+		}
+		
+		Iterator<InputEvent> d = downRequests.iterator();
+		
+		while(i.hasNext()) {
+			InputEvent e = d.next();
+			if (e.getCurrentFloor() != this.currentPositionList.get(0)) {
+				this.elevatorTaskQueue.get(0).add(e.getCurrentFloor());
+				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			} else {
+				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+			}
+			d.remove();
 		}
 		
 		
 	}
 	
 	public byte[] taskListToByteArray(int elevatorNumber) {
+		Set<Integer> set = new HashSet<Integer>(this.elevatorTaskQueue.get(0));
+		this.elevatorTaskQueue.get(0).clear();
+		this.elevatorTaskQueue.get(0).addAll(set);
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
 		
 		ObjectOutputStream oos = null;
@@ -225,45 +243,122 @@ public class Scheduler {
 			e.printStackTrace();
 		}
 		
+		this.elevatorTaskQueue.get(0).clear();
+		
 		return baos.toByteArray();
 		
 		
 	}
 	
 	public void sendTask(int elevatorNumber) {
-		
-		byte[] data = taskListToByteArray(elevatorNumber);
-		
-		// Create Datagram packet containing byte array of event list information
+		if (this.elevatorTaskQueue.get(0).size() > 0) {
+			byte[] data = taskListToByteArray(elevatorNumber);
+			
+			// Create Datagram packet containing byte array of event list information
+			try {
+			     sendPacket = new DatagramPacket(data,
+			                                     data.length, InetAddress.getLocalHost(), ELEVATOR_RECEIVE_PORT);
+			  } catch (UnknownHostException e) {
+			     e.printStackTrace();
+			     System.exit(1);
+			  }
+			
+			try {
+				this.sendSocket = new DatagramSocket();
+			} catch (SocketException se) {
+				se.printStackTrace();
+				System.exit(1);
+			}
+			
+			try {
+		         sendSocket.send(sendPacket);
+		      } catch (IOException e) {
+		         e.printStackTrace();
+		         System.exit(1);
+		      }
+			sendSocket.close();
+		}
+	}	
+	
+	public void receiveFromElevator() {
+		byte[] data = new byte[BYTE_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+
+		// Receive datagram socket from floor subsystem
 		try {
-		     sendPacket = new DatagramPacket(data,
-		                                     data.length, InetAddress.getLocalHost(), ELEVATOR_RECEIVE_PORT);
-		  } catch (UnknownHostException e) {
-		     e.printStackTrace();
-		     System.exit(1);
-		  }
-		
-		try {
-			this.sendSocket = new DatagramSocket();
-		} catch (SocketException se) {
-			se.printStackTrace();
+			elevatorReceiveSocket.receive(receivePacket);
+		} catch (IOException e) {
+			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		try {
-	         sendSocket.send(sendPacket);
-	      } catch (IOException e) {
-	         e.printStackTrace();
-	         System.exit(1);
-	      }
-	}	
+		Integer arrival = byteArrayToInteger(data);
+		
+		this.currentPositionList.set(0, arrival);
+		
+		System.out.println("The elevator has arrived at floor: " + arrival);
+	}
+	
+	
 
+
+	private Integer byteArrayToInteger(byte[] data) {
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+	    ObjectInputStream objStream = null;
+		try {
+			objStream = new ObjectInputStream(byteStream);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+	    try {
+			return (Integer) objStream.readObject();
+		} catch (ClassNotFoundException e) {
+			// Class not found
+			e.printStackTrace();
+		} catch (IOException e) {
+			// Could not red object from stream
+			e.printStackTrace();
+		}
+	    
+		return null;
+	}
 
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
-		s.receiveInputEventList();
-		s.processRequests();
-		s.sendTask(1);
+		
+		Thread schedulerStateMachine = new Thread() {
+			public void run() {
+				while (true) {
+					s.processRequests();
+					s.sendTask(1);
+				}
+			}
+		};
+		
+		Thread receiveFromElevator = new Thread() {
+			public void run() {
+				while(true) {
+					s.receiveFromElevator();
+				}
+			}
+		};
+		
+		Thread receiveFromFloor = new Thread() {
+			public void run() {
+				while(true) {
+					s.receiveInputEventList();
+				}
+			}
+		};
+		
+		receiveFromElevator.start();
+		schedulerStateMachine.start();
+		receiveFromFloor.start();
+		
+
 	}
 
 }

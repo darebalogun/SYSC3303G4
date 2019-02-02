@@ -29,7 +29,7 @@ public class FloorSubsystem {
 	private DatagramSocket sendReceive;
 	
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is where the floor subsystem listens for incoming data 
-	private static final int SEND_PORT = 60001, RECEIVE_PORT = 60004;
+	private static final int SEND_PORT = 60002, RECEIVE_PORT = 60004;
 	
 	// Text file containing events to be sent to scheduler
 	private static final String INPUT_PATH = "src/InputEvents.txt";
