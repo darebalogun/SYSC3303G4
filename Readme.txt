@@ -42,6 +42,7 @@ InputEvent.java:-
 -> This file contains the InputEvent class
 -> Reads inputs from the InputEvents test file
 -> Contains information about the current floor, destination floor, time between floors and direction of the elevator
+
 InputEvents.txt:-
 
 -> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
