@@ -10,15 +10,16 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-/*
+
+/**
  * FloorSubSystem.java
  * SYSC3303G4
  * 
  * Iteration 1
  * 
- * 
- * 
- * 
+ * This class sends and receives packets from the Scheduler. Converts an ArrayList
+ * of input events into an array byte. Also checks if the elevator is already
+ * present on the floor in operation.
  * 
  */
 

@@ -33,7 +33,7 @@ public class Scheduler {
 	
 	private static final int ELEVATOR_COUNT = 1;
 	
-	// List of input events received from Floor Subystem to be handled
+	// List of input events received from Floor Subsystem to be handled
 	private ArrayList<InputEvent> eventList;
 	
 	private ArrayList<InputEvent> upRequests;
@@ -52,7 +52,7 @@ public class Scheduler {
 	
 	private ArrayList<Direction> directionList;
 	
-	// Default byte array size for datagram packets
+	// Default byte array size for Datagram packets
 	private static final int BYTE_SIZE = 6400;
 	
 	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
@@ -70,6 +70,7 @@ public class Scheduler {
 		this.elevatorTaskQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
 		this.elevatorTaskQueue.add(new ArrayList<Integer>());
 		
+		//current position of elevator is 1
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
 		this.currentPositionList.add(1);
 
