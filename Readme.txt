@@ -64,8 +64,10 @@ SetUp Instructions:-
 -> Open eclipse-java
 -> Make new project and load all the files described above in the created project
 -> Run ElevatorSubSysetm::main
+-> Wait for the class to execute fully
 -> Open new console
 -> Run Scheduler:: main
+-> Wait for the class to execute fully
 -> Open new Console
 -> Run FloorSubsystem
 -> Open different consoles to check the output
