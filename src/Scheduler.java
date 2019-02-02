@@ -15,13 +15,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
+/** 
+ * Scheduler.java
+ * SYSC3303G4
  * 
- */
-
-/**
- * @author TZ-L
- *
+ * Iteration 1
+ * 
+ * This Class represents an Elevator Car as a unit. Has basic functionality such as
+ * Button and lamp for floors to go, Door and door delay, delay for between floors.
+ * Scheduler input nextFloor to run Elevator and can get current floor status for event log.
+ * 
  */
 public class Scheduler {
 	
