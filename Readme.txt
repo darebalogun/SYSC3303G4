@@ -5,7 +5,7 @@ Member:
 	1. Muhammad Tarequzzaman | 100954008 
 	2. Sama Adil Sheikh | 101060020
 	3. Anannya Bhatia | 100989250
-	4. Dare Balogun | 
+	4. Dare Balogun | 101062340
 	5. Mrunal Patel | 101001748
 
 
