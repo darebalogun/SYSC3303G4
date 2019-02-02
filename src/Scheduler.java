@@ -12,13 +12,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-/**
+/** 
+ * Scheduler.java
+ * SYSC3303G4
  * 
- */
-
-/**
- * @author TZ-L
- *
+ * Iteration 1
+ * 
+ * This class is to receive the information/requests from the FloorSubsystem and send
+ * them to ElevatorSubSystem and send response back to the FloorSubsystem.
+ * The scheduler accepts inputs from the InputEvent class and send the requests to 
+ * ElevatorSubSystem. The Scheduler is also updated when an Elevator reaches it's desired floor
+ * 
  */
 public class Scheduler {
 	
@@ -26,7 +30,7 @@ public class Scheduler {
 	
 	private static final int ELEVATOR_COUNT = 1;
 	
-	// List of input events received from Floor Subystem to be handled
+	// List of input events received from Floor Subsystem to be handled
 	private ArrayList<InputEvent> eventList;
 	
 	private ArrayList<InputEvent> upRequests;
@@ -45,7 +49,7 @@ public class Scheduler {
 	
 	private ArrayList<Direction> directionList;
 	
-	// Default byte array size for datagram packets
+	// Default byte array size for Datagram packets
 	private static final int BYTE_SIZE = 6400;
 	
 	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
@@ -60,9 +64,11 @@ public class Scheduler {
 	
 	public Scheduler() {
 		
+	
 		this.elevatorTaskQueue = new ArrayList<ArrayList<Integer>>(ELEVATOR_COUNT);	
 		this.elevatorTaskQueue.add(new ArrayList<Integer>());
 		
+		//current position of elevator is 1
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
 		Collections.fill(this.currentPositionList, 1);
 		

@@ -9,21 +9,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Muhammad Tarequzzaman | 100954008
+/** 
+ * ElevatorSubSystem.java
+ * SYSC3303G4
  * 
- * @ElevatorSubsystem This Class represent Elevator Car as a unit. Has basic
- *                    functionality such as Button and lamp for floors to go ,
- *                    Door and door delay, Delay for between floors.
+ * Iteration 1
  * 
- *                    Scheduler input nextFloor to run Elevator and can get
- *                    current floor status for event log.
- * 
+ * This Class represents an Elevator Car as a unit. Has basic functionality
+ * such as Button and lamp for floors to go, Door and door delay, delay
+ * for between floors. Scheduler input nextFloor to run Elevator and can 
+ * get current floor status for event log.
  * 
  */
 public class ElevatorSubSystem {
-
-	private int elevatorNumber; // nth Elevator number, DO NOT PUT Same number as some other instance;
+	
+	// nth Elevator number, DO NOT PUT Same number as some other instance;
+	private int elevatorNumber; 
 	public ArrayList<Boolean> buttonList;
 	public ArrayList<Boolean> elevatorLamp;
 
@@ -55,6 +56,8 @@ public class ElevatorSubSystem {
 	 *                       elevator for floors.
 	 */
 	public ElevatorSubSystem(int elevatorNumber, int buttons) {
+		
+		System.out.println("ElevatorSubSystem running...Waiting for the requests from the Scheduler \n");
 
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[buttons]));
