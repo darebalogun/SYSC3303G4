@@ -6,7 +6,7 @@ Member:
 	2. Sama Adil Sheikh | 101060020
 	3. Anannya Bhatia | 100989250
 	4. Dare Balogun | 
-	5. Mrunal Patel |
+	5. Mrunal Patel | 101001748
 
 
 Included files and setup instructions are as under:-
