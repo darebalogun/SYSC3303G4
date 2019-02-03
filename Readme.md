@@ -49,10 +49,10 @@ ElevatorSubSystem.java:
 	* It also gets updates for next floor from the Scheduler
 
 ElevatorSusSystemTest.java:
-	author : Muhammad Tarequzzaman | 100954008 
+	author : Muhammad Tarequzzaman | 100954008. 
 	
 	This file contains the ElevatorSubSystemTest class 
-	Contains Junit tests for the system
+	Contains Junit tests for the system.
 
 InputEvent.java:-
 
