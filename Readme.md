@@ -31,6 +31,7 @@ Scheduler.java:-
 -> The Scheduler is also updated when an Elevator reaches it's desired floor
 
 ElevatorSubSystem.java:-
+
 	author : Muhammad Tarequzzaman | 100954008 |
 			Responsible for creating Method elevatorState()}, Method runElevator(),
  			Method updateGoing_UPorDown(),  Method updateNextFloor(),  
