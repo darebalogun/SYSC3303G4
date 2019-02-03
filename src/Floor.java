@@ -1,10 +1,11 @@
 import java.util.*;
-/*
+/**
  * Floor.java
  * SYSC3303G4
  * 
- * Iteration 1
- * 
+ *  @author 
+ *  @version Iteration 1
+ *  
  * The floor provides information needed by the FloorSubsystem 
  * and Scheduler.
  * The responsibilities of the floor class includes providing the current floor

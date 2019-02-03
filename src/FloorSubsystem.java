@@ -16,7 +16,11 @@ import java.nio.file.Paths;
 /**
  * FloorSubSystem.java SYSC3303G4
  * 
- * Iteration 1
+ *  @author: Dare Balogun
+ *  
+ *  @co_author: Sama Adil Sheikh
+ *  
+ *  @version Iteration 1
  * 
  * This class sends and receives packets from the Scheduler. Converts an
  * ArrayList of input events into an array byte. Also checks if the elevator is
