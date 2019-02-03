@@ -11,7 +11,7 @@ Member:
 	3. Anannya Bhatia | 100989250
 	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
 	4. Dare Balogun | 101062340
-	Responsiblilities: FloorSubSystem.java, Scheduler.java and co-author of ElevatorSubSystem
+	Responsiblilities: FloorSubSystem.java, Scheduler.java and co-author of ElevatorSubSystem.
 	5. Mrunal Patel | 101001748
 	Responsibilities: State Machine Diagram
 
