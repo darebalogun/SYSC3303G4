@@ -71,8 +71,9 @@ InputEvent.java:-
 
 Pair.java
 	
-	-> This file contains the Pair class which is used as a data structure to send arrival information from the ElevatorSubsystem to the Scheduler
-	-> and back to the FloorSubsystem. The Pair class functions similarly to a tuple however it only takes one string argument and one integer
+	-> This file contains the Pair class which is used as a data structure to send arrival information from the ElevatorSubsystem
+	   to the Scheduler and back to the FloorSubsystem.
+	-> The Pair class functions similarly to a tuple however it only takes one string argument and one integer
 
 
 InputEvents.txt:-
