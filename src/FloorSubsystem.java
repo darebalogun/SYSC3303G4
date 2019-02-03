@@ -24,6 +24,10 @@ import java.nio.file.Paths;
  * 
  */
 
+/**
+ * @author mrolu
+ *
+ */
 public class FloorSubsystem {
 
 	// Datagram sockets used to send and receive packets to the Scheduler
@@ -84,6 +88,7 @@ public class FloorSubsystem {
 			System.exit(1);
 		}
 
+		// Turn buttons off
 		this.upButton = false;
 
 		this.downButton = false;
@@ -113,7 +118,7 @@ public class FloorSubsystem {
 
 		int i = 0;
 
-		// Starting from the current line saved in the floor subsystem read and parse
+		// For each floor starting from the current line saved in the floor subsystem read and parse
 		// the string
 		for (int floorNum = 1; floorNum <= FLOOR_COUNT; floorNum++) {
 			for (i = this.currentLine; i < inputEventList.size(); i++) {
@@ -149,10 +154,8 @@ public class FloorSubsystem {
 					// Add to event object list
 					eventList.add(event);
 
-					if (i == this.currentLine) {
-						System.out.println("\nFloor " + floorNum + ": Requests read from file: ");
-					}
 					System.out.print("Time: " + time);
+					System.out.print(" From: " + currentFloor);
 					System.out.println(" Destination: " + destinationFloor);
 				}
 			}
@@ -163,6 +166,9 @@ public class FloorSubsystem {
 
 	}
 
+	/** This helper function converts the class's event list into a byte array that can be sent over UDP
+	 * @return byte array
+	 */
 	public byte[] eventListToByteArray() {
 		if (!this.eventList.isEmpty()) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
@@ -191,6 +197,13 @@ public class FloorSubsystem {
 		}
 	}
 
+	
+	/**
+	 * This function sends the event list as a byte array to the scheduler
+	 */
+	/**
+	 * 
+	 */
 	public void sendEventList() {
 		DatagramPacket sendPacket = null;
 
@@ -220,11 +233,15 @@ public class FloorSubsystem {
 		this.eventList.clear();
 	}
 
+	/**
+	 * This function blocks until it receives information from the scheduler. 
+	 * This is used to update the floorsubsystem whenever an elevator arrives
+	 */
 	public void receiveFromScheduler() {
 		byte[] data = new byte[BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
-		// Receive datagram socket from floor subsystem
+		// Receive datagram socket from Scheduler
 		try {
 			receive.receive(receivePacket);
 		} catch (IOException e) {
@@ -232,6 +249,7 @@ public class FloorSubsystem {
 			System.exit(1);
 		}
 
+		// Information is received as a pair containing the arrival floor and the direction of elevator
 		Pair pair = byteArrayToPair(data);
 
 		for (int floorNum = 1; floorNum <= FLOOR_COUNT; floorNum++) {
@@ -251,6 +269,11 @@ public class FloorSubsystem {
 
 	}
 
+	/** Convert a byte array into a pair object, so it can read the information received from the scheduler
+	 * @param data 
+	 * 	the byte array that is to be converted into a Pair object
+	 * @return
+	 */
 	private Pair byteArrayToPair(byte[] data) {
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 		ObjectInputStream objStream = null;
@@ -272,6 +295,22 @@ public class FloorSubsystem {
 		}
 
 		return null;
+	}
+	
+	public boolean isUpLamp() {
+		return upLamp;
+	}
+
+	public void setUpLamp(boolean upLamp) {
+		this.upLamp = upLamp;
+	}
+
+	public boolean isDownLamp() {
+		return downLamp;
+	}
+
+	public void setDownLamp(boolean downLamp) {
+		this.downLamp = downLamp;
 	}
 
 	public static void main(String[] args) {
@@ -298,21 +337,4 @@ public class FloorSubsystem {
 		readSendInput.start();
 		receiveFromScheduler.start();
 	}
-
-	public boolean isUpLamp() {
-		return upLamp;
-	}
-
-	public void setUpLamp(boolean upLamp) {
-		this.upLamp = upLamp;
-	}
-
-	public boolean isDownLamp() {
-		return downLamp;
-	}
-
-	public void setDownLamp(boolean downLamp) {
-		this.downLamp = downLamp;
-	}
-
 }
