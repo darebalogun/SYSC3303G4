@@ -31,6 +31,14 @@ import java.util.Set;
  * ElevatorSubSystem. The Scheduler is also updated when an Elevator reaches it's desired floor
  * 
  */
+/**
+ * @author TZ-L
+ *
+ */
+/**
+ * @author TZ-L
+ *
+ */
 public class Scheduler {
 	
 	private static final int FLOOR_COUNT = 6;
@@ -71,6 +79,9 @@ public class Scheduler {
 	
 	
 	
+	/**
+	 * Constructor 	
+	 */
 	public Scheduler() {
 		
 	
@@ -112,6 +123,9 @@ public class Scheduler {
 		}
 	}
 	
+	/**
+	 * Receive input event list 
+	 */
 	public void receiveInputEventList() {
 		 byte[] data = new byte[BYTE_SIZE];
 	     DatagramPacket receivePacket = new DatagramPacket(data, data.length);
@@ -136,6 +150,11 @@ public class Scheduler {
 	}
 
 	
+	/**
+	 * Converts bytes to array 
+	 * @param data
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<InputEvent> byteArrayToList(byte[] data){
 		
@@ -163,6 +182,9 @@ public class Scheduler {
 		
 	}
 	
+	/**
+	 * Processing request 
+	 */
 	public void processRequests() {
 		for (InputEvent event : eventList) {
 			if (event.getUp() == true) {
@@ -229,6 +251,11 @@ public class Scheduler {
 		
 	}
 	
+	/**
+	 * Converts task list to Bytes 
+	 * @param elevatorNumber
+	 * @return
+	 */
 	public byte[] taskListToByteArray(int elevatorNumber) {
 			
 		ArrayList<Integer> list = new ArrayList<Integer>();
@@ -267,6 +294,10 @@ public class Scheduler {
 		
 	}
 	
+	/**
+	 * Send task to unique elevator
+	 * @param elevatorNumber
+	 */
 	public void sendTask(int elevatorNumber) {
 		if (this.elevatorTaskQueue.get(0).size() > 0) {
 			byte[] data = taskListToByteArray(elevatorNumber);
@@ -297,6 +328,9 @@ public class Scheduler {
 		}
 	}	
 	
+	/**
+	 * Receive information from elevator 
+	 */
 	public void receiveFromElevator() {
 		byte[] data = new byte[BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
@@ -342,6 +376,11 @@ public class Scheduler {
 	}
 	
 	
+	/**
+	 * convert Byte Array to Pair object 
+	 * @param data
+	 * @return
+	 */
 	private Pair byteArrayToPair(byte[] data) {
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 	    ObjectInputStream objStream = null;
@@ -367,6 +406,7 @@ public class Scheduler {
 	}
 
 	/**
+	 * main function 
 	 * @param args
 	 */
 	public static void main(String[] args) {
