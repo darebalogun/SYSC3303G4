@@ -31,15 +31,14 @@ Scheduler.java:-
 -> The Scheduler is also updated when an Elevator reaches it's desired floor
 
 ElevatorSubSystem.java:-
-	author : Muhammad Tarequzzaman | 100954008 | Responsible for creating
- *         {@link Method elevatorState()},{@link Method runElevator()},
- *         {@link Method updateGoing_UPorDown()}, {@link Method
- *         updateNextFloor()}, {@link Method updateGoing_UPorDown()} and getters
- *         and setters in {@link Class ElevatorSubSystem}
+	author : Muhammad Tarequzzaman | 100954008 |
+			Responsible for creating Method elevatorState()}, Method runElevator(),
+ 			Method updateGoing_UPorDown(),  Method updateNextFloor(),  
+ 			Method updateGoing_UPorDown() and getters / setters in  Class ElevatorSubSystem. 
  
- @co_author : Dare Balogun | 101062340 | Responsible for creating
- *            {@link Method sendArrivalInfo()} {@link Method receiveTaskList()},
- *            and {@link Method IntegerToByteArray(Integer i)} 
+ 	co_author : Dare Balogun | 101062340 | 
+ 			Responsible for creating
+			Method sendArrivalInfo(), Method receiveTaskList() and  Method IntegerToByteArray(Integer i)
 
 -> This file contains the ElevatorSubSystem class
 -> The purpose of this class is to represent the Elevator Car as a unit
