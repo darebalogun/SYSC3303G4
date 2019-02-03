@@ -573,6 +573,7 @@ public class ElevatorSubSystem {
 	 * main function of ElevatorSubSystem 
 	 */
 	public static void main(String[] args) {
+		
 		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
 		e.elevatorState();
