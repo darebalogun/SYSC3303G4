@@ -5,7 +5,7 @@ public class InputEvent implements Serializable,Comparable<InputEvent> {
 	 * InputEvent.java
 	 * SYSC3303G4
 	 * 
-	 * @author 
+	 * @author Dare Balogun | 101062340
 	 * @version Iteration 1
 	 * 
 	 * Reads inputs from the InputEvents test file.Contains information about the
