@@ -80,6 +80,7 @@ public class Scheduler {
 		//current position of elevator is 1
 		this.currentPositionList = new ArrayList<Integer>(ELEVATOR_COUNT);
 		this.currentPositionList.add(1);
+		this.currentPositionList.set(0, 1);
 
 		
 		this.upRequests = new ArrayList<InputEvent>();
@@ -125,11 +126,11 @@ public class Scheduler {
 	     
 	     this.eventList.addAll(byteArrayToList(data));
 	     
-	     System.out.println("\nReceived request from floor: " + this.eventList.get(this.eventList.size() - 1).getCurrentFloor());
+	     
 	     
 	     for (InputEvent event : this.eventList) {
 	     
-	    	 System.out.println("Destination: " + event.getDestinationFloor());
+	    	 System.out.println("Request from: " + event.getCurrentFloor() + " destination: " + event.getDestinationFloor());
 	     }
 	     
 	}
@@ -199,12 +200,14 @@ public class Scheduler {
 		
 		Iterator<InputEvent> i = upRequests.iterator();
 		
+		System.out.println(this.currentPositionList);
+		
 		while(i.hasNext()) {
 			InputEvent e = i.next();
-			if (e.getCurrentFloor() != this.currentPositionList.get(0)) {
-				this.elevatorTaskQueue.get(0).add(e.getCurrentFloor());
+			if (e.getCurrentFloor().equals(this.currentPositionList.get(0))) {
 				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 			} else {
+				this.elevatorTaskQueue.get(0).add(e.getCurrentFloor());
 				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 			}
 			i.remove();
@@ -212,12 +215,12 @@ public class Scheduler {
 		
 		Iterator<InputEvent> d = downRequests.iterator();
 		
-		while(i.hasNext()) {
+		while(d.hasNext()) {
 			InputEvent e = d.next();
-			if (e.getCurrentFloor() != this.currentPositionList.get(0)) {
+			if (e.getCurrentFloor().equals(this.currentPositionList.get(0))) {
 				this.elevatorTaskQueue.get(0).add(e.getCurrentFloor());
-				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 			} else {
+				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 				this.elevatorTaskQueue.get(0).add(e.getDestinationFloor());
 			}
 			d.remove();
@@ -227,9 +230,17 @@ public class Scheduler {
 	}
 	
 	public byte[] taskListToByteArray(int elevatorNumber) {
-		Set<Integer> set = new HashSet<Integer>(this.elevatorTaskQueue.get(0));
+			
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		System.out.println(this.elevatorTaskQueue);
+		for (Integer integer : this.elevatorTaskQueue.get(0)) {
+			if (!list.contains(integer)) {
+				list.add(integer);
+			}
+		}
+		
 		this.elevatorTaskQueue.get(0).clear();
-		this.elevatorTaskQueue.get(0).addAll(set);
+		this.elevatorTaskQueue.get(0).addAll(list);
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
 		
