@@ -5,7 +5,8 @@ public class InputEvent implements Serializable,Comparable<InputEvent> {
 	 * InputEvent.java
 	 * SYSC3303G4
 	 * 
-	 * Iteration 1
+	 * @author 
+	 * @version Iteration 1
 	 * 
 	 * Reads inputs from the InputEvents test file.Contains information about the
 	 * current floor, destination floor, time between floors and direction of the elevator.
