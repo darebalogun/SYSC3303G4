@@ -28,10 +28,6 @@ import java.nio.file.Paths;
  * 
  */
 
-/**
- * @author mrolu
- *
- */
 public class FloorSubsystem {
 
 	// Datagram sockets used to send and receive packets to the Scheduler
