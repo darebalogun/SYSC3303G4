@@ -3,7 +3,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -100,8 +99,8 @@ public class ElevatorSubSystem {
 			se.printStackTrace();
 			System.exit(1);
 		}
-		
-		this.setGoingUP(true);
+
+		setGoingUP(true);
 	}
 
 	public enum State {
@@ -341,7 +340,6 @@ public class ElevatorSubSystem {
 		}
 	}
 
-	
 	/**
 	 * Send and receive data from Scheduler system.
 	 */
@@ -367,7 +365,7 @@ public class ElevatorSubSystem {
 	 * @param data
 	 * @return
 	 * 
-	 * Converts bytes packets to ArrayList  
+	 * 		Converts bytes packets to ArrayList
 	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Integer> byteArrayToList(byte[] data) {
@@ -396,17 +394,17 @@ public class ElevatorSubSystem {
 	}
 
 	/**
-	 * send arrival floor number from Elevator system to Schedulers 
+	 * send arrival floor number from Elevator system to Schedulers
 	 */
 	public void sendArrivalInfo() {
-		
+
 		Pair pair;
-		if (this.goingUP) {
+		if (goingUP) {
 			pair = new Pair("up", currentFloor);
 		} else {
 			pair = new Pair("down", currentFloor);
 		}
-		
+
 		byte[] data = PairToByteArray(pair);
 
 		// Create Datagram packet containing byte array of event list information
@@ -439,8 +437,7 @@ public class ElevatorSubSystem {
 
 	/**
 	 * @param i
-	 * @return
-	 *   Byte Array from integer value  
+	 * @return Byte Array from integer value
 	 */
 	private byte[] PairToByteArray(Pair pair) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(ElevatorSubSystem.BYTE_SIZE);
@@ -565,15 +562,13 @@ public class ElevatorSubSystem {
 		this.goingDOWN = goingDOWN;
 	}
 
-	
-
 	/**
 	 * @param args
 	 * 
-	 * main function of ElevatorSubSystem 
+	 *             main function of ElevatorSubSystem
 	 */
 	public static void main(String[] args) {
-		
+
 		ElevatorSubSystem e = new ElevatorSubSystem(1, 5);
 		e.receiveTaskList();
 		e.elevatorState();
