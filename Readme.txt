@@ -11,7 +11,7 @@ Member:
 	3. Anannya Bhatia | 100989250
 	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
 	4. Dare Balogun | 101062340
-	Responsiblilities: FloorSubSystem.java, Scheduler.java and co-author of ElevatorSubSystem.
+	Responsiblilities: FloorSubSystem.java, InputEvents.java, Pair.java, Scheduler.java and co-author of ElevatorSubSystem.
 	5. Mrunal Patel | 101001748
 	Responsibilities: State Machine Diagram
 
@@ -19,14 +19,15 @@ Member:
 SetUp Instructions:-
 
 	-> Open eclipse-java
-	-> Make new project and load all the files described above in the created project or Import from .zip 
-	-> Run ElevatorSubSysetm::main
-	-> Wait for the class to execute fully
+	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_1.zip"
+	-> Click Finish
+	-> Run ElevatorSubSystem as Java Application
+	-> Wait for the class to execute
 	-> Open new console
-	-> Run Scheduler:: main
+	-> Run Scheduler as Java Application
 	-> Wait for the class to execute fully
 	-> Open new Console
-	-> Run FloorSubsystem
+	-> Run FloorSubsystem as Java Application
 	-> Open different consoles to check the output.
 	
 
@@ -38,6 +39,7 @@ FloorSubsystem.java:-
 	-> FloorSubsystem converts an ArrayList of input events into an array byte which is then sent to the Scheduler as a DatagramPacket. 
 	-> FloorSubsystem also checks to see if the elevator is already present on the floor in operation
 	-> The main method inside FloorSubsystem class when run, reads the requests from the InputEvents file
+	-> By default the FloorSubsystem creates 5 floors
 
 Scheduler.java:-
 
@@ -56,21 +58,27 @@ ElevatorSubSystem.java:
 	   time delay between the opening/closing of the door and time delay in between floors.
 	-> It also gets updates for next floor from the Scheduler
 
-ElevatorSusSystemTest.java:
+ElevatorSubSystemTest.java:
 	
 	-> This file contains the ElevatorSubSystemTest class 
-	-> Contains Junit tests for the system.
+	-> Contain a Junit tests for the system. It tests if the ElevatorSubsystem constructor creates the appropriate object
 
 InputEvent.java:-
 
-	-> This file contains the InputEvent class
+	-> This file contains the InputEvent class which is used as a data structure to pass information from the FloorSubsystem to the Scheduler
 	-> Reads inputs from the InputEvents test file
 	-> Contains information about the current floor, destination floor, time between floors and direction of the elevator
+
+Pair.java
+	
+	-> This file contains the Pair class which is used as a data structure to send arrival information from the ElevatorSubsystem to the Scheduler
+	-> and back to the FloorSubsystem. The Pair class functions similarly to a tuple however it only takes one string argument and one integer
 
 
 InputEvents.txt:-
 
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
+	-> Change this file to change test cases in the system
 
 UML_DIAGRAM:-
 
