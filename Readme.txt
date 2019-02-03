@@ -4,10 +4,14 @@ L5G4_milestone_1
 
 Member: 
 
-	1. Muhammad Tarequzzaman | 100954008 
+	1. Muhammad Tarequzzaman | 100954008
+	Responsiblities: ElevatorSubSystem.java and ElevatorSubSystemTest.java.
 	2. Sama Adil Sheikh | 101060020
+	Responsiblities: Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
+	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
 	4. Dare Balogun | 101062340
+	Responsiblilities: FloorSubSystem.java, Scheduler.java and co-author of ElevatorSubSystem
 	5. Mrunal Patel | 101001748
 	Responsibilities: State Machine Diagram
 
