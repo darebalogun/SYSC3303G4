@@ -203,8 +203,6 @@ public class Scheduler {
 
 		Iterator<InputEvent> i = upRequests.iterator();
 
-		System.out.println(currentPositionList);
-
 		while (i.hasNext()) {
 			InputEvent e = i.next();
 			if (e.getCurrentFloor().equals(currentPositionList.get(0))) {
@@ -240,7 +238,6 @@ public class Scheduler {
 	public byte[] taskListToByteArray(int elevatorNumber) {
 
 		ArrayList<Integer> list = new ArrayList<>();
-		System.out.println(elevatorTaskQueue);
 		for (Integer integer : elevatorTaskQueue.get(0)) {
 			if (!list.contains(integer)) {
 				list.add(integer);
