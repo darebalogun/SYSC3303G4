@@ -16,9 +16,7 @@ import java.nio.file.Paths;
 /**
  * FloorSubSystem.java SYSC3303G4
  * 
- *  @author: Dare Balogun
- *  
- *  @co_author: Sama Adil Sheikh
+ *  @author: Dare Balogun | 101062340
  *  
  *  @version Iteration 1
  * 
@@ -28,10 +26,6 @@ import java.nio.file.Paths;
  * 
  */
 
-/**
- * @author mrolu
- *
- */
 public class FloorSubsystem {
 
 	// Datagram sockets used to send and receive packets to the Scheduler

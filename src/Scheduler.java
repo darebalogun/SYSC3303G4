@@ -15,7 +15,7 @@ import java.util.Iterator;
 /**
  * Scheduler.java SYSC3303G4
  * 
- * @author Dare Balogan
+ * @author Dare Balogun | 101062340
  * 
  * @version Iteration 1
  * 
