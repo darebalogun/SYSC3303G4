@@ -47,6 +47,10 @@ ElevatorSubSystem.java:-
 	-> It's functional features include opening/closing the door, buttons and lamps for floors, 
 	   time delay between the opening/closing of the door and time delay in between floors.
 	-> It also gets updates for next floor from the Scheduler
+ElevatorSusSystemTest.java:-
+	author : Muhammad Tarequzzaman | 100954008 
+	-> This file contains the ElevatorSubSystemTest class 
+	-> Contains Junit tests for the system
 
 InputEvent.java:-
 
@@ -54,10 +58,6 @@ InputEvent.java:-
 -> Reads inputs from the InputEvents test file
 -> Contains information about the current floor, destination floor, time between floors and direction of the elevator
 
-ElevatorSusSystemTest.java:-
-
--> This file contains the ElevatorSubSystemTest class 
--> Contains Junit tests for the system
 
 InputEvents.txt:-
 
