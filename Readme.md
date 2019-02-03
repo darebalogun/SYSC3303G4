@@ -30,7 +30,7 @@ Scheduler.java:-
 -> The scheduler accepts inputs from the InputEvent class and send the requests to ElevatorSubSystem. 
 -> The Scheduler is also updated when an Elevator reaches it's desired floor
 
-ElevatorSubSystem.java:-
+ElevatorSubSystem.java:
 
 	author : Muhammad Tarequzzaman | 100954008 |
 			Responsible for creating Method elevatorState()}, Method runElevator(),
@@ -47,8 +47,10 @@ ElevatorSubSystem.java:-
 	* It's functional features include opening/closing the door, buttons and lamps for floors, 
 	   time delay between the opening/closing of the door and time delay in between floors.
 	* It also gets updates for next floor from the Scheduler
+
 ElevatorSusSystemTest.java:
 	author : Muhammad Tarequzzaman | 100954008 
+	
 	This file contains the ElevatorSubSystemTest class 
 	Contains Junit tests for the system
 
