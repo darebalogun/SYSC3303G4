@@ -41,16 +41,16 @@ ElevatorSubSystem.java:-
  			Responsible for creating
 			Method sendArrivalInfo(), Method receiveTaskList() and  Method IntegerToByteArray(Integer i)
 	Overview: 
-	-> This file contains the ElevatorSubSystem class
-	-> The purpose of this class is to represent the Elevator Car as a unit
-	-> It receives and send Datagram packets to the Scheduler using UDP communication
-	-> It's functional features include opening/closing the door, buttons and lamps for floors, 
+	* This file contains the ElevatorSubSystem class
+	* The purpose of this class is to represent the Elevator Car as a unit
+	* It receives and send Datagram packets to the Scheduler using UDP communication
+	* It's functional features include opening/closing the door, buttons and lamps for floors, 
 	   time delay between the opening/closing of the door and time delay in between floors.
-	-> It also gets updates for next floor from the Scheduler
-ElevatorSusSystemTest.java:-
+	* It also gets updates for next floor from the Scheduler
+ElevatorSusSystemTest.java:
 	author : Muhammad Tarequzzaman | 100954008 
-	-> This file contains the ElevatorSubSystemTest class 
-	-> Contains Junit tests for the system
+	This file contains the ElevatorSubSystemTest class 
+	Contains Junit tests for the system
 
 InputEvent.java:-
 
