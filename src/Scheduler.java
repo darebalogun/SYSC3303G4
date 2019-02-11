@@ -70,7 +70,10 @@ public class Scheduler {
 	public Scheduler() {
 
 		elevatorTaskQueue = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
-		elevatorTaskQueue.add(new ArrayList<Integer>());
+		
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			elevatorTaskQueue.add(new ArrayList<Integer>());
+		}
 
 		// current position of elevator is 1
 		currentPositionList = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
@@ -85,8 +88,8 @@ public class Scheduler {
 
 		directionList = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
 
-		for (Direction direction : directionList) {
-			direction = Direction.IDLE;
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			directionList.add(Direction.UP);
 		}
 
 		try {
@@ -184,49 +187,64 @@ public class Scheduler {
 		if (!downRequests.isEmpty()) {
 			Collections.sort(downRequests);
 		}
-
-		if (!upRequests.isEmpty()) {
-			for (Direction direction : directionList) {
-				if (direction == Direction.IDLE) {
-					direction = Direction.UP;
-					break;
-				}
-			}
-		} else if (!downRequests.isEmpty()) {
-			for (Direction direction : directionList) {
-				if (direction == Direction.IDLE) {
-					direction = Direction.DOWN;
-					break;
-				}
+		
+		ArrayList<Integer> upList = new ArrayList<Integer>();
+		ArrayList<Integer> upPosition = new ArrayList<Integer>();
+		
+		System.out.println(directionList);
+		
+		for (int i = 0; i < directionList.size(); i++) {
+			if (directionList.get(i) == Direction.UP) {
+				upList.add(i);
+				upPosition.add(currentPositionList.get(i));
 			}
 		}
-
-		Iterator<InputEvent> i = upRequests.iterator();
-
-		while (i.hasNext()) {
-			InputEvent e = i.next();
-			if (e.getCurrentFloor().equals(currentPositionList.get(0))) {
-				elevatorTaskQueue.get(0).add(e.getDestinationFloor());
-			} else {
-				elevatorTaskQueue.get(0).add(e.getCurrentFloor());
-				elevatorTaskQueue.get(0).add(e.getDestinationFloor());
+		
+		ArrayList<Integer> downList = new ArrayList<Integer>();
+		ArrayList<Integer> downPosition = new ArrayList<Integer>();
+		
+		for (int i = 0; i < directionList.size(); i++) {
+			if (directionList.get(i) == Direction.DOWN) {
+				downList.add(i);
+				downPosition.add(currentPositionList.get(i));
 			}
-			i.remove();
 		}
-
-		Iterator<InputEvent> d = downRequests.iterator();
-
-		while (d.hasNext()) {
-			InputEvent e = d.next();
-			if (e.getCurrentFloor().equals(currentPositionList.get(0))) {
-				elevatorTaskQueue.get(0).add(e.getCurrentFloor());
-			} else {
-				elevatorTaskQueue.get(0).add(e.getDestinationFloor());
-				elevatorTaskQueue.get(0).add(e.getDestinationFloor());
-			}
-			d.remove();
+		
+		
+		for (InputEvent event : upRequests) {
+			System.out.println(closest(event.getCurrentFloor(), upPosition));
+			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getCurrentFloor());
+			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getDestinationFloor());
 		}
+		
+		upRequests.clear();
+		
+	if (!downList.isEmpty()) {
+		for (InputEvent event : downRequests) {
+			elevatorTaskQueue.get(downList.get(closest(event.getCurrentFloor(), downPosition))).add(event.getCurrentFloor());
+			elevatorTaskQueue.get(downList.get(closest(event.getCurrentFloor(), downPosition))).add(event.getDestinationFloor());
+		}
+		
+		downRequests.clear();
+	}
 
+
+	}
+	
+	public int closest(Integer request, ArrayList<Integer> positionList) {
+	    Integer dist = Math.abs(positionList.get(0) - request);
+	    int closestIndex = 0;
+
+	    for (int i = 0; i < positionList.size(); i++) {
+	        int diff = Math.abs(positionList.get(i) - request);
+
+	        if (diff < dist) {
+	            closestIndex = i;
+	            dist = diff;
+	        }
+	    }
+
+	    return closestIndex;
 	}
 
 	/**
