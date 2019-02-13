@@ -19,21 +19,28 @@ public class ElevatorSubSystem extends Thread{
 		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1);
 		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 5);
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
-		
+		Elevator[] elevators = new Elevator [3];
 		
 		int[] ports = {RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1};
 		// use MAINTENANCE_PORT to send a initial packet to scheduler  
-		//>>> here<<<//
-		
-			
 			try {
-				
+				//>>> here<<<//
+				sendMaintenance(ports) ;
 			}catch (Exception e) {
 				// TODO: handle exception
 			}
+			
+		for (Elevator E : elevators) { // start all elevator
+			E.start();
+		}
+			
 		
 	}
 	
+	public void sendMaintenance(int[]ports) {
+		// please implement send ports to scheduler here 
+		
+	}
 	
 	
 	
