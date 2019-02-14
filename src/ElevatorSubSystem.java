@@ -1,3 +1,4 @@
+import java.net.DatagramPacket;
 import java.util.*;
 
 
@@ -10,7 +11,6 @@ public class ElevatorSubSystem extends Thread{
 	private static final int Floors = 5;
 	private static final int MAINTENANCE_PORT = 5252;
 	public static void main(String[] args) {
-		
 		
 	}
 	
@@ -25,7 +25,7 @@ public class ElevatorSubSystem extends Thread{
 		// use MAINTENANCE_PORT to send a initial packet to scheduler  
 			try {
 				//>>> here<<<//
-				sendMaintenance(ports) ;
+				sendMaintenancePort(ports) ;
 			}catch (Exception e) {
 				// TODO: handle exception
 			}
