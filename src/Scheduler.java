@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -30,7 +31,7 @@ import java.util.Iterator;
 
 public class Scheduler {
 
-	private static final int ELEVATOR_COUNT = 1;
+	private final int ELEVATOR_COUNT = 4;
 
 	// List of input events received from Floor Subsystem to be handled
 	private ArrayList<InputEvent> eventList;
@@ -38,6 +39,14 @@ public class Scheduler {
 	private ArrayList<InputEvent> upRequests;
 
 	private ArrayList<InputEvent> downRequests;
+	
+	private ArrayList<Integer> upList;
+	
+	private ArrayList<Integer> upPosition;
+	
+	private ArrayList<Integer> downList;
+	
+	private ArrayList<Integer> downPosition;
 
 	private ArrayList<ArrayList<Integer>> elevatorTaskQueue;
 
@@ -58,7 +67,7 @@ public class Scheduler {
 
 	private static final int FLOOR_RECEIVE_PORT = 60002;
 
-	private static final int ELEVATOR_SEND_PORT = 60008;
+	private static final ArrayList<Integer> elevatorPortList = new ArrayList<Integer>(Arrays.asList(5248, 5249, 5250, 5251));
 
 	private static final int ELEVATOR_RECEIVE_PORT = 60006;
 
@@ -69,14 +78,14 @@ public class Scheduler {
 	 */
 	public Scheduler() {
 
-		elevatorTaskQueue = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
+		elevatorTaskQueue = new ArrayList<>(ELEVATOR_COUNT);
 		
 		for (int i = 0; i < ELEVATOR_COUNT; i++) {
 			elevatorTaskQueue.add(new ArrayList<Integer>());
 		}
 
 		// current position of elevator is 1
-		currentPositionList = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
+		currentPositionList = new ArrayList<>(ELEVATOR_COUNT);
 		currentPositionList.add(1);
 		currentPositionList.set(0, 1);
 
@@ -86,7 +95,15 @@ public class Scheduler {
 
 		eventList = new ArrayList<>();
 
-		directionList = new ArrayList<>(Scheduler.ELEVATOR_COUNT);
+		directionList = new ArrayList<>(ELEVATOR_COUNT);
+		
+		upList = new ArrayList<Integer>();
+		
+		upPosition = new ArrayList<Integer>();
+		
+		downList = new ArrayList<Integer>();
+		
+		downPosition = new ArrayList<Integer>();
 
 		for (int i = 0; i < ELEVATOR_COUNT; i++) {
 			directionList.add(Direction.UP);
@@ -101,12 +118,15 @@ public class Scheduler {
 		}
 
 		try {
-			elevatorReceiveSocket = new DatagramSocket(Scheduler.ELEVATOR_RECEIVE_PORT);
+			elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
 			// elevatorReceiveSocket = new DatagramSocket(ELEVATOR_RECEIVE_PORT);
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
 		}
+		
+		initElevator();
+		
 	}
 
 	/**
@@ -170,6 +190,7 @@ public class Scheduler {
 	 * Processing request
 	 */
 	public void processRequests() {
+		// Separate events into 2 lists based on direction up or down
 		for (InputEvent event : eventList) {
 			if (event.getUp() == true) {
 				upRequests.add(event);
@@ -178,8 +199,10 @@ public class Scheduler {
 			}
 		}
 
+		// Clear list once all requests have been moved
 		eventList.clear();
 
+		
 		if (!upRequests.isEmpty()) {
 			Collections.sort(upRequests);
 		}
@@ -188,47 +211,36 @@ public class Scheduler {
 			Collections.sort(downRequests);
 		}
 		
-		ArrayList<Integer> upList = new ArrayList<Integer>();
-		ArrayList<Integer> upPosition = new ArrayList<Integer>();
-		
-		System.out.println(directionList);
-		
-		for (int i = 0; i < directionList.size(); i++) {
-			if (directionList.get(i) == Direction.UP) {
-				upList.add(i);
-				upPosition.add(currentPositionList.get(i));
-			}
-		}
-		
-		ArrayList<Integer> downList = new ArrayList<Integer>();
-		ArrayList<Integer> downPosition = new ArrayList<Integer>();
-		
-		for (int i = 0; i < directionList.size(); i++) {
-			if (directionList.get(i) == Direction.DOWN) {
-				downList.add(i);
-				downPosition.add(currentPositionList.get(i));
-			}
-		}
-		
-		
 		for (InputEvent event : upRequests) {
-			System.out.println(closest(event.getCurrentFloor(), upPosition));
 			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getCurrentFloor());
 			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getDestinationFloor());
 		}
 		
 		upRequests.clear();
 		
-	if (!downList.isEmpty()) {
+
 		for (InputEvent event : downRequests) {
 			elevatorTaskQueue.get(downList.get(closest(event.getCurrentFloor(), downPosition))).add(event.getCurrentFloor());
 			elevatorTaskQueue.get(downList.get(closest(event.getCurrentFloor(), downPosition))).add(event.getDestinationFloor());
 		}
 		
 		downRequests.clear();
+
+
 	}
-
-
+	
+	public void initElevator() {
+		ArrayList<Integer> bottomFloor = new ArrayList<Integer>(Arrays.asList(1));
+		ArrayList<Integer> topFloor = new ArrayList<Integer>(Arrays.asList(1));
+		for (int i = 0; i < 3; i++) {
+			elevatorTaskQueue.set(i, bottomFloor);
+			sendTask(i);
+		} 
+		elevatorTaskQueue.set(3, topFloor);
+		sendTask(3);
+		while (upList.isEmpty()) {
+			receiveFromElevator();
+		}
 	}
 	
 	public int closest(Integer request, ArrayList<Integer> positionList) {
@@ -246,6 +258,10 @@ public class Scheduler {
 
 	    return closestIndex;
 	}
+	
+	public void updateElevatorPosition() {
+		
+	}
 
 	/**
 	 * Converts task list to Bytes
@@ -256,14 +272,14 @@ public class Scheduler {
 	public byte[] taskListToByteArray(int elevatorNumber) {
 
 		ArrayList<Integer> list = new ArrayList<>();
-		for (Integer integer : elevatorTaskQueue.get(0)) {
+		for (Integer integer : elevatorTaskQueue.get(elevatorNumber)) {
 			if (!list.contains(integer)) {
 				list.add(integer);
 			}
 		}
 
-		elevatorTaskQueue.get(0).clear();
-		elevatorTaskQueue.get(0).addAll(list);
+		elevatorTaskQueue.get(elevatorNumber).clear();
+		elevatorTaskQueue.get(elevatorNumber).addAll(list);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(Scheduler.BYTE_SIZE);
 
@@ -277,13 +293,13 @@ public class Scheduler {
 		}
 
 		try {
-			oos.writeObject(elevatorTaskQueue.get(0));
+			oos.writeObject(elevatorTaskQueue.get(elevatorNumber));
 		} catch (IOException e) {
 			// Unable to write eventList in bytes
 			e.printStackTrace();
 		}
 
-		elevatorTaskQueue.get(0).clear();
+		elevatorTaskQueue.get(elevatorNumber).clear();
 
 		return baos.toByteArray();
 
@@ -295,13 +311,13 @@ public class Scheduler {
 	 * @param elevatorNumber
 	 */
 	public void sendTask(int elevatorNumber) {
-		if (elevatorTaskQueue.get(0).size() > 0) {
+		if (elevatorTaskQueue.get(elevatorNumber).size() > 0) {
 			byte[] data = taskListToByteArray(elevatorNumber);
-
+			
 			// Create Datagram packet containing byte array of event list information
 			try {
-				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(),
-						Scheduler.ELEVATOR_SEND_PORT);
+				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 
+						elevatorPortList.get(elevatorNumber));
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 				System.exit(1);
@@ -321,6 +337,8 @@ public class Scheduler {
 				System.exit(1);
 			}
 			sendSocket.close();
+			
+			elevatorTaskQueue.get(elevatorNumber).clear();
 		}
 	}
 
@@ -331,6 +349,8 @@ public class Scheduler {
 		byte[] data = new byte[Scheduler.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
+		
+		
 		// Receive datagram socket from floor subsystem
 		try {
 			elevatorReceiveSocket.receive(receivePacket);
@@ -340,8 +360,54 @@ public class Scheduler {
 		}
 
 		Pair arrival = byteArrayToPair(data);
+		
+		switch(receivePacket.getPort()) {
+			case 5248:
+				currentPositionList.set(0, arrival.getInteger());
+				if (arrival.getString() == "up") {
+					directionList.set(0, Direction.UP);
+				} else {
+					directionList.set(0, Direction.DOWN);
+				}
+			case 5249:
+				currentPositionList.set(1, arrival.getInteger());
+				if (arrival.getString() == "up") {
+					directionList.set(1, Direction.UP);
+				} else {
+					directionList.set(1, Direction.DOWN);
+				}
+			case 5250:
+				currentPositionList.set(2, arrival.getInteger());
+				if (arrival.getString() == "up") {
+					directionList.set(2, Direction.UP);
+				} else {
+					directionList.set(2, Direction.DOWN);
+				}
+			case 5251:
+				currentPositionList.set(3, arrival.getInteger());
+				if (arrival.getString() == "up") {
+					directionList.set(3, Direction.UP);
+				} else {
+					directionList.set(3, Direction.DOWN);
+				}
+		}
+		
 
-		currentPositionList.set(0, arrival.getInteger());
+		upList.clear();
+		for (int i = 0; i < directionList.size(); i++) {
+			if (directionList.get(i) == Direction.UP) {
+				upList.add(i);
+				upPosition.add(currentPositionList.get(i));
+			}
+		}
+		
+		downList.clear();
+		for (int i = 0; i < directionList.size(); i++) {
+			if (directionList.get(i) == Direction.DOWN) {
+				downList.add(i);
+				downPosition.add(currentPositionList.get(i));
+			}
+		}
 
 		System.out.println("The elevator has arrived at floor: " + arrival.getInteger());
 
@@ -421,7 +487,9 @@ public class Scheduler {
 				while (true) {
 					s.receiveInputEventList();
 					s.processRequests();
-					s.sendTask(1);
+					for (int i = 0; i < s.ELEVATOR_COUNT; i++) {
+						s.sendTask(i);
+					}
 				}
 			}
 		};
