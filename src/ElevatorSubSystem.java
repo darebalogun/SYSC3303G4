@@ -17,7 +17,7 @@ public class ElevatorSubSystem extends Thread{
 	public void run() {
 		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1);
 		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1);
-		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 5);
+		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1);
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
 		Elevator[] elevators = new Elevator [3];
 		
