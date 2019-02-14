@@ -37,7 +37,7 @@ public class ElevatorSubSystem extends Thread{
 		
 	}
 	
-	public void sendMaintenance(int[]ports) {
+	public void sendMaintenancePort(int[]ports) {
 		// please implement send ports to scheduler here 
 		
 	}
