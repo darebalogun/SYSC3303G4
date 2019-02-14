@@ -15,7 +15,7 @@ public class ElevatorSubSystemTest {
 	@Test
 	public final void testElevatorSubSystem() {
 		//fail("Not yet implemented"); // TODO
-		ElevatorSubSystem E = new ElevatorSubSystem(1, 5);
+		ElevatorSubSystem E = new ElevatorSubSystem();
 		assertEquals(false, equals(E));
 	}
 

@@ -73,11 +73,16 @@ public class Elevator extends Thread {
 	
 	public void run() {
 		
-		while(true) {
+		try {
 			receiveTaskList();
 			elevatorState();
-			
+		}catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Elevator run call problem \n");
+			e.printStackTrace();
+
 		}
+		
 		
 	}
 	
@@ -104,7 +109,7 @@ public class Elevator extends Thread {
 	 * This method implants FSM Using State
 	 * condition to change state
 	 */
-	public void elevatorState() {
+	public  synchronized void elevatorState() {
 
 		State state = State.Ready;
 
