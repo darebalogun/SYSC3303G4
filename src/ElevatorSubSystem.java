@@ -2,7 +2,7 @@ import java.net.DatagramPacket;
 import java.util.*;
 
 
-public class ElevatorSubSystem extends Thread{
+public class ElevatorSubSystem {
 
 	private static final int RECEIVE_PORT1 = 5248;
 	private static final int RECEIVE_PORT2 = 5249;
@@ -14,7 +14,7 @@ public class ElevatorSubSystem extends Thread{
 		
 	}
 	
-	public void run() {
+	public void main(String[] args) {
 		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1);
 		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1);
 		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1);
