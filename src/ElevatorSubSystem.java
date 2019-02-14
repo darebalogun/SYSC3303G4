@@ -10,6 +10,7 @@ public class ElevatorSubSystem extends Thread{
 	private static final int RECEIVE_PORT4 = 5251;
 	private static final int Floors = 5;
 	private static final int MAINTENANCE_PORT = 5252;
+	
 	public static void main(String[] args) {
 		
 	}
