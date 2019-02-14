@@ -3,12 +3,12 @@ import java.util.*;
 
 public class ElevatorSubSystem extends Thread{
 
-	private static final int RECEIVE_PORT1 = 0;
-	private static final int RECEIVE_PORT2 = 0;
-	private static final int RECEIVE_PORT3 = 0;
-	private static final int RECEIVE_PORT4 = 0;
+	private static final int RECEIVE_PORT1 = 5248;
+	private static final int RECEIVE_PORT2 = 5249;
+	private static final int RECEIVE_PORT3 = 5250;
+	private static final int RECEIVE_PORT4 = 5251;
 	private static final int Floors = 5;
-	private static final int MAINTENANCE_PORT =0;
+	private static final int MAINTENANCE_PORT = 5252;
 	public static void main(String[] args) {
 		
 		
