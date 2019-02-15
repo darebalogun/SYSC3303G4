@@ -435,6 +435,7 @@ public class Elevator extends Thread {
 	public void sendArrivalInfo() {
 
 		Pair pair;
+		updateGoing_UPorDOWN();
 		if (goingUP) {
 			pair = new Pair("up", currentFloor);
 		} else {
