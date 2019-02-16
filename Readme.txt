@@ -53,12 +53,15 @@ Scheduler.java:-
 ElevatorSubSystem.java:
 
 	-> This file contains the ElevatorSubSystem class
-	-> The purpose of this class is to represent the Elevator Car as a unit
-	-> It receives and send Datagram packets to the Scheduler using UDP communication
-	-> It's functional features include opening/closing the door, buttons and lamps for floors, 
+	-> The purpose of this class is run multiple Elevator's as a multiple thread unit
+	
+	 
 	   time delay between the opening/closing of the door and time delay in between floors.
 	-> It also gets updates for next floor from the Scheduler
-
+Elevator.java:
+	->It receives and send Datagram packets to the Scheduler using UDP communication
+	-> It's functional features include opening/closing the door, buttons and lamps for floors,
+	->
 ElevatorSubSystemTest.java:
 	
 	-> This file contains the ElevatorSubSystemTest class 
