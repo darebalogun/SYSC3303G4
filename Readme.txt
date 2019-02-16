@@ -41,6 +41,7 @@ FloorSubsystem.java:-
 	-> FloorSubsystem also checks to see if the elevator is already present on the floor in operation
 	-> The main method inside FloorSubsystem class when run, reads the requests from the InputEvents file
 	-> By default the FloorSubsystem creates 5 floors
+	-> FloorSubSystem adds 5 random events with random timing between 0 to 10 seconds
 
 Scheduler.java:-
 
