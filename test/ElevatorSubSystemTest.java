@@ -3,10 +3,7 @@ import static org.junit.Assert.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-/**
- * @author Muhammad Tarequzzaman |100954008|
- *
- */
+
 public class ElevatorSubSystemTest {
 	static ElevatorSubSystem ES;
 	@BeforeClass

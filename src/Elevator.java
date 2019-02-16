@@ -13,13 +13,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Muhammad Tarequzzaman |100954008|
+ *
+ */
 public class Elevator extends Thread {
-	
-	
 
 	private static final int BYTE_SIZE = 6400;
-	static private int timeBtwFloors = 2; // time as Canal building main Elevators
-	static private int doorDelay = 1;
+	static private int timeBtwFloors = 4; // time as Canal building main Elevators
+	static private int doorDelay = 2;
 
 	// private static int RECEIVE_PORT = 50002;
 	public int RECEIVE_PORT = 0;
@@ -40,14 +42,14 @@ public class Elevator extends Thread {
 	private Boolean goingDOWN;
 
 	private DatagramPacket sendPacket, receivePacket; /* Packet */
-	private DatagramSocket  sendreceiveSocket; /* Socket */
+	private DatagramSocket sendReceiveSocket; /* Socket */
 	/*---------------------------------------------------------------*/
 
 	/**
-	 * @param elevatorNumber : Unique number to represent unique Elevator in the
-	 *                       system
-	 * @param numberofFloorbuttons        : number of button had to be install inside the
-	 *                       elevator for floors.
+	 * @param elevatorNumber       : Unique number to represent unique Elevator in
+	 *                             the system
+	 * @param numberofFloorbuttons : number of button had to be install inside the
+	 *                             elevator for floors.
 	 */
 	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
 
@@ -70,29 +72,29 @@ public class Elevator extends Thread {
 		receiveSocketPortCreation(RECEIVE_PORT);
 
 	}
-	
+
 	public void run() {
-		
+
 		try {
 			receiveTaskList();
 			elevatorState();
-		}catch (Exception e) {
-			// TODO: handle exception
+		} catch (Exception e) {
+
 			System.out.println("Elevator run call problem \n");
 			e.printStackTrace();
 
 		}
-		
-		
+
 	}
-	
+
 	/**
 	 * Creating port for ELEVATOR
-	 * @param PORT_number
+	 * 
+	 * @param PORT_Number
 	 */
-	public void receiveSocketPortCreation(int PORT_number) {
+	public void receiveSocketPortCreation(int PORT_Number) {
 		try {
-			sendreceiveSocket = new DatagramSocket(PORT_number);
+			sendReceiveSocket = new DatagramSocket(PORT_Number);
 		} catch (SocketException se) {
 			System.out.println("Error in receiveSocketPort creation \n");
 			se.printStackTrace();
@@ -105,11 +107,11 @@ public class Elevator extends Thread {
 		Ready, Idle, UpdateInput, Run, Arrived;
 
 	}
+
 	/**
-	 * This method implants FSM Using State
-	 * condition to change state
+	 * This method implants FSM Using State condition to change state
 	 */
-	public  synchronized void elevatorState() {
+	public synchronized void elevatorState() {
 
 		State state = State.Ready;
 
@@ -118,7 +120,7 @@ public class Elevator extends Thread {
 			switch (state) {
 
 			case Ready: // Ready state
-				System.out.printf("\n Elevator#: %d Ready \n",getElevatorNumber());
+				System.out.printf("\n Elevator#: %d Ready \n", getElevatorNumber());
 				ACTIVE = true;
 				state = State.Idle;
 				break; // end Ready
@@ -134,7 +136,7 @@ public class Elevator extends Thread {
 
 				} else {
 					state = State.UpdateInput;
-					System.out.printf("\n Elevator#: %d Idle at floor %d \n", getElevatorNumber(),currentFloor);
+					System.out.printf("\n Elevator#: %d Idle at floor %d \n", getElevatorNumber(), currentFloor);
 
 				}
 
@@ -143,10 +145,12 @@ public class Elevator extends Thread {
 			case UpdateInput: // UpdateInput
 
 				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
+
 					state = State.Run;
+
 				} else {
 					receiveTaskList();
-					// updateGoing_UPorDOWN();
+
 					state = State.Idle;
 				}
 
@@ -154,7 +158,7 @@ public class Elevator extends Thread {
 
 			case Run: // Run
 
-				System.out.printf(" Elevator's Next Destination is : %d\n", nextFloor);
+				System.out.printf(" Elevator#: %d Next Destination is : %d\n", getElevatorNumber(), nextFloor);
 
 				runToNextFloor();
 
@@ -165,15 +169,14 @@ public class Elevator extends Thread {
 			case Arrived: // Arrived
 				if (currentFloor == nextFloor) { // later we will use here
 
-					System.out.printf(" Elevator#: %d Arrived at floor: %d \n", getElevatorNumber(),currentFloor);
+					System.out.printf(" Elevator#: %d Arrived at floor: %d \n", getElevatorNumber(), currentFloor);
 					sendArrivalInfo();
 					elevatorOpendDoorAtFloor(currentFloor);
 					elevatorCloseDoorAtFloor(currentFloor);
 					if (nextFloorList.size() != 0) {
-						// System.out.println(nextFloorList.size());
+
 						nextFloor = nextFloorList.remove(0);
-						// state = State.Run;
-						// break;
+
 					}
 
 				}
@@ -189,14 +192,15 @@ public class Elevator extends Thread {
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
-	public void runToNextFloor() {
+	public synchronized void runToNextFloor() {
 		// Prepare to run for target floor
 
 		// running until next floor
 		while (currentFloor != nextFloor) {
+
 			updateGoing_UPorDOWN();
-			System.out.printf(" Elevator:# %d Currently at floor: %d \n",getElevatorNumber(), currentFloor);
-			
+			System.out.printf(" Elevator:# %d Currently at floor: %d \n", getElevatorNumber(), currentFloor);
+
 			// System.out.printf(" Next Floor %d \n", nextFloor);
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
@@ -208,21 +212,21 @@ public class Elevator extends Thread {
 				currentFloor--;
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
-
+			updateNextFloor();
 		}
 
 	}
-	
+
 	//
 
 	/**
 	 * runMotor for a time
 	 */
-	public synchronized void runMotor() {
+	public void runMotor() {
 		try {
 
 			TimeUnit.SECONDS.sleep(Elevator.timeBtwFloors);
-			wait(timeBtwFloors);
+			// wait(timeBtwFloors);
 		} catch (InterruptedException e) {
 
 			System.out.printf("Some Error in runMotor on Elevator#: %d\n", getElevatorNumber());
@@ -239,12 +243,12 @@ public class Elevator extends Thread {
 		if (currentFloor <= nextFloor) {
 			setGoingUP(true);
 			setGoingDOWN(false);
-			System.out.printf(" Elevator#: %d  Going UP \n",getElevatorNumber());
+			System.out.printf(" Elevator#: %d  Going UP \n", getElevatorNumber());
 
 		} else if (currentFloor > nextFloor) {
 			setGoingUP(false);
 			setGoingDOWN(true);
-			System.out.printf(" Elevator:# %d Going DOWN \n",getElevatorNumber());
+			System.out.printf(" Elevator:# %d Going DOWN \n", getElevatorNumber());
 
 		} else if (currentFloor == nextFloor) {
 			setGoingUP(false);
@@ -421,7 +425,7 @@ public class Elevator extends Thread {
 
 		// Receive datagram socket from floor subsystem
 		try {
-			sendreceiveSocket.receive(receivePacket);
+			sendReceiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -429,7 +433,7 @@ public class Elevator extends Thread {
 
 		nextFloorList = byteArrayToList(data);
 		// no need to update nextFloor here
-		notify();
+		// notify();
 
 	}
 
@@ -457,19 +461,14 @@ public class Elevator extends Thread {
 			System.exit(1);
 		}
 
-
 		try {
-			sendreceiveSocket.send(sendPacket);
+			sendReceiveSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 
-
-
 		System.out.printf(" Elevator#: %d Arrival info sent to Scheduler\n", getElevatorNumber());
-
-	
 
 	}
 
@@ -532,6 +531,58 @@ public class Elevator extends Thread {
 
 	public Boolean isGoingUP() {
 		return goingUP;
+	}
+
+	public DatagramSocket getSendreceiveSocket() {
+		return sendReceiveSocket;
+	}
+
+	public static int getDoorDelay() {
+		return doorDelay;
+	}
+
+	public static void setDoorDelay(int doorDelay) {
+		Elevator.doorDelay = doorDelay;
+	}
+
+	public static int getSCHEDULER_SEND_PORT() {
+		return SCHEDULER_SEND_PORT;
+	}
+
+	public static void setSCHEDULER_SEND_PORT(int sCHEDULER_SEND_PORT) {
+		SCHEDULER_SEND_PORT = sCHEDULER_SEND_PORT;
+	}
+
+	public ArrayList<Integer> getNextFloorList() {
+		return nextFloorList;
+	}
+
+	public void setNextFloorList(ArrayList<Integer> nextFloorList) {
+		this.nextFloorList = nextFloorList;
+	}
+
+	public Boolean getDooropen() {
+		return dooropen;
+	}
+
+	public void setDooropen(Boolean dooropen) {
+		this.dooropen = dooropen;
+	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
+	}
+
+	public Boolean getGoingUP() {
+		return goingUP;
+	}
+
+	public Boolean getGoingDOWN() {
+		return goingDOWN;
+	}
+
+	public void setElevatorNumber(int elevatorNumber) {
+		this.elevatorNumber = elevatorNumber;
 	}
 
 }
