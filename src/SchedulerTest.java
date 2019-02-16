@@ -4,9 +4,10 @@ import org.junit.*;
 public class SchedulerTest {
 
 	Scheduler stest = new Scheduler();
+	static ElevatorSubSystem ES2;
 	//Scheduler stest2 = new Scheduler();
 	public static void setUpBeforeClass() throws Exception {
-		
+		ES2= new ElevatorSubSystem();
 	}
 	
 	public void testMain() {
@@ -15,7 +16,7 @@ public class SchedulerTest {
 	}
 	
 	public void testOutput() {
-		
+		//ES2.getClass()
 		
 	}
 	
