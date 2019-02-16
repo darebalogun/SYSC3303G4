@@ -85,7 +85,9 @@ UML_DIAGRAM:-
 
 	-> Contains the UML class diagrams for the system
 
+SEQUENCE_DIAGRAM:-
 
+	-> Contains the sequence diagram for the system
 
 
 
