@@ -214,6 +214,9 @@ public class Scheduler {
 			Collections.sort(downRequests);
 		}
 		
+		System.out.println(upList);
+		System.out.println(downList);
+		
 		for (InputEvent event : upRequests) {
 			if (elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).size() < 3 | upList.size() <= 1) {
 				elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getCurrentFloor());
