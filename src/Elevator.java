@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-public class  extends Thread {
 	
 	
 
