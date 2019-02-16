@@ -1,6 +1,10 @@
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,6 +34,8 @@ public class FloorSubsystem {
 
 	// Datagram sockets used to send and receive packets to the Scheduler
 	private DatagramSocket sendReceive, receive;
+	
+	private boolean ready;
 
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is
 	// where the floor subsystem listens for incoming data
@@ -66,6 +72,8 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
+		ready = false;
+		
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
 
@@ -102,26 +110,44 @@ public class FloorSubsystem {
 		return elevatorPresent;
 	}
 
-	public void readInputEvent() {
+	public synchronized void readInputEvent() {
+		while (ready) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		Path path = Paths.get(INPUT_PATH);
 
-		List<String> inputEventList = null;
-
-		// Read the input file line by line into a list of strings
-		try {
-			inputEventList = Files.readAllLines(path);
-		} catch (IOException e) { // Unable to read the input text file
-			e.printStackTrace();
+		//List<String> inputEventList = null;
+		
+		ArrayList<String> inputEventArrayList = new ArrayList<String>();
+		
+		boolean tag = true;
+		
+		while (tag) {
+			try (Stream<String> lines = Files.lines(path)) {
+				try {
+					inputEventArrayList.add(lines.skip(currentLine).findFirst().get());
+				} catch (NoSuchElementException e) {
+					tag = false;
+					lines.close();
+					break;
+				}
+			    
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			currentLine++;
 		}
-
-		int i = 0;
-
+		
+		for (String inputEvent: inputEventArrayList) {
+		
 		// For each floor starting from the current line saved in the floor subsystem read and parse
 		// the string
 		for (int floorNum = 1; floorNum <= FLOOR_COUNT; floorNum++) {
-			for (i = this.currentLine; i < inputEventList.size(); i++) {
-
-				String inputEvent = inputEventList.get(i);
 
 				String[] inputEvents = inputEvent.split(" ");
 
@@ -157,9 +183,11 @@ public class FloorSubsystem {
 					System.out.println(" Destination: " + destinationFloor);
 				}
 			}
+		
 		}
-
-		this.currentLine = i;
+		
+		ready = true;
+		notifyAll();
 		return;
 
 	}
@@ -295,6 +323,56 @@ public class FloorSubsystem {
 		return null;
 	}
 	
+	public synchronized void addRandomInput() {
+		while (!ready) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		String time = java.time.LocalTime.now().toString();
+		
+		Random rand = new Random();
+		
+		Integer n = rand.nextInt(5) + 1;
+		
+		String from = n.toString();
+		
+		Integer m = rand.nextInt(5) + 1;
+		
+		while (n == m) {
+			m = rand.nextInt(5) + 1;
+		}
+		
+		String to = m.toString();
+		
+		String direction;
+		
+		if (n > m) {
+			direction = "down";
+		} else {
+			direction = "up";
+		}
+		
+		String request = time + " " + from + " " + direction + " " + to;
+		
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter("src/InputEvents.txt", true));
+			out.newLine();
+			out.write(request);
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ready = false;
+		notifyAll();
+	}
+
+	
 	public boolean isUpLamp() {
 		return upLamp;
 	}
@@ -331,8 +409,24 @@ public class FloorSubsystem {
 				}
 			}
 		};
+		
+		Thread simulateInput = new Thread() {
+			public void run() {
+				for (int i = 0; i < 5; i++) {
+					s.addRandomInput();
+					Random rand = new Random();
+					int n = rand.nextInt(4);
+					try {
+						TimeUnit.SECONDS.sleep(n);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
 
 		readSendInput.start();
 		receiveFromScheduler.start();
+		simulateInput.start();
 	}
 }

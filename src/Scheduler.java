@@ -214,9 +214,21 @@ public class Scheduler {
 			Collections.sort(downRequests);
 		}
 		
+		System.out.println(upList);
+		System.out.println(downList);
+		
 		for (InputEvent event : upRequests) {
-			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getCurrentFloor());
-			elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getDestinationFloor());
+			if (elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).size() < 3 | upList.size() <= 1) {
+				elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getCurrentFloor());
+				elevatorTaskQueue.get(upList.get(closest(event.getCurrentFloor(), upPosition))).add(event.getDestinationFloor());
+			} else {
+				ArrayList<Integer> newUpPosition = new ArrayList<Integer>(upPosition);
+				ArrayList<Integer> newUpList = new ArrayList<Integer>(upList);
+				newUpPosition.remove(closest(event.getCurrentFloor(), upPosition));
+				newUpList.remove(closest(event.getCurrentFloor(), upPosition));
+				elevatorTaskQueue.get(newUpList.get(closest(event.getCurrentFloor(), newUpPosition))).add(event.getCurrentFloor());
+				elevatorTaskQueue.get(newUpList.get(closest(event.getCurrentFloor(), newUpPosition))).add(event.getDestinationFloor());
+			}
 		}
 		
 		upRequests.clear();
