@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 /**
  * @author Muhammad Tarequzzaman |100954008|
  *
@@ -29,15 +31,15 @@ public class Elevator extends Thread {
 	static private int doorDelay = 2;
 
 	// private static int RECEIVE_PORT = 50002;
-	public int RECEIVE_PORT = 0;
+	
 	private static int SCHEDULER_SEND_PORT = 60006;
 
 	// nth Elevator number, DO NOT PUT Same number as some other instance;
 	private int elevatorNumber;
-	public ArrayList<Boolean> buttonList;
-	public ArrayList<Boolean> elevatorLamp;
+	private ArrayList<Boolean> buttonList;
+	private ArrayList<Boolean> elevatorLamp;
 	private ArrayList<Integer> nextFloorList;
-	public Boolean ACTIVE = true;
+	private Boolean ACTIVE = true;
 	private Boolean dooropen;
 
 	private int currentFloor;
@@ -70,22 +72,44 @@ public class Elevator extends Thread {
 
 		// basic implementation
 		dooropen = false;
+		
 		this.elevatorNumber = elevatorNumber;
 
 		currentFloor = startFloor;
 
 		receiveSocketPortCreation(RECEIVE_PORT);
+		intit_GoingUp_Down(); // Re factor Commit 4861eb20ecb06e71083040db3d6a388a2796e292 @ 1.17pm 16th February 2019 by @author 
 		
-		goingUP = true;
-		goingDOWN = false;
-		
-		if (startFloor > 1) {
-			goingUP = false;
-			goingDOWN = true;
-		}
 			
 		System.out.printf("Elevator E%d...Waiting for the requests from the Scheduler \n",elevatorNumber);
 
+	}
+	public void intit_GoingUp_Down(){
+		if(isGoingUP()==null || isGoingDOWN()==null) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}else if (currentFloor <= nextFloor) {
+			setGoingUP(true);
+			setGoingDOWN(false);
+			
+
+		} else if (currentFloor > nextFloor) {
+			setGoingUP(false);
+			setGoingDOWN(true);
+			
+
+		} else if (currentFloor == nextFloor) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+			System.out.printf("Elevator:# %d Standby \n", getElevatorNumber());
+		} else if (isGoingUP() == isGoingDOWN()) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}else if(isGoingUP()==null || isGoingDOWN()==null) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}
+		
 	}
 
 	public void run() {
@@ -214,7 +238,7 @@ public class Elevator extends Thread {
 		while (currentFloor != nextFloor) {
 
 			updateGoing_UPorDOWN();
-			System.out.printf(" Elevator:# %d Currently at floor: %d \n", getElevatorNumber(), currentFloor);
+			System.out.printf(" Elevator#: %d Currently at floor: %d \n", getElevatorNumber(), currentFloor);
 
 			// System.out.printf(" Next Floor %d \n", nextFloor);
 
