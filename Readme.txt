@@ -19,7 +19,7 @@ Member:
 SetUp Instructions:-
 
 	-> Open eclipse-java
-	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_1.zip"
+	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_2.zip"
 	-> Click Finish
 	-> Run ElevatorSubSystem as Java Application
 	-> Wait for the class to execute
