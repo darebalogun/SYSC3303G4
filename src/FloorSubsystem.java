@@ -57,16 +57,16 @@ public class FloorSubsystem {
 	public static final int FLOOR_COUNT = 5;
 
 	// Button indicate which direction requests have been made for
-	public boolean upButton, downButton;
+	public ArrayList<Boolean> upButton, downButton;
 
 	// to check if the elevator door is open or closed
-	private boolean doorOpen, doorClosed;
+	private ArrayList<Boolean> doorOpen, doorClosed;
 
 	// Up and Down lamps on the floor's elevator buttons
-	private boolean upLamp, downLamp;
+	private ArrayList<Boolean> upLamp, downLamp;
 
 	// to check if elevator is currently present on the floor
-	public boolean elevatorPresent;
+	public ArrayList<Boolean> elevatorPresent;
 
 	/**
 	 * Constructor for the floor subsystem
