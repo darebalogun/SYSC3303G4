@@ -40,7 +40,7 @@ public class Elevator extends Thread {
 	private Boolean goingDOWN;
 
 	private DatagramPacket sendPacket, receivePacket; /* Packet */
-	private DatagramSocket sendSocket, receiveSocket; /* Socket */
+	private DatagramSocket  sendreceiveSocket; /* Socket */
 	/*---------------------------------------------------------------*/
 
 	/**
@@ -92,7 +92,7 @@ public class Elevator extends Thread {
 	 */
 	public void receiveSocketPortCreation(int PORT_number) {
 		try {
-			receiveSocket = new DatagramSocket(PORT_number);
+			sendreceiveSocket = new DatagramSocket(PORT_number);
 		} catch (SocketException se) {
 			System.out.println("Error in receiveSocketPort creation \n");
 			se.printStackTrace();
@@ -418,7 +418,7 @@ public class Elevator extends Thread {
 
 		// Receive datagram socket from floor subsystem
 		try {
-			receiveSocket.receive(receivePacket);
+			sendreceiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -453,21 +453,13 @@ public class Elevator extends Thread {
 			System.exit(1);
 		}
 
-		try {
-			sendSocket = new DatagramSocket();
-		} catch (SocketException se) {
-			se.printStackTrace();
-			System.exit(1);
-		}
 
 		try {
-			sendSocket.send(sendPacket);
+			sendreceiveSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		sendSocket.close();
 
 		System.out.println(" Arrival info sent to Scheduler\n");
 	}
