@@ -75,7 +75,7 @@ public class Elevator extends Thread {
 		currentFloor = startFloor;
 
 		receiveSocketPortCreation(RECEIVE_PORT);
-		intit_GoingUp_Down(); // Re factor Commit 4861eb20ecb06e71083040db3d6a388a2796e292 @ 1.17pm 16th February 2019 by 
+		intit_GoingUp_Down(); // Re factor Commit 4861eb20ecb06e71083040db3d6a388a2796e292 @ 1.17pm 16th February 2019 by @author 
 		
 			
 		System.out.printf("Elevator E%d...Waiting for the requests from the Scheduler \n",elevatorNumber);
