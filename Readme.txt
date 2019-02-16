@@ -92,7 +92,7 @@ InputEvents.txt:-
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
 	-> Change this file to change test cases in the system
 
-UML_DIAGRAM:-
+UML_DIAGRAM_iteration2:-
 
 	-> Contains the UML class diagrams for the system
 
