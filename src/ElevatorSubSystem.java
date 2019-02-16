@@ -1,6 +1,10 @@
 
 
 
+/**
+ * @author Muhammad Tarequzzaman |100954008|
+ *
+ */
 public class ElevatorSubSystem {
 
 	private static final int RECEIVE_PORT1 = 5248;
@@ -18,9 +22,9 @@ public class ElevatorSubSystem {
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
 		Elevator[] elevators = {E1, E2,E3,E4};
 		
-//		int[] ports = {RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1};
+		//int[] ports = {RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1};
 		// use MAINTENANCE_PORT to send a initial packet to scheduler  
-	//		try {
+		//try {
 				//>>> here<<<//
 		//		sendMaintenancePort(ports) ;
 		//	}catch (Exception e) {
@@ -38,6 +42,21 @@ public class ElevatorSubSystem {
 		}
 			
 		
+	}
+	public static int getReceivePort1() {
+		return RECEIVE_PORT1;
+	}
+	public static int getReceivePort2() {
+		return RECEIVE_PORT2;
+	}
+	public static int getReceivePort3() {
+		return RECEIVE_PORT3;
+	}
+	public static int getReceivePort4() {
+		return RECEIVE_PORT4;
+	}
+	public static int getFloors() {
+		return Floors;
 	}
 	
 	//public void sendMaintenancePort(int[]ports) {

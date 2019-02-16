@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author TZ-WORKSTATION
+ *
+ */
 public class Elevator extends Thread {
 	
 	
@@ -40,7 +44,7 @@ public class Elevator extends Thread {
 	private Boolean goingDOWN;
 
 	private DatagramPacket sendPacket, receivePacket; /* Packet */
-	private DatagramSocket  sendreceiveSocket; /* Socket */
+	private DatagramSocket  sendReceiveSocket; /* Socket */
 	/*---------------------------------------------------------------*/
 
 	/**
@@ -77,7 +81,7 @@ public class Elevator extends Thread {
 			receiveTaskList();
 			elevatorState();
 		}catch (Exception e) {
-			// TODO: handle exception
+			
 			System.out.println("Elevator run call problem \n");
 			e.printStackTrace();
 
@@ -86,13 +90,17 @@ public class Elevator extends Thread {
 		
 	}
 	
+	
+
+	
+
 	/**
 	 * Creating port for ELEVATOR
-	 * @param PORT_number
+	 * @param PORT_Number
 	 */
-	public void receiveSocketPortCreation(int PORT_number) {
+	public void receiveSocketPortCreation(int PORT_Number) {
 		try {
-			sendreceiveSocket = new DatagramSocket(PORT_number);
+			sendReceiveSocket = new DatagramSocket(PORT_Number);
 		} catch (SocketException se) {
 			System.out.println("Error in receiveSocketPort creation \n");
 			se.printStackTrace();
@@ -154,7 +162,7 @@ public class Elevator extends Thread {
 
 			case Run: // Run
 
-				System.out.printf(" Elevator's Next Destination is : %d\n", nextFloor);
+				System.out.printf(" Elevator#: %d Next Destination is : %d\n", getElevatorNumber(),nextFloor);
 
 				runToNextFloor();
 
@@ -218,11 +226,11 @@ public class Elevator extends Thread {
 	/**
 	 * runMotor for a time
 	 */
-	public synchronized void runMotor() {
+	public  void runMotor() {
 		try {
 
 			TimeUnit.SECONDS.sleep(Elevator.timeBtwFloors);
-			wait(timeBtwFloors);
+			//wait(timeBtwFloors);
 		} catch (InterruptedException e) {
 
 			System.out.printf("Some Error in runMotor on Elevator#: %d\n", getElevatorNumber());
@@ -415,13 +423,13 @@ public class Elevator extends Thread {
 	 * Send and receive data from Scheduler system.
 	 */
 
-	public synchronized void receiveTaskList() {
+	public  void receiveTaskList() {
 		byte[] data = new byte[Elevator.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
 		// Receive datagram socket from floor subsystem
 		try {
-			sendreceiveSocket.receive(receivePacket);
+			sendReceiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -429,7 +437,7 @@ public class Elevator extends Thread {
 
 		nextFloorList = byteArrayToList(data);
 		// no need to update nextFloor here
-		notify();
+		//notify();
 
 	}
 
@@ -459,7 +467,7 @@ public class Elevator extends Thread {
 
 
 		try {
-			sendreceiveSocket.send(sendPacket);
+			sendReceiveSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -533,5 +541,56 @@ public class Elevator extends Thread {
 	public Boolean isGoingUP() {
 		return goingUP;
 	}
+	public DatagramSocket getSendreceiveSocket() {
+		return sendReceiveSocket;
+	}
 
+	public static int getDoorDelay() {
+		return doorDelay;
+	}
+
+	public static void setDoorDelay(int doorDelay) {
+		Elevator.doorDelay = doorDelay;
+	}
+
+	public static int getSCHEDULER_SEND_PORT() {
+		return SCHEDULER_SEND_PORT;
+	}
+
+	public static void setSCHEDULER_SEND_PORT(int sCHEDULER_SEND_PORT) {
+		SCHEDULER_SEND_PORT = sCHEDULER_SEND_PORT;
+	}
+
+	public ArrayList<Integer> getNextFloorList() {
+		return nextFloorList;
+	}
+
+	public void setNextFloorList(ArrayList<Integer> nextFloorList) {
+		this.nextFloorList = nextFloorList;
+	}
+
+	public Boolean getDooropen() {
+		return dooropen;
+	}
+
+	public void setDooropen(Boolean dooropen) {
+		this.dooropen = dooropen;
+	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
+	}
+
+	public Boolean getGoingUP() {
+		return goingUP;
+	}
+
+	public Boolean getGoingDOWN() {
+		return goingDOWN;
+	}
+
+	public void setElevatorNumber(int elevatorNumber) {
+		this.elevatorNumber = elevatorNumber;
+	}
+	
 }
