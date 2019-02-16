@@ -17,7 +17,12 @@ import java.util.concurrent.TimeUnit;
  * @author Muhammad Tarequzzaman |100954008|
  *
  */
+
+	
+	
+
 public class Elevator extends Thread {
+
 
 	private static final int BYTE_SIZE = 6400;
 	static private int timeBtwFloors = 4; // time as Canal building main Elevators
@@ -53,7 +58,7 @@ public class Elevator extends Thread {
 	 */
 	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
 
-		System.out.println("ElevatorSubSystem running...Waiting for the requests from the Scheduler \n");
+		//System.out.println("ElevatorSubSystem running...Waiting for the requests from the Scheduler \n");
 
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[numberofFloorbuttons]));

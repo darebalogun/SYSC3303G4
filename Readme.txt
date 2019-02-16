@@ -61,7 +61,8 @@ ElevatorSubSystem.java:
 ElevatorSubSystemTest.java:
 	
 	-> This file contains the ElevatorSubSystemTest class 
-	-> Contain a Junit tests for the system. It tests if the ElevatorSubsystem constructor creates the appropriate object
+	-> Contains the Junit tests for the system
+	-> It tests if the ElevatorSubsystem constructor creates the appropriate object
 
 InputEvent.java:-
 
@@ -84,9 +85,9 @@ UML_DIAGRAM:-
 
 	-> Contains the UML class diagrams for the system
 
-STATE_MACHINE_DIAGRAM:-
+SEQUENCE_DIAGRAM:-
 
-	-> Contains the State diagrams for the ElevatorSubSystem and Scheduler
+	-> Contains the sequence diagram for the system
 
 
 
