@@ -118,7 +118,7 @@ public class Elevator extends Thread {
 			switch (state) {
 
 			case Ready: // Ready state
-				System.out.print("\n System Ready \n");
+				System.out.printf("\n Elevator#: %d Ready \n",getElevatorNumber());
 				ACTIVE = true;
 				state = State.Idle;
 				break; // end Ready
@@ -134,7 +134,7 @@ public class Elevator extends Thread {
 
 				} else {
 					state = State.UpdateInput;
-					System.out.printf(" Idle at floor %d \n", currentFloor);
+					System.out.printf("\n Elevator#: %d Idle at floor %d \n", getElevatorNumber(),currentFloor);
 
 				}
 
@@ -165,7 +165,7 @@ public class Elevator extends Thread {
 			case Arrived: // Arrived
 				if (currentFloor == nextFloor) { // later we will use here
 
-					System.out.printf(" Elevator Arrived at floor: %d \n", currentFloor);
+					System.out.printf(" Elevator#: %d Arrived at floor: %d \n", getElevatorNumber(),currentFloor);
 					sendArrivalInfo();
 					elevatorOpendDoorAtFloor(currentFloor);
 					elevatorCloseDoorAtFloor(currentFloor);
@@ -194,8 +194,9 @@ public class Elevator extends Thread {
 
 		// running until next floor
 		while (currentFloor != nextFloor) {
-			System.out.printf(" Currently at floor: %d \n", currentFloor);
 			updateGoing_UPorDOWN();
+			System.out.printf(" Elevator:# %d Currently at floor: %d \n",getElevatorNumber(), currentFloor);
+			
 			// System.out.printf(" Next Floor %d \n", nextFloor);
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
@@ -215,14 +216,14 @@ public class Elevator extends Thread {
 	/**
 	 * runMotor for a time
 	 */
-	public void runMotor() {
+	public synchronized void runMotor() {
 		try {
 
 			TimeUnit.SECONDS.sleep(Elevator.timeBtwFloors);
+			wait(timeBtwFloors);
+		} catch (InterruptedException e) {
 
-		} catch (Exception e) {
-
-			System.out.println("Some Error in runMotor \n");
+			System.out.printf("Some Error in runMotor on Elevator#: %d\n", getElevatorNumber());
 			e.printStackTrace();
 		}
 
@@ -236,17 +237,17 @@ public class Elevator extends Thread {
 		if (currentFloor <= nextFloor) {
 			setGoingUP(true);
 			setGoingDOWN(false);
-			System.out.println(" Elevator Going UP \n");
+			System.out.printf(" Elevator#: %d  Going UP \n",getElevatorNumber());
 
 		} else if (currentFloor > nextFloor) {
 			setGoingUP(false);
 			setGoingDOWN(true);
-			System.out.println(" Elevator Going DOWN \n");
+			System.out.printf(" Elevator:# %d Going DOWN \n",getElevatorNumber());
 
 		} else if (currentFloor == nextFloor) {
 			setGoingUP(false);
 			setGoingDOWN(false);
-			System.out.println("Elevator Standby \n");
+			System.out.printf("Elevator:# %d Standby \n", getElevatorNumber());
 		} else if (isGoingUP() == isGoingDOWN()) {
 			setGoingUP(false);
 			setGoingDOWN(false);
@@ -265,7 +266,7 @@ public class Elevator extends Thread {
 			// System.out.printf(" NEXT Floor %d \n", nextFloor);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
-			System.out.println("Elevator Cureent Floor Number out of the range \n");
+			System.out.printf("Elevator#: %d Cureent Floor Number out of the range \n", getElevatorNumber());
 
 		}
 	}
@@ -301,10 +302,10 @@ public class Elevator extends Thread {
 		try {
 			TimeUnit.SECONDS.sleep(Elevator.doorDelay);
 			setDoorState(true);
-			System.out.println(" Elevator door opening \n");
+			System.out.printf(" Elevator#: %d door opening \n", getElevatorNumber());
 		} catch (InterruptedException e) {
 
-			System.out.println("Some Error in Opening Door \n");
+			System.out.printf("Some Error in Opening Door in Elevator#: %d \n", getElevatorNumber());
 
 			e.printStackTrace();
 		}
@@ -318,9 +319,9 @@ public class Elevator extends Thread {
 		try {
 			TimeUnit.SECONDS.sleep(Elevator.doorDelay);
 			setDoorState(false);
-			System.out.println(" Elevator door closing \n");
+			System.out.printf(" Elevator#: %d door closing \n", getElevatorNumber());
 		} catch (InterruptedException e) {
-			System.out.println(" Some Error in Closing Door \n");
+			System.out.printf("Some Error in Closing Door in Elevator#: %d \n", getElevatorNumber());
 			e.printStackTrace();
 		}
 
@@ -412,7 +413,7 @@ public class Elevator extends Thread {
 	 * Send and receive data from Scheduler system.
 	 */
 
-	public void receiveTaskList() {
+	public synchronized void receiveTaskList() {
 		byte[] data = new byte[Elevator.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
@@ -426,6 +427,7 @@ public class Elevator extends Thread {
 
 		nextFloorList = byteArrayToList(data);
 		// no need to update nextFloor here
+		notify();
 
 	}
 
@@ -469,7 +471,7 @@ public class Elevator extends Thread {
 
 		sendSocket.close();
 
-		System.out.println(" Arrival info sent to Scheduler\n");
+		System.out.printf(" Elevator#: %d Arrival info sent to Scheduler\n", getElevatorNumber());
 	}
 
 	/* GET AND SET from here */
