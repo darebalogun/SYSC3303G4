@@ -5,7 +5,7 @@ L5G4_milestone_1
 Member: 
 
 	1. Muhammad Tarequzzaman | 100954008
-	Responsiblities: ElevatorSubSystem.java, Elevator.java and ElevatorSubSystemTest.java.
+	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java.
 	2. Sama Adil Sheikh | 101060020
 	Responsiblities: Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
