@@ -67,7 +67,7 @@
   </class>  
   <class id="8" language="java" name="Pair" project="Project1" file="/Project1/src/Pair.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="516" y="-266"/>    
+    <position height="-1" width="-1" x="495" y="-347"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
