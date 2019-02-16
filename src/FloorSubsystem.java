@@ -144,16 +144,24 @@ public class FloorSubsystem {
 			currentLine++;
 		}
 		
-		for (String inputEvent: inputEventArrayList) {
+		out:
+		for (int i = 0; i < inputEventArrayList.size(); i++) {
+			
+			String inputEvent = inputEventArrayList.get(i);
 		
 		// For each floor starting from the current line saved in the floor subsystem read and parse
 		// the string
 		for (int floorNum = 1; floorNum <= FLOOR_COUNT; floorNum++) {
 
 				String[] inputEvents = inputEvent.split(" ");
-
-				Integer currentFloor = Integer.parseInt(inputEvents[1]);
-
+		
+				Integer currentFloor = null;
+				try {
+					currentFloor = Integer.parseInt(inputEvents[1]);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					break out;
+				}
+				
 				if (floorNum == currentFloor) {
 
 					// Input event starts with a string of the time log followed by whitespace
@@ -183,6 +191,7 @@ public class FloorSubsystem {
 					System.out.print(" From: " + currentFloor);
 					System.out.println(" Destination: " + destinationFloor);
 				}
+				
 			}
 		
 		}
