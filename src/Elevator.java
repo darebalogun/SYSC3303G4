@@ -16,8 +16,12 @@ import java.util.concurrent.TimeUnit;
 import javax.print.attribute.standard.MediaSize.Other;
 
 /**
+ * <blockquote> This Thread Class represent Elevator as a unit, to run this unit use ElevatorSubSystem 
  * @author Muhammad Tarequzzaman |100954008|
- *
+ *  responsible for <b> Class Elevator  </b>
+ * @Coauthor Dare Balogun | 101062340| 
+ *  responsible for methods:
+ *	<b>PairToByteArray, byteArrayToList and sendArrivalInfo 
  */
 
 	
@@ -52,11 +56,14 @@ public class Elevator extends Thread {
 	private DatagramSocket sendReceiveSocket; /* Socket */
 	/*---------------------------------------------------------------*/
 
+	
 	/**
-	 * @param elevatorNumber       : Unique number to represent unique Elevator in
+	 * @param elevatorNumber	: Unique number to represent unique Elevator in
 	 *                             the system
 	 * @param numberofFloorbuttons : number of button had to be install inside the
-	 *                             elevator for floors.
+	 *                             elevator for floors. same as FloorSubsystem
+	 * @param RECEIVE_PORT		: Unique Port Number
+	 * @param startFloor		: Default Staring Floor 
 	 */
 	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
 
@@ -84,33 +91,7 @@ public class Elevator extends Thread {
 		System.out.printf("Elevator E%d...Waiting for the requests from the Scheduler \n",elevatorNumber);
 
 	}
-	public void intit_GoingUp_Down(){
-		if(isGoingUP()==null || isGoingDOWN()==null) {
-			setGoingUP(false);
-			setGoingDOWN(false);
-		}else if (currentFloor <= nextFloor) {
-			setGoingUP(true);
-			setGoingDOWN(false);
-			
-
-		} else if (currentFloor > nextFloor) {
-			setGoingUP(false);
-			setGoingDOWN(true);
-			
-
-		} else if (currentFloor == nextFloor) {
-			setGoingUP(false);
-			setGoingDOWN(false);
-			System.out.printf("Elevator:# %d Standby \n", getElevatorNumber());
-		} else if (isGoingUP() == isGoingDOWN()) {
-			setGoingUP(false);
-			setGoingDOWN(false);
-		}else if(isGoingUP()==null || isGoingDOWN()==null) {
-			setGoingUP(false);
-			setGoingDOWN(false);
-		}
-		
-	}
+	
 
 	public void run() {
 
@@ -139,6 +120,34 @@ public class Elevator extends Thread {
 			se.printStackTrace();
 			System.exit(1);
 		}
+	}
+	
+	public void intit_GoingUp_Down(){
+		if(isGoingUP()==null || isGoingDOWN()==null) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}else if (currentFloor <= nextFloor) {
+			setGoingUP(true);
+			setGoingDOWN(false);
+			
+
+		} else if (currentFloor > nextFloor) {
+			setGoingUP(false);
+			setGoingDOWN(true);
+			
+
+		} else if (currentFloor == nextFloor) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+			System.out.printf("Elevator#: %d Standby \n", getElevatorNumber());
+		} else if (isGoingUP() == isGoingDOWN()) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}else if(isGoingUP()==null || isGoingDOWN()==null) {
+			setGoingUP(false);
+			setGoingDOWN(false);
+		}
+		
 	}
 
 	/*---------------------------------------------------------------*/
@@ -175,7 +184,7 @@ public class Elevator extends Thread {
 
 				} else {
 					state = State.UpdateInput;
-					System.out.printf("\n Elevator#: %d Idle at floor %d \n", getElevatorNumber(), currentFloor);
+					System.out.printf("\n Elevator#: %d Idle at Floor: %d \n", getElevatorNumber(), currentFloor);
 
 				}
 
@@ -206,7 +215,7 @@ public class Elevator extends Thread {
 				break; // end Run
 
 			case Arrived: // Arrived
-				if (currentFloor == nextFloor) { // later we will use here
+				if (currentFloor == nextFloor) { 
 
 					System.out.printf(" Elevator#: %d Arrived at floor: %d \n", getElevatorNumber(), currentFloor);
 					sendArrivalInfo();
@@ -265,7 +274,7 @@ public class Elevator extends Thread {
 		try {
 
 			TimeUnit.SECONDS.sleep(Elevator.timeBtwFloors);
-			// wait(timeBtwFloors);
+			
 		} catch (InterruptedException e) {
 
 			System.out.printf("Some Error in runMotor on Elevator#: %d\n", getElevatorNumber());
@@ -282,17 +291,17 @@ public class Elevator extends Thread {
 		if (currentFloor <= nextFloor) {
 			setGoingUP(true);
 			setGoingDOWN(false);
-			System.out.printf(" Elevator#: %d  Going UP \n", getElevatorNumber());
+			System.out.printf(" Elevator#: %d Going UP \n", getElevatorNumber());
 
 		} else if (currentFloor > nextFloor) {
 			setGoingUP(false);
 			setGoingDOWN(true);
-			System.out.printf(" Elevator:# %d Going DOWN \n", getElevatorNumber());
+			System.out.printf(" Elevator#: %d Going DOWN \n", getElevatorNumber());
 
 		} else if (currentFloor == nextFloor) {
 			setGoingUP(false);
 			setGoingDOWN(false);
-			System.out.printf("Elevator:# %d Standby \n", getElevatorNumber());
+			System.out.printf("Elevator#: %d Standby \n", getElevatorNumber());
 		} else if (isGoingUP() == isGoingDOWN()) {
 			setGoingUP(false);
 			setGoingDOWN(false);
@@ -347,7 +356,7 @@ public class Elevator extends Thread {
 		try {
 			TimeUnit.SECONDS.sleep(Elevator.doorDelay);
 			setDoorState(true);
-			System.out.printf(" Elevator#: %d door opening \n", getElevatorNumber());
+			System.out.printf(" Elevator#: %d Door Opening \n", getElevatorNumber());
 		} catch (InterruptedException e) {
 
 			System.out.printf("Some Error in Opening Door in Elevator#: %d \n", getElevatorNumber());
@@ -364,7 +373,7 @@ public class Elevator extends Thread {
 		try {
 			TimeUnit.SECONDS.sleep(Elevator.doorDelay);
 			setDoorState(false);
-			System.out.printf(" Elevator#: %d door closing \n", getElevatorNumber());
+			System.out.printf(" Elevator#: %d Door Closing\n", getElevatorNumber());
 		} catch (InterruptedException e) {
 			System.out.printf("Some Error in Closing Door in Elevator#: %d \n", getElevatorNumber());
 			e.printStackTrace();
@@ -395,7 +404,7 @@ public class Elevator extends Thread {
 	}
 
 	/*---------------------------------------------------------------*/
-
+	/*Start @coauthor*/
 	/**
 	 * @param i
 	 * @return Byte Array from integer value
@@ -458,21 +467,20 @@ public class Elevator extends Thread {
 	 * Send and receive data from Scheduler system.
 	 */
 
-	public synchronized void receiveTaskList() {
+	public synchronized void receiveTaskList() { // Re factor by @author 
 		byte[] data = new byte[Elevator.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
-		// Receive datagram socket from floor subsystem
+		// Receive datagram socket from Scheduler
 		try {
 			sendReceiveSocket.receive(receivePacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-
+		// update next floor 
 		nextFloorList = byteArrayToList(data);
-		// no need to update nextFloor here
-		// notify();
+		
 
 	}
 
@@ -509,6 +517,8 @@ public class Elevator extends Thread {
 		System.out.printf(" Elevator#: %d Arrival info sent to Scheduler\n", getElevatorNumber());
 
 	}
+	/*END @coauthor*/
+	/*-------------------------------------------------------------------------*/
 
 	/* GET AND SET from here */
 	public ArrayList<Boolean> getButtonList() {

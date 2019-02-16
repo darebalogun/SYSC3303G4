@@ -2,8 +2,10 @@
 
 
 /**
+ * <blockquote>  Run this to start Elevator SubSystem to ensure thread running of multiple elevator 
  * @author Muhammad Tarequzzaman |100954008|
- *
+ *  responsible for <b> Entire Elevator System</b> 
+ *  
  */
 public class ElevatorSubSystem {
 
@@ -22,14 +24,7 @@ public class ElevatorSubSystem {
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
 		Elevator[] elevators = {E1, E2,E3,E4};
 		
-		//int[] ports = {RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1,RECEIVE_PORT1};
-		// use MAINTENANCE_PORT to send a initial packet to scheduler  
-		//try {
-				//>>> here<<<//
-		//		sendMaintenancePort(ports) ;
-		//	}catch (Exception e) {
-				// TODO: handle exception
-		//	}
+	
 			
 		for (Elevator E : elevators) { // start all elevator
 			try {
@@ -59,10 +54,6 @@ public class ElevatorSubSystem {
 		return Floors;
 	}
 	
-	//public void sendMaintenancePort(int[]ports) {
-		// please implement send ports to scheduler here 
-		
-//	}
 	
 	
 	
