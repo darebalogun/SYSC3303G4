@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -415,7 +416,7 @@ public class FloorSubsystem {
 				for (int i = 0; i < 5; i++) {
 					s.addRandomInput();
 					Random rand = new Random();
-					int n = rand.nextInt(4);
+					int n = rand.nextInt(10);
 					try {
 						TimeUnit.SECONDS.sleep(n);
 					} catch (InterruptedException e) {

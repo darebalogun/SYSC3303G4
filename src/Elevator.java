@@ -70,6 +70,16 @@ public class Elevator extends Thread {
 		currentFloor = startFloor;
 
 		receiveSocketPortCreation(RECEIVE_PORT);
+		
+		goingUP = true;
+		goingDOWN = false;
+		
+		if (startFloor > 1) {
+			goingUP = false;
+			goingDOWN = true;
+		}
+			
+		
 
 	}
 
@@ -443,12 +453,11 @@ public class Elevator extends Thread {
 	public void sendArrivalInfo() {
 
 		Pair pair;
-		updateGoing_UPorDOWN();
 		if (goingUP) {
 			pair = new Pair("up", currentFloor);
 		} else {
 			pair = new Pair("down", currentFloor);
-		}
+		} 
 
 		byte[] data = PairToByteArray(pair);
 
