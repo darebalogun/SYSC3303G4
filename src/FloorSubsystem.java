@@ -96,20 +96,16 @@ public class FloorSubsystem {
 		}
 
 		// Turn buttons off
-		this.upButton = false;
 
-		this.downButton = false;
-
-		this.elevatorPresent = false;
 
 		System.out.println("\nStarting " + FLOOR_COUNT + " floors");
 
 	}
 
 	/** true if the elevator is present on the current floor **/
-	public boolean isElevatorPresent() {
-		return elevatorPresent;
-	}
+//	public boolean isElevatorPresent() {
+//		return elevatorPresent;
+//	}
 
 	public synchronized void readInputEvent() {
 		while (ready) {
@@ -293,11 +289,11 @@ public class FloorSubsystem {
 			if (pair.getInteger() == floorNum) {
 
 				String s = pair.getString();
-				if (s == "up") {
-					this.setUpLamp(false);
-				} else {
-					this.setDownLamp(false);
-				}
+//				if (s == "up") {
+//					this.setUpLamp(false);
+//				} else {
+//					this.setDownLamp(false);
+//				}
 
 				System.out.println("An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
 			}
@@ -383,21 +379,21 @@ public class FloorSubsystem {
 	}
 
 	
-	public boolean isUpLamp() {
-		return upLamp;
-	}
-
-	public void setUpLamp(boolean upLamp) {
-		this.upLamp = upLamp;
-	}
-
-	public boolean isDownLamp() {
-		return downLamp;
-	}
-
-	public void setDownLamp(boolean downLamp) {
-		this.downLamp = downLamp;
-	}
+//	public boolean isUpLamp() {
+//		return upLamp;
+//	}
+//
+//	public void setUpLamp(boolean upLamp) {
+//		this.upLamp = upLamp;
+//	}
+//
+//	public boolean isDownLamp() {
+//		return downLamp;
+//	}
+//
+//	public void setDownLamp(boolean downLamp) {
+//		this.downLamp = downLamp;
+//	}
 
 	public static void main(String[] args) {
 
