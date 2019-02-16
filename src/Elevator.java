@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author TZ-WORKSTATION
  *
  */
-public class Elevator extends Thread {
+public class  extends Thread {
 	
 	
 

@@ -29,7 +29,7 @@ import java.util.Iterator;
  * 
  */
 
-public class Scheduler {
+public class  {
 
 	private final int ELEVATOR_COUNT = 4;
 
