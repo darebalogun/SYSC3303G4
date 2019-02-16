@@ -7,14 +7,14 @@ Member:
 	1. Muhammad Tarequzzaman | 100954008
 	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java.
 	2. Sama Adil Sheikh | 101060020
-	Responsiblities: Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
+	Responsiblities: Sequence Diagram, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
 	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
 	4. Dare Balogun | 101062340
 	Responsiblilities: FloorSubSystem.java, InputEvents.java, Pair.java, Scheduler.java and co-author of methods 
 						(PairToByteArray, byteArrayToList and sendArrivalInfo)  in Elevator.
 	5. Mrunal Patel | 101001748
-	Responsibilities: State Machine Diagram
+	Responsibilities: Worked on on UML Diagrams and Scheduler.java.
 
 
 SetUp Instructions:-
@@ -58,7 +58,7 @@ ElevatorSubSystem.java:
 Elevator.java:
 
 	-> It receives and send Datagram packets to the Scheduler using UDP communication
-	-> Runs as an individual thread for each instance and recive information from schedulers. 	
+	-> Runs as an individual thread for each instance and receive information from schedulers. 	
 	-> It's functional features include opening/closing the door, buttons and lamps for floors,
 	time delay between the opening/closing of the door and time delay in between floors.
 	-> TearDown after test 
@@ -66,7 +66,7 @@ Elevator.java:
 ElevatorSubSystemTest.java:
 	
 	-> This file contains the ElevatorSubSystemTest class 
-	-> Contains the Junit tests for the system
+	-> Contains the JUnit tests for the system
 	-> It tests if the ElevatorSubsystem constructor creates the appropriate object
 
 ElevatorTest.java:
