@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 /**
  * @author Muhammad Tarequzzaman |100954008|
  *
@@ -29,15 +31,15 @@ public class Elevator extends Thread {
 	static private int doorDelay = 2;
 
 	// private static int RECEIVE_PORT = 50002;
-	public int RECEIVE_PORT = 0;
+	
 	private static int SCHEDULER_SEND_PORT = 60006;
 
 	// nth Elevator number, DO NOT PUT Same number as some other instance;
 	private int elevatorNumber;
-	public ArrayList<Boolean> buttonList;
-	public ArrayList<Boolean> elevatorLamp;
+	private ArrayList<Boolean> buttonList;
+	private ArrayList<Boolean> elevatorLamp;
 	private ArrayList<Integer> nextFloorList;
-	public Boolean ACTIVE = true;
+	private Boolean ACTIVE = true;
 	private Boolean dooropen;
 
 	private int currentFloor;
@@ -70,6 +72,7 @@ public class Elevator extends Thread {
 
 		// basic implementation
 		dooropen = false;
+		
 		this.elevatorNumber = elevatorNumber;
 
 		currentFloor = startFloor;
