@@ -54,6 +54,16 @@ public class InputEvent implements Serializable,Comparable<InputEvent> {
 	public int compareTo(InputEvent event) {
 		return (this.getDestinationFloor() < event.getDestinationFloor() ? -1 : (this.getDestinationFloor() == event.getDestinationFloor() ? 0 : 1));
 	}
+	
+	@Override
+	public boolean equals (Object o) {
+		if (o == null) return false;
+		if (o == this) return true;
+		if (!(o instanceof InputEvent)) return false;
+		InputEvent e = (InputEvent) o;
+		return (this.getCurrentFloor() == e.getCurrentFloor() & this.getDestinationFloor() == e.getDestinationFloor());
+		
+	}
 
 	public Integer getCurrentFloor() {
 		return currentFloor;

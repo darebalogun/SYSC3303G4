@@ -57,16 +57,16 @@ public class FloorSubsystem {
 	public static final int FLOOR_COUNT = 5;
 
 	// Button indicate which direction requests have been made for
-	public boolean upButton, downButton;
+	public ArrayList<Boolean> upButton, downButton;
 
 	// to check if the elevator door is open or closed
-	private boolean doorOpen, doorClosed;
+	private ArrayList<Boolean> doorOpen, doorClosed;
 
 	// Up and Down lamps on the floor's elevator buttons
-	private boolean upLamp, downLamp;
+	private ArrayList<Boolean> upLamp, downLamp;
 
 	// to check if elevator is currently present on the floor
-	public boolean elevatorPresent;
+	public ArrayList<Boolean> elevatorPresent;
 
 	/**
 	 * Constructor for the floor subsystem
@@ -96,20 +96,16 @@ public class FloorSubsystem {
 		}
 
 		// Turn buttons off
-		this.upButton = false;
 
-		this.downButton = false;
-
-		this.elevatorPresent = false;
 
 		System.out.println("\nStarting " + FLOOR_COUNT + " floors");
 
 	}
 
 	/** true if the elevator is present on the current floor **/
-	public boolean isElevatorPresent() {
-		return elevatorPresent;
-	}
+//	public boolean isElevatorPresent() {
+//		return elevatorPresent;
+//	}
 
 	public synchronized void readInputEvent() {
 		while (ready) {
@@ -293,11 +289,11 @@ public class FloorSubsystem {
 			if (pair.getInteger() == floorNum) {
 
 				String s = pair.getString();
-				if (s == "up") {
-					this.setUpLamp(false);
-				} else {
-					this.setDownLamp(false);
-				}
+//				if (s == "up") {
+//					this.setUpLamp(false);
+//				} else {
+//					this.setDownLamp(false);
+//				}
 
 				System.out.println("An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
 			}
@@ -383,21 +379,21 @@ public class FloorSubsystem {
 	}
 
 	
-	public boolean isUpLamp() {
-		return upLamp;
-	}
-
-	public void setUpLamp(boolean upLamp) {
-		this.upLamp = upLamp;
-	}
-
-	public boolean isDownLamp() {
-		return downLamp;
-	}
-
-	public void setDownLamp(boolean downLamp) {
-		this.downLamp = downLamp;
-	}
+//	public boolean isUpLamp() {
+//		return upLamp;
+//	}
+//
+//	public void setUpLamp(boolean upLamp) {
+//		this.upLamp = upLamp;
+//	}
+//
+//	public boolean isDownLamp() {
+//		return downLamp;
+//	}
+//
+//	public void setDownLamp(boolean downLamp) {
+//		this.downLamp = downLamp;
+//	}
 
 	public static void main(String[] args) {
 
