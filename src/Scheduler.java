@@ -273,6 +273,7 @@ public class  Scheduler{
 
 	}
 
+	// Finds the closest value to an integer in an arraylist
 	public int closest(Integer request, ArrayList<Integer> positionList) {
 		Integer dist = Math.abs(positionList.get(0) - request);
 		int closestIndex = 0;
