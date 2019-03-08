@@ -23,7 +23,7 @@ import java.time.LocalTime;
  * @author Muhammad Tarequzzaman |100954008| responsible for <b> Class Elevator
  *         </b>
  * @Coauthor Dare Balogun | 101062340| responsible for methods:
- *           <b>PairToByteArray, byteArrayToList and 
+ *           <b>PairToByteArray, byteArrayToList  
  */
 
 public class Elevator extends Thread {
