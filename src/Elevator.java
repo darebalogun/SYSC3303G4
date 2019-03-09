@@ -657,18 +657,10 @@ public class Elevator extends Thread {
 	//------------------------------------------------------------------------------------------------------//
 	
 	private static final String INPUT_PATH = "src/InputEvents.txt";
-	private boolean canRead = true;
 	private int currentLine = 0;
 	private boolean moreToRead;
 	
 	public synchronized void ElevatorInputGenerator () {
-		while (canRead) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 		
 		Path path = Paths.get(INPUT_PATH);
 		
@@ -691,9 +683,18 @@ public class Elevator extends Thread {
 		}
 		
 		for (int i = 0; i < inputArrayList.size(); i++) {
+			String inputElevatorEvent = inputArrayList.get(i);
+			String[] inputEvents = inputElevatorEvent.split(" ");
 			
-		}
+			if ("e" + String.valueOf(elevatorNumber) == inputEvents [1]) {
+					ArrayList <Integer> userDest = new ArrayList<Integer>(1);
+					userDest.add(Integer.parseInt(inputEvents[2]));
+					setNextFloorList(userDest);
+				}
+			}
 		
+		notifyAll();
+		return;
 		
 	}
 }
