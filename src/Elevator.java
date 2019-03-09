@@ -8,11 +8,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import java.time.Instant;
 import java.time.LocalTime;
 
@@ -648,5 +653,47 @@ public class Elevator extends Thread {
 	public void setElevatorNumber(int elevatorNumber) {
 		this.elevatorNumber = elevatorNumber;
 	}
-
+	
+	//------------------------------------------------------------------------------------------------------//
+	
+	private static final String INPUT_PATH = "src/InputEvents.txt";
+	private boolean canRead = true;
+	private int currentLine = 0;
+	private boolean moreToRead;
+	
+	public synchronized void ElevatorInputGenerator () {
+		while (canRead) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Path path = Paths.get(INPUT_PATH);
+		
+		ArrayList<String> 	inputArrayList = new ArrayList<String>();
+		moreToRead = true;
+		
+		while (moreToRead) {
+			try (Stream<String> lines = Files.lines(path)) {
+				try {
+					inputArrayList.add(lines.skip(currentLine).findFirst().get());				
+				}catch (NoSuchElementException e) {
+					moreToRead = false;
+					lines.close();
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			currentLine++;
+		}
+		
+		for (int i = 0; i < inputArrayList.size(); i++) {
+			
+		}
+		
+		
+	}
 }
