@@ -1,6 +1,6 @@
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class ElevatorState implements Comparable<ElevatorState>{
+public class ElevatorState {
 	
 	private int number;
 	
@@ -91,11 +91,6 @@ public class ElevatorState implements Comparable<ElevatorState>{
 		if (this.taskList.isEmpty()) {
 			this.direction = Scheduler.Direction.IDLE;
 		}
-	}
-
-	@Override
-	public int compareTo(ElevatorState state) {
-		return (this.getNumber() - state.getNumber());
 	}
 	
 	
