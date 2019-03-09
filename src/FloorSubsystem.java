@@ -73,11 +73,10 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
-<<<<<<< HEAD
-=======
-		ready = false;
+
+	ready = false;
 		
->>>>>>> parent of 8ddda5d... Add System Test
+
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
 

@@ -660,13 +660,16 @@ public class Elevator extends Thread {
 	private int currentLine = 0;
 	private boolean moreToRead;
 	
-	public synchronized void ElevatorInputGenerator () {
+	public synchronized void ElevatorInputRead () {
 		
+		//get text file path
 		Path path = Paths.get(INPUT_PATH);
 		
 		ArrayList<String> 	inputArrayList = new ArrayList<String>();
 		moreToRead = true;
 		
+		
+		//iterate through the file and read each line
 		while (moreToRead) {
 			try (Stream<String> lines = Files.lines(path)) {
 				try {
