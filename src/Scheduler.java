@@ -8,6 +8,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -41,6 +46,8 @@ public class  Scheduler{
 	private Queue<InputEvent> eventList;
 
 	private ArrayList<ElevatorState> elevatorStates;
+	
+	private static final String INPUT_PATH = "src/InputEvents.txt";
 
 	// The following ArrayLists track the position of the elevators based on arrival information received from the elevator subsystem
 	private ArrayList<InputEvent> upRequests;
@@ -233,11 +240,11 @@ public class  Scheduler{
 			System.out.println(eventList.size());
 
 			while (!eventList.isEmpty()){
-				System.out.println(event.getCurrentFloor() + " " + event.getTime());
 				for (int i = 0; i < ELEVATOR_COUNT; i++) {
 					if (elevatorStates.get(i).getDirection() == Direction.UP) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
+							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -246,6 +253,7 @@ public class  Scheduler{
 					} else if (elevatorStates.get(i).getDirection() == Direction.DOWN) {
 						if ((event.getCurrentFloor() + diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
+							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -254,6 +262,7 @@ public class  Scheduler{
 					} else {
 						if (Math.abs(event.getCurrentFloor() - elevatorStates.get(i).getCurrentFloor()) == diff) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
+							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -275,6 +284,38 @@ public class  Scheduler{
 		Collections.sort(elevatorStates);
 		System.out.println(elevatorStates.get(0).getNumber());
 
+	}
+	
+	public void addElevatorToList(InputEvent event, Integer evNumber) {
+		Path path = Paths.get(INPUT_PATH);
+		
+		List<String> lines = null;
+		
+		try {
+			lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for (String line : lines) {
+			String[] splitLine = line.split(" ");
+			if (splitLine[0].equals(event.getTime())) {
+				int position = lines.indexOf(line);
+				String extraline = line + " e" + evNumber.toString();
+				lines.set(position, extraline);
+				System.out.println("Added");
+				break;
+			}
+		}
+		
+		try {
+			Files.write(path, lines, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 	}
 
 	// Finds the closest value to an integer in an arraylist
@@ -428,7 +469,7 @@ public class  Scheduler{
 				elevatorStates.get(0).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 1 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
+			System.out.println("Elevator 1 going has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5249:
 			//currentPositionList.set(1, arrival.getInteger());
@@ -444,7 +485,7 @@ public class  Scheduler{
 				elevatorStates.get(1).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 2 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
+			System.out.println("Elevator 2 has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5250:
 			//currentPositionList.set(2, arrival.getInteger());
@@ -460,7 +501,7 @@ public class  Scheduler{
 				elevatorStates.get(2).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 3 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
+			System.out.println("Elevator 3 has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5251:
 			
@@ -477,41 +518,10 @@ public class  Scheduler{
 				elevatorStates.get(3).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 4 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
+			System.out.println("Elevator 4 has arrived at floor: " + arrival.getInteger());
 			break;
 		}
 
-		synchronized (this) {
-			upList.clear();
-			upPosition.clear();
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				if (directionList.get(i) == Direction.UP) {
-					upList.add(i);
-					upPosition.add(currentPositionList.get(i));
-				}
-			}
-			if (upList.size() == 4) {
-				downList.add(upList.remove(3));
-				downPosition.add(upPosition.remove(3));
-			}	
-			notifyAll();
-		}
-
-		synchronized (this) {
-			downList.clear();
-			downPosition.clear();
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				if (directionList.get(i) == Direction.DOWN) {
-					downList.add(i);
-					downPosition.add(currentPositionList.get(i));
-				}
-			}
-			if (downList.size() == 4) {
-				upList.add(downList.remove(3));
-				upPosition.add(downPosition.remove(3));
-			}	
-			notifyAll();
-		}
 
 		byte[] sendData = data;
 
