@@ -9,11 +9,13 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.time.Instant;
@@ -659,7 +661,7 @@ public class Elevator extends Thread {
 	private int currentLine = 0;
 	private boolean moreToRead;
 	
-	public synchronized void floorInputGenerator () {
+	public synchronized void ElevatorInputGenerator () {
 		while (canRead) {
 			try {
 				wait();
@@ -677,10 +679,19 @@ public class Elevator extends Thread {
 			try (Stream<String> lines = Files.lines(path)) {
 				try {
 					inputArrayList.add(lines.skip(currentLine).findFirst().get());				
-				}catch (InterruptedException e) {
-					
+				}catch (NoSuchElementException e) {
+					moreToRead = false;
+					lines.close();
+					break;
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+			currentLine++;
+		}
+		
+		for (int i = 0; i < inputArrayList.size(); i++) {
+			
 		}
 		
 		
