@@ -23,8 +23,6 @@ public class ElevatorSubSystem {
 		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1);
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
 		Elevator[] elevators = {E1, E2,E3,E4};
-		
-	
 			
 		for (Elevator E : elevators) { // start all elevator
 			try {

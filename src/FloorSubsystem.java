@@ -175,17 +175,21 @@ public class FloorSubsystem {
 					}
 
 					// Finally an integer representing the requested destination
-					Integer destinationFloor = Integer.parseInt(inputEvents[3]);
+					//Integer destinationFloor = Integer.parseInt(inputEvents[3]);
 
 					// Create event object
-					InputEvent event = new InputEvent(time, floorNum, up, destinationFloor);
+					InputEvent event = new InputEvent(time, floorNum, up);
 
 					// Add to event object list
 					eventList.add(event);
 
 					System.out.print("Time: " + time);
 					System.out.print(" From: " + currentFloor);
-					System.out.println(" Destination: " + destinationFloor);
+					if (up) {
+						System.out.println(" Direction: " + "up");
+					} else {
+						System.out.println(" Direction: " + "down");
+					}
 				}
 				
 			}
