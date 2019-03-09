@@ -549,7 +549,7 @@ public class  Scheduler{
 	 * 
 	 * @param args
 	 */
-	public static void main() {
+	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
 
 		Thread receiveFromElevator = new Thread() {

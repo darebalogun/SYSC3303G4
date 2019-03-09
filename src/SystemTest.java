@@ -29,9 +29,6 @@ public class SystemTest {
 
 	@Test
 	public void test() {
-		ElevatorSubSystem.main();
-		Scheduler.main();
-		FloorSubsystem.main();
 		
 		//fail("Not yet implemented");
 	}

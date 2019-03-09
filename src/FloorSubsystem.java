@@ -70,7 +70,6 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
-		
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
 
@@ -335,7 +334,7 @@ public class FloorSubsystem {
 //		this.downLamp = downLamp;
 //	}
 
-	public static void main() {
+	public static void main(String[] args) {
 
 		FloorSubsystem s = new FloorSubsystem();
 
