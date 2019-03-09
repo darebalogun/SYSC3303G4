@@ -244,7 +244,6 @@ public class  Scheduler{
 					if (elevatorStates.get(i).getDirection() == Direction.UP) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -253,7 +252,6 @@ public class  Scheduler{
 					} else if (elevatorStates.get(i).getDirection() == Direction.DOWN) {
 						if ((event.getCurrentFloor() + diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -262,7 +260,6 @@ public class  Scheduler{
 					} else {
 						if (Math.abs(event.getCurrentFloor() - elevatorStates.get(i).getCurrentFloor()) == diff) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
 							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
@@ -284,38 +281,6 @@ public class  Scheduler{
 		Collections.sort(elevatorStates);
 		System.out.println(elevatorStates.get(0).getNumber());
 
-	}
-	
-	public void addElevatorToList(InputEvent event, Integer evNumber) {
-		Path path = Paths.get(INPUT_PATH);
-		
-		List<String> lines = null;
-		
-		try {
-			lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for (String line : lines) {
-			String[] splitLine = line.split(" ");
-			if (splitLine[0].equals(event.getTime())) {
-				int position = lines.indexOf(line);
-				String extraline = line + " e" + evNumber.toString();
-				lines.set(position, extraline);
-				System.out.println("Added");
-				break;
-			}
-		}
-		
-		try {
-			Files.write(path, lines, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
 	}
 
 	// Finds the closest value to an integer in an arraylist
@@ -584,7 +549,7 @@ public class  Scheduler{
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main() {
 		Scheduler s = new Scheduler();
 
 		Thread receiveFromElevator = new Thread() {

@@ -15,14 +15,12 @@ public class SystemTest {
 	@Before
 	public void setUp() throws Exception {
 		generateInput("1", "5");
-		Random rand = new Random();
-		int n = rand.nextInt(10);
-		try {
-			TimeUnit.SECONDS.sleep(n);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
+		randomDelay();
+		generateInput("1", "2");
+		randomDelay();
+		generateInput("4", "2");
+		randomDelay();
+		generateInput("5", "1");
 	}
 
 	@After
@@ -31,7 +29,11 @@ public class SystemTest {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		ElevatorSubSystem.main();
+		Scheduler.main();
+		FloorSubsystem.main();
+		
+		//fail("Not yet implemented");
 	}
 	
 	public void generateInput(String from, String to) {
@@ -55,6 +57,16 @@ public class SystemTest {
 			out.flush();
 			out.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void randomDelay() {
+		Random rand = new Random();
+		int n = rand.nextInt(7);
+		try {
+			TimeUnit.SECONDS.sleep(n);
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

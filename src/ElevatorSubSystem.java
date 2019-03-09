@@ -17,7 +17,7 @@ public class ElevatorSubSystem {
 	//private static final int MAINTENANCE_PORT = 5252;
 	
 	
-	public static void main(String[] args) {
+	public static void main() {
 		
 
 		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1);

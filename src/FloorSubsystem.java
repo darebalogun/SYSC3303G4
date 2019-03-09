@@ -35,9 +35,6 @@ public class FloorSubsystem {
 
 	// Datagram sockets used to send and receive packets to the Scheduler
 	private DatagramSocket sendReceive, receive;
-	
-	private boolean ready;
-
 	// SEND_PORT is the port on the scheduler where data is sent and RECIEVE_PORT is
 	// where the floor subsystem listens for incoming data
 	private static final int SEND_PORT = 60002, RECEIVE_PORT = 60004;
@@ -73,7 +70,6 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
-		ready = false;
 		
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
@@ -108,13 +104,6 @@ public class FloorSubsystem {
 //	}
 
 	public synchronized void readInputEvent() {
-		while (ready) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 		
 		Path path = Paths.get(INPUT_PATH);
 
@@ -195,9 +184,6 @@ public class FloorSubsystem {
 			}
 		
 		}
-		
-		ready = true;
-		notifyAll();
 		return;
 
 	}
@@ -333,56 +319,6 @@ public class FloorSubsystem {
 		return null;
 	}
 	
-	public synchronized void addRandomInput() {
-		while (!ready) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		String time = java.time.LocalTime.now().toString();
-		
-		Random rand = new Random();
-		
-		Integer n = rand.nextInt(5) + 1;
-		
-		String from = n.toString();
-		
-		Integer m = rand.nextInt(5) + 1;
-		
-		while (n == m) {
-			m = rand.nextInt(5) + 1;
-		}
-		
-		String to = m.toString();
-		
-		String direction;
-		
-		if (n > m) {
-			direction = "down";
-		} else {
-			direction = "up";
-		}
-		
-		String request = time + " " + from + " " + direction + " " + to;
-		
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/InputEvents.txt", true));
-			out.newLine();
-			out.write(request);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		ready = false;
-		notifyAll();
-	}
-
-	
 //	public boolean isUpLamp() {
 //		return upLamp;
 //	}
@@ -399,7 +335,7 @@ public class FloorSubsystem {
 //		this.downLamp = downLamp;
 //	}
 
-	public static void main(String[] args) {
+	public static void main() {
 
 		FloorSubsystem s = new FloorSubsystem();
 
@@ -420,23 +356,8 @@ public class FloorSubsystem {
 			}
 		};
 		
-		Thread simulateInput = new Thread() {
-			public void run() {
-				for (int i = 0; i < 5; i++) {
-					s.addRandomInput();
-					Random rand = new Random();
-					int n = rand.nextInt(10);
-					try {
-						TimeUnit.SECONDS.sleep(n);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		};
 
 		readSendInput.start();
 		receiveFromScheduler.start();
-		simulateInput.start();
 	}
 }
