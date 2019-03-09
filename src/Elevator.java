@@ -42,6 +42,7 @@ public class Elevator extends Thread {
 	private ArrayList<Boolean> buttonList;
 	private ArrayList<Boolean> elevatorLamp;
 	private ArrayList<Integer> nextFloorList;
+	private Scheduler.Direction nextDirection;
 	private Boolean ACTIVE = true;
 	private Boolean dooropen;
 
@@ -79,6 +80,8 @@ public class Elevator extends Thread {
 		this.elevatorNumber = elevatorNumber;
 
 		currentFloor = startFloor;
+		
+		this.nextDirection = Scheduler.Direction.IDLE;
 
 		receiveSocketPortCreation(RECEIVE_PORT);
 
@@ -146,7 +149,7 @@ public class Elevator extends Thread {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
 
-				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
+				if (nextDirection != Scheduler.Direction.IDLE | (currentFloor != nextFloor)) {
 					updateNextFloor();
 					state = State.RUN;
 
@@ -193,13 +196,6 @@ public class Elevator extends Thread {
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d Arrived at floor: %d \n",
 							getElevatorNumber(), currentFloor);
 					sendArrivalInfo();
-					elevatorOpendDoorAtFloor(currentFloor);
-					elevatorCloseDoorAtFloor(currentFloor);
-					if (nextFloorList.size() != 0) {
-						nextFloor = nextFloorList.remove(0);
-
-					}
-
 				}
 
 				state = State.STANDBY;
@@ -301,12 +297,15 @@ public class Elevator extends Thread {
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
 	public void updateNextFloor() {// change accordingly
-		if (nextFloorList.size() > 0) {
+		if (nextDirection == Scheduler.Direction.UP) {
 			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
 			// packet command
-			nextFloor = nextFloorList.get(0);
+			nextFloor = currentFloor + 1;
 			// System.out.printf(" NEXT Floor %d \n", nextFloor);
+		} else if (nextDirection == Scheduler.Direction.DOWN) {
+			nextFloor = currentFloor - 1;
 		}
+		
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.printf(LocalTime.now().toString() + "Elevator#: %d Cureent Floor Number out of the range \n",
 					getElevatorNumber());
@@ -429,7 +428,7 @@ public class Elevator extends Thread {
 	 * 		Converts bytes packets to ArrayList
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList<Integer> byteArrayToList(byte[] data) {
+	private Scheduler.Direction byteArrayToDirection(byte[] data) {
 
 		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 		ObjectInputStream objStream = null;
@@ -441,7 +440,7 @@ public class Elevator extends Thread {
 		}
 
 		try {
-			return (ArrayList<Integer>) objStream.readObject();
+			return (Scheduler.Direction) objStream.readObject();
 		} catch (ClassNotFoundException e) {
 			// Class not found
 			e.printStackTrace();
@@ -470,7 +469,7 @@ public class Elevator extends Thread {
 			System.exit(1);
 		}
 		// update next floor
-		nextFloorList = byteArrayToList(data);
+		nextDirection = byteArrayToDirection(data);
 
 	}
 
@@ -485,11 +484,10 @@ public class Elevator extends Thread {
 		} else if (goingUP == false && goingDOWN == true) {
 			pair = new Pair("down", currentFloor);
 		} else {
-			pair = new Pair("standby", currentFloor);
+			pair = new Pair("idle", currentFloor);
 		}
 		sendPacket = packetCreator(pair);
 		packetSend(sendPacket);
-		
 
 	}
 
@@ -509,9 +507,54 @@ public class Elevator extends Thread {
 			packetSend(packet);
 			//System.exit(1);
 		}
+		
+		byte[] data = new byte[Elevator.BYTE_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
+		// Receive datagram socket from Scheduler
+		try {
+			sendReceiveSocket.receive(receivePacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		//Update direction
+		ElevatorState state = byteArrayToState(data);
+		
+		nextDirection = state.getDirection();
+		
+		if (state.getTaskList().contains(currentFloor)) {
+			elevatorOpendDoorAtFloor(currentFloor);
+			elevatorCloseDoorAtFloor(currentFloor);
+		}
 		
 	}
+	
+	public ElevatorState byteArrayToState(byte[] data){
+		ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
+		ObjectInputStream objStream = null;
+		try {
+			objStream = new ObjectInputStream(byteStream);
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+
+		try {
+			return (ElevatorState) objStream.readObject();
+		} catch (ClassNotFoundException e) {
+			// Class not found
+			e.printStackTrace();
+		} catch (IOException e) {
+			// Could not red object from stream
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	
 	/**
 	 * @author Muhammad Tarequzzaman
 	 * @param pair

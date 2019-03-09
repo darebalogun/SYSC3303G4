@@ -263,15 +263,14 @@ public class  Scheduler{
 				diff++;
 			}
 			System.out.println(eventList.size());
+			
+			for (ElevatorState elevatorState : elevatorStates) {
+				System.out.println("Elevator task size" + elevatorState.getTaskList().size());
+			}	
+			
+			Collections.sort(elevatorStates);
+			System.out.println(elevatorStates.get(0).getNumber());
 		}
-
-		for (ElevatorState elevatorState : elevatorStates) {
-			System.out.println("Elevator task size" + elevatorState.getTaskList().size());
-		}
-		
-
-		
-
 	}
 
 	// Finds the closest value to an integer in an arraylist
@@ -298,24 +297,14 @@ public class  Scheduler{
 	 * @param elevatorNumber
 	 * @return
 	 */
-	public byte[] taskListToByteArray(int elevatorNumber) {
-
-		ArrayList<Integer> list = new ArrayList<>();
-		for (Integer integer : elevatorTaskQueue.get(elevatorNumber)) {
-			if (!list.contains(integer)) {
-				list.add(integer);
-			}
+	public byte[] directionToByteArray(int elevatorNumber) {
+		ElevatorState thisState = null;
+		for (ElevatorState state : elevatorStates) {
+			if (state.getNumber()-1 == elevatorNumber);
+			thisState = state;
 		}
-
-		Collections.sort(list);
-
-		if (directionList.get(elevatorNumber) == Direction.DOWN) {
-			Collections.reverse(list);
-		}
-
-		elevatorTaskQueue.get(elevatorNumber).clear();
-		elevatorTaskQueue.get(elevatorNumber).addAll(list);
-
+		
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(Scheduler.BYTE_SIZE);
 
 		ObjectOutputStream oos = null;
@@ -328,7 +317,7 @@ public class  Scheduler{
 		}
 
 		try {
-			oos.writeObject(elevatorTaskQueue.get(elevatorNumber));
+			oos.writeObject(thisState.getDirection());
 		} catch (IOException e) {
 			// Unable to write eventList in bytes
 			e.printStackTrace();
@@ -348,9 +337,9 @@ public class  Scheduler{
 	 * @param elevatorNumber
 	 */
 	public void sendTask(int elevatorNumber) {
-		if (elevatorTaskQueue.get(elevatorNumber).size() > 0) {
+		if (elevatorStates.get(elevatorNumber).getTaskList().size() > 0) {
 
-			byte[] data = taskListToByteArray(elevatorNumber);
+			byte[] data = directionToByteArray(elevatorNumber);
 
 			// Create Datagram packet containing byte array of event list information
 			try {
@@ -387,8 +376,6 @@ public class  Scheduler{
 		byte[] data = new byte[Scheduler.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
-
-
 		// Receive datagram socket from floor subsystem
 		try {
 			elevatorReceiveSocket.receive(receivePacket);
@@ -399,43 +386,89 @@ public class  Scheduler{
 
 		Pair arrival = byteArrayToPair(data);
 
+		byte[] sendData = null;
+		
 		switch(receivePacket.getPort()) {
 		case 5248:
-			currentPositionList.set(0, arrival.getInteger());
-			if (arrival.getString() == "up") {
-				directionList.set(0, Direction.UP);
-			} else {
-				directionList.set(0, Direction.DOWN);
-			}
+			for (ElevatorState state: elevatorStates) {
+				if (state.getNumber() == 1) {
+					state.setCurrentFloor(arrival.getInteger());
+					if (arrival.getString() == "up") {
+						state.setDirection(Direction.UP);
+					} else if (arrival.getString() == "down") {
+						state.setDirection(Direction.DOWN);
+					} else {
+						state.setDirection(Direction.IDLE);
+					}
+					
+					sendData = stateToByte(state);
+				}
+			}	
 			System.out.println("Elevator 1 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
 			break;
+			
 		case 5249:
-			currentPositionList.set(1, arrival.getInteger());
-			if (arrival.getString() == "up") {
-				directionList.set(1, Direction.UP);
-			} else {
-				directionList.set(1, Direction.DOWN);
+			for (ElevatorState state: elevatorStates) {
+				if (state.getNumber() == 2) {
+					state.setCurrentFloor(arrival.getInteger());
+					if (arrival.getString() == "up") {
+						state.setDirection(Direction.UP);
+					} else if (arrival.getString() == "down") {
+						state.setDirection(Direction.DOWN);
+					} else {
+						state.setDirection(Direction.IDLE);
+					}
+					
+					sendData = stateToByte(state);
+				}
 			}
+			
 			System.out.println("Elevator 2 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
 			break;
+			
 		case 5250:
-			currentPositionList.set(2, arrival.getInteger());
-			if (arrival.getString() == "up") {
-				directionList.set(2, Direction.UP);
-			} else {
-				directionList.set(2, Direction.DOWN);
+			for (ElevatorState state: elevatorStates) {
+				if (state.getNumber() == 3) {
+					state.setCurrentFloor(arrival.getInteger());
+					if (arrival.getString() == "up") {
+						state.setDirection(Direction.UP);
+					} else if (arrival.getString() == "down") {
+						state.setDirection(Direction.DOWN);
+					} else {
+						state.setDirection(Direction.IDLE);
+					}
+					
+					sendData = stateToByte(state);
+				}
 			}
 			System.out.println("Elevator 3 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
 			break;
+			
 		case 5251:
-			currentPositionList.set(3, arrival.getInteger());
-			if (arrival.getString() == "up") {
-				directionList.set(3, Direction.UP);
-			} else {
-				directionList.set(3, Direction.DOWN);
+			for (ElevatorState state: elevatorStates) {
+				if (state.getNumber() == 4) {
+					state.setCurrentFloor(arrival.getInteger());
+					if (arrival.getString() == "up") {
+						state.setDirection(Direction.UP);
+					} else if (arrival.getString() == "down") {
+						state.setDirection(Direction.DOWN);
+					} else {
+						state.setDirection(Direction.IDLE);
+					}
+					
+					sendData = stateToByte(state);
+				}
 			}
 			System.out.println("Elevator 4 going " + arrival.getString() + " has arrived at floor: " + arrival.getInteger());
 			break;
+		}
+		
+		try {
+			sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getLocalHost(),
+					receivePacket.getPort());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		synchronized (this) {
@@ -470,7 +503,7 @@ public class  Scheduler{
 			notifyAll();
 		}
 
-		byte[] sendData = data;
+		sendData = data;
 
 		try {
 			sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getLocalHost(),
@@ -494,6 +527,29 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		sendSocket.close();
+	}
+	
+	private byte[] stateToByte(ElevatorState state) {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(Scheduler.BYTE_SIZE);
+
+		ObjectOutputStream oos = null;
+
+		try {
+			oos = new ObjectOutputStream(baos);
+		} catch (IOException e1) {
+			// Unable to create object output stream
+			e1.printStackTrace();
+		}
+
+		try {
+			oos.writeObject(state);
+		} catch (IOException e) {
+			// Unable to write eventList in bytes
+			e.printStackTrace();
+		}
+
+		return baos.toByteArray();
 	}
 
 	/**
@@ -546,14 +602,22 @@ public class  Scheduler{
 			public void run() {
 				while (true) {
 					s.receiveInputEventList();
+				}
+			}
+		};
+		
+		Thread processRequests = new Thread() {
+			public void run() {
+				while (true) {
 					for (int i = 0; i < s.ELEVATOR_COUNT; i++) {
-						s.sendTask(i);
+						//s.sendTask(i);
 					}
 				}
 			}
 		};
 
 		runScheduler.start();
+		processRequests.start();
 		receiveFromElevator.start();
 
 	}
