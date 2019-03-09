@@ -15,12 +15,14 @@ public class SystemTest {
 	@Before
 	public void setUp() throws Exception {
 		generateInput("1", "5");
-		randomDelay();
-		generateInput("1", "2");
-		randomDelay();
-		generateInput("4", "2");
-		randomDelay();
-		generateInput("5", "1");
+		Random rand = new Random();
+		int n = rand.nextInt(10);
+		try {
+			TimeUnit.SECONDS.sleep(n);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@After
@@ -29,8 +31,12 @@ public class SystemTest {
 
 	@Test
 	public void test() {
+<<<<<<< HEAD
 		
 		//fail("Not yet implemented");
+=======
+		fail("Not yet implemented");
+>>>>>>> parent of 8ddda5d... Add System Test
 	}
 	
 	public void generateInput(String from, String to) {
@@ -54,16 +60,6 @@ public class SystemTest {
 			out.flush();
 			out.close();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void randomDelay() {
-		Random rand = new Random();
-		int n = rand.nextInt(7);
-		try {
-			TimeUnit.SECONDS.sleep(n);
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
