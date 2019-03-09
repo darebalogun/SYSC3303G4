@@ -237,9 +237,6 @@ public class  Scheduler{
 			
 			//Iterator<InputEvent> iter = eventList.iterator();
 			InputEvent event = eventList.peek();
-			
-			System.out.println(eventList.size());
-			
 
 			while (!eventList.isEmpty()){
 				for (int i = 0; i < ELEVATOR_COUNT; i++) {
@@ -254,7 +251,6 @@ public class  Scheduler{
 					if (elevatorStates.get(i).getDirection() == Direction.UP) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -262,7 +258,6 @@ public class  Scheduler{
 					} else if (elevatorStates.get(i).getDirection() == Direction.DOWN) {
 						if ((event.getCurrentFloor() + diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -270,7 +265,6 @@ public class  Scheduler{
 					} else {
 						if (Math.abs(event.getCurrentFloor() - elevatorStates.get(i).getCurrentFloor()) == diff) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -279,17 +273,9 @@ public class  Scheduler{
 				}
 				diff++;
 			}
-			System.out.println(eventList.size());
-		}
-
-		for (ElevatorState elevatorState : elevatorStates) {
-			System.out.print("Elevator number: " + elevatorState.getNumber());
-			System.out.print(" going " + elevatorState.getDirection());
-			System.out.println(" currently at: " + elevatorState.getCurrentFloor() + " going to " + elevatorState.getTaskList());
 		}
 		
 		Collections.sort(elevatorStates);
-		System.out.println(elevatorStates.get(0).getNumber());
 
 	}
 
