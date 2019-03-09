@@ -171,6 +171,7 @@ public class  Scheduler{
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
 
 		synchronized (this) {
 			// Store all input events
@@ -186,7 +187,7 @@ public class  Scheduler{
 				System.out.println(" going down");
 			}
 		}
-		
+
 		processRequests();
 
 	}
@@ -236,16 +237,20 @@ public class  Scheduler{
 			
 			//Iterator<InputEvent> iter = eventList.iterator();
 			InputEvent event = eventList.peek();
-			
-			System.out.println(eventList.size());
 
 			while (!eventList.isEmpty()){
+				for (int i = 0; i < ELEVATOR_COUNT; i++) {
+					if (elevatorStates.get(i).getTaskList().contains(event.getCurrentFloor())) {
+						System.out.println("Elevator: " + elevatorStates.get(i).getNumber() + "is already assigned this floor");
+						eventList.remove();
+						event = eventList.peek();
+						break;
+					}
+				}
 				for (int i = 0; i < ELEVATOR_COUNT; i++) {
 					if (elevatorStates.get(i).getDirection() == Direction.UP) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -253,8 +258,6 @@ public class  Scheduler{
 					} else if (elevatorStates.get(i).getDirection() == Direction.DOWN) {
 						if ((event.getCurrentFloor() + diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -262,8 +265,6 @@ public class  Scheduler{
 					} else {
 						if (Math.abs(event.getCurrentFloor() - elevatorStates.get(i).getCurrentFloor()) == diff) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
-							addElevatorToList(event, i+1);
-							System.out.println("Added to " + elevatorStates.get(i).getNumber());
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -272,51 +273,12 @@ public class  Scheduler{
 				}
 				diff++;
 			}
-			System.out.println(eventList.size());
-		}
-
-		for (ElevatorState elevatorState : elevatorStates) {
-			System.out.print("Elevator number: " + elevatorState.getNumber());
-			System.out.print(" going " + elevatorState.getDirection());
-			System.out.println(" currently at: " + elevatorState.getCurrentFloor() + " going to " + elevatorState.getTaskList());
 		}
 		
 		Collections.sort(elevatorStates);
-		System.out.println(elevatorStates.get(0).getNumber());
 
 	}
-	
-	public void addElevatorToList(InputEvent event, Integer evNumber) {
-		Path path = Paths.get(INPUT_PATH);
-		
-		List<String> lines = null;
-		
-		try {
-			lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for (String line : lines) {
-			String[] splitLine = line.split(" ");
-			if (splitLine[0].equals(event.getTime())) {
-				int position = lines.indexOf(line);
-				String extraline = line + " e" + evNumber.toString();
-				lines.set(position, extraline);
-				System.out.println("Added");
-				break;
-			}
-		}
-		
-		try {
-			Files.write(path, lines, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
+
 
 	// Finds the closest value to an integer in an arraylist
 	public int closest(Integer request, ArrayList<Integer> positionList) {
@@ -432,6 +394,8 @@ public class  Scheduler{
 			
 
 			elevatorTaskQueue.get(elevatorNumber).clear();
+			elevatorStates.get(elevatorNumber).getTaskList().clear();
+			
 		}
 	}
 
@@ -441,8 +405,6 @@ public class  Scheduler{
 	public void receiveFromElevator() {
 		byte[] data = new byte[Scheduler.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-
-
 
 		// Receive datagram socket from floor subsystem
 		try {
