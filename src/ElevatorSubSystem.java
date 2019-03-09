@@ -2,7 +2,7 @@
 
 
 /**
- * <blockquote>  Run this to start Elevator SubSystem to ensure thread running of multiple elevator 
+ * <blockquote>  RUN this to start Elevator SubSystem to ensure thread running of multiple elevator 
  * @author Muhammad Tarequzzaman |100954008|
  *  responsible for <b> Entire Elevator System</b> 
  *  
