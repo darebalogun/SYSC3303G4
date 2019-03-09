@@ -1,5 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,6 +18,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.NoSuchElementException;
+
+import java.util.Random;
+
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.time.Instant;
@@ -51,7 +56,7 @@ public class Elevator extends Thread {
 	private Boolean dooropen;
 
 	private int currentFloor;
-	private int nextFloor;
+	private int nextFloor, numberofFloorbuttons;
 
 	private Boolean goingUP = false;
 	private Boolean goingDOWN = false;
@@ -69,7 +74,7 @@ public class Elevator extends Thread {
 	 * @param startFloor           : Default Staring Floor
 	 */
 	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
-
+		this.numberofFloorbuttons= numberofFloorbuttons;
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[numberofFloorbuttons]));
 		Collections.fill(buttonList, Boolean.FALSE);
@@ -146,10 +151,15 @@ public class Elevator extends Thread {
 				break; // end READY
 
 			case STANDBY:// STANDBY state
-
+				
 				if (dooropen == true) {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
+				
+				/*rand*/
+				Random r = new Random();
+				Integer dest = r.nextInt(numberofFloorbuttons);
+				generateInput(this.elevatorNumber, dest);
 
 				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					updateNextFloor();
@@ -540,6 +550,25 @@ public class Elevator extends Thread {
 		return sendPacket;
 	}
 	/*-------------------------------------------------------------------------*/
+	
+	
+	public void generateInput(Integer elevatorNum, Integer dest) {
+		String time = LocalTime.now().toString();
+		
+		elevatorNum = getElevatorNumber();
+		Integer destination = dest;
+		String request = time + " " + elevatorNum + " " + destination;
+		
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter("src/ElevatorInputEvents.txt", true));
+			out.newLine();
+			out.write(request);
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/* GET AND SET from here */
 	public ArrayList<Boolean> getButtonList() {
@@ -655,12 +684,22 @@ public class Elevator extends Thread {
 	}
 	
 	//------------------------------------------------------------------------------------------------------//
-	
+	/*
 	private static final String INPUT_PATH = "src/InputEvents.txt";
 	private int currentLine = 0;
 	private boolean moreToRead;
 	
 	public synchronized void ElevatorInputGenerator () {
+<<<<<<< HEAD
+		while (canRead) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+=======
+>>>>>>> branch 'iteration2' of https://github.com/mtareq305/SYSC3303G4
 		
 		Path path = Paths.get(INPUT_PATH);
 		
@@ -680,6 +719,13 @@ public class Elevator extends Thread {
 				e.printStackTrace();
 			}
 			currentLine++;
+<<<<<<< HEAD
+		}
+		
+		for (int i = 0; i < inputArrayList.size(); i++) {
+			
+=======
+>>>>>>> branch 'iteration2' of https://github.com/mtareq305/SYSC3303G4
 		}
 		
 		for (int i = 0; i < inputArrayList.size(); i++) {
@@ -696,5 +742,5 @@ public class Elevator extends Thread {
 		notifyAll();
 		return;
 		
-	}
+	}*/
 }
