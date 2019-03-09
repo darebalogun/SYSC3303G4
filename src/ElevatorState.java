@@ -63,23 +63,24 @@ public class ElevatorState implements Comparable<ElevatorState>{
 	}
 	
 	public void addTask(Integer task) {
-		
-		if (this.direction == Scheduler.Direction.UP) {
-			if (task > this.taskList.last()) {
+		if (this.taskList.size() > 0) {
+			if (this.direction == Scheduler.Direction.UP) {
+				if (task > this.taskList.last()) {
+					this.destinationFloor = task;
+				}
+			} else if (this.direction == Scheduler.Direction.DOWN) {
+				if (task < this.taskList.first()) {
+					this.destinationFloor = task;
+				}
+			} else {
 				this.destinationFloor = task;
+				
+				if (task > this.currentFloor) {
+					this.direction = Scheduler.Direction.UP;
+				} else if (task < this.currentFloor) {
+					this.direction = Scheduler.Direction.DOWN;
+				} 
 			}
-		} else if (this.direction == Scheduler.Direction.DOWN) {
-			if (task < this.taskList.first()) {
-				this.destinationFloor = task;
-			}
-		} else {
-			this.destinationFloor = task;
-			
-			if (task > this.currentFloor) {
-				this.direction = Scheduler.Direction.UP;
-			} else if (task < this.currentFloor) {
-				this.direction = Scheduler.Direction.DOWN;
-			} 
 		}
 		
 		this.taskList.add(task);

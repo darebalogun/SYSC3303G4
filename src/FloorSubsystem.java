@@ -4,10 +4,12 @@ import java.util.stream.Stream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -73,11 +75,8 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
-<<<<<<< HEAD
-=======
 		ready = false;
-		
->>>>>>> parent of 8ddda5d... Add System Test
+
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
 
@@ -425,6 +424,15 @@ public class FloorSubsystem {
 		
 		Thread simulateInput = new Thread() {
 			public void run() {
+				PrintWriter pw = null;
+				try {
+					pw = new PrintWriter(INPUT_PATH);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				pw.close();
+				
 				for (int i = 0; i < 5; i++) {
 					s.addRandomInput();
 					Random rand = new Random();
