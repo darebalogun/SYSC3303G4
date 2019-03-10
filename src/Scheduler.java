@@ -79,7 +79,7 @@ public class  Scheduler{
 	private static final int BYTE_SIZE = 6400;
 
 	// Sockets to send and receive data from the ElevatorSubsystem and FloorSubsystem
-	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket;
+	private DatagramSocket sendSocket, floorReceiveSocket, elevatorReceiveSocket, esReceiveSocket;
 
 	private static final int FLOOR_RECEIVE_PORT = 60002;
 
@@ -89,6 +89,8 @@ public class  Scheduler{
 	private static final int ELEVATOR_RECEIVE_PORT = 60006;
 
 	private static final int FLOOR_SEND_PORT = 60004;
+	
+	private static final int ES_RECEIVE_PORT = 60009;
 
 	/**
 	 * Constructor
@@ -153,8 +155,17 @@ public class  Scheduler{
 			se.printStackTrace();
 			System.exit(1);
 		}
+		
+		try {
+			esReceiveSocket = new DatagramSocket(ES_RECEIVE_PORT);
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
 
 	}
+	
+	
 
 	/**
 	 * Receive input event list from floor subsystem
@@ -396,6 +407,34 @@ public class  Scheduler{
 			elevatorTaskQueue.get(elevatorNumber).clear();
 			elevatorStates.get(elevatorNumber).getTaskList().clear();
 			
+		}
+	}
+	
+	public void receiveFromES() {
+		byte[] data = new byte[Scheduler.BYTE_SIZE];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+
+		// Receive datagram socket from floor subsystem
+		try {
+			esReceiveSocket.receive(receivePacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		Pair userInput = byteArrayToPair(data);
+		
+		Boolean up;
+		
+		if (elevatorStates.get(userInput.getElevator() - 1).getCurrentFloor() > userInput.getDestination() ) {
+			up = false;
+		} else {
+			up = true;
+		}
+		
+		InputEvent event = new InputEvent(userInput.getString(), userInput.getDestination(), up);
+		synchronized(this) {
+			eventList.add(event);
 		}
 	}
 
