@@ -176,22 +176,26 @@ public class Elevator extends Thread {
 
 				if (dest == 0) {
 					state = State.DOOR_ERROR;
+					break;
 				} else if (dest < 0) {
 					state = State.ELEVATOR_ERROR;
+					break;
 				}
 
 				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					updateNextFloor();
 					state = State.RUN;
+					break;
 
 				} else {
 					state = State.UPDATE;
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d STANDBY at Floor: %d \n",
 							getElevatorNumber(), currentFloor);
+					break;
 
 				}
 
-				break;// end STANDBY
+				//break;// end STANDBY
 
 			case UPDATE: // UPDATE
 				receiveTaskList();
