@@ -436,6 +436,7 @@ public class  Scheduler{
 		synchronized(this) {
 			eventList.add(event);
 		}
+		System.out.println("User pressed floor " + userInput.getDestination() + " in Elevator " + userInput.getElevator());
 	}
 
 	/**
@@ -595,6 +596,14 @@ public class  Scheduler{
 				}
 			}
 		};
+		
+		Thread receiveFromES = new Thread() {
+			public void run() {
+				while (true) {
+					s.receiveFromES();
+				}
+			}
+		};
 
 		Thread runScheduler = new Thread() {
 			public void run() {
@@ -609,6 +618,7 @@ public class  Scheduler{
 
 		runScheduler.start();
 		receiveFromElevator.start();
+		receiveFromES.start();
 
 	}
 

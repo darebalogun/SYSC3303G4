@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -53,15 +55,23 @@ public class ElevatorSubSystem {
 
 		}
 		
+		try {
+			sendReceiveSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			System.out.println("Error in receiveSocketPort creation \n");
+			se.printStackTrace();
+			System.exit(1);
+		}
+		
 		Thread sendtoSch = new Thread(){
 			public void run() {
 				while(true) {
 					ElevatorInputRead();
-					
-					
 				}
 			}
 		};
+		
+		sendtoSch.start();
 		
 
 	}
@@ -92,8 +102,8 @@ public class ElevatorSubSystem {
 	private static int currentLine = 0;
 	private static boolean moreToRead;
 	
-	private DatagramPacket sendPacket; /* Packet */
-	private DatagramSocket sendReceiveSocket; 
+	private static DatagramPacket sendPacket; /* Packet */
+	private static DatagramSocket sendReceiveSocket; 
 
 	public synchronized static void ElevatorInputRead() {
 
@@ -118,33 +128,26 @@ public class ElevatorSubSystem {
 			}
 			currentLine++;
 		}
-		Pair pair;
+		Pair pair = null;
 				
-		for (int i = 0; i < inputArrayList.size(); i++) {
+		for (int i = 1; i < inputArrayList.size(); i++) {
 			String inputElevatorEvent = inputArrayList.get(i);
 			String[] inputEvents = inputElevatorEvent.split(" ");
-
 			
-				pair = new Pair(inputEvents[0] ,Integer.parseInt(inputEvents[1]), Integer.parseInt(inputEvents[2]) );	
+			pair = new Pair(inputEvents[0] ,Integer.parseInt(inputEvents[1]), Integer.parseInt(inputEvents[2]) );	
 			
 		}
-		PrintWriter pw = null;
-		try {
-			pw = new PrintWriter(INPUT_PATH);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		pw.close();
 
 		///notifyAll();
+		
+		sendPacketToScheduler(pair);
 		return;
 
 	}
 
 	private static final int BYTE_SIZE = 6400;
 
-	private byte[] PairToByteArray(Pair pair) {
+	private static byte[] PairToByteArray(Pair pair) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_SIZE);
 
 		ObjectOutputStream oos = null;
@@ -168,8 +171,8 @@ public class ElevatorSubSystem {
 
 	
 	
-	public void sendPacketToScheduler(Pair pair) {
-
+	public static void sendPacketToScheduler(Pair pair) {
+		
 		
 		
 		sendPacket = packetCreator(pair);
@@ -181,7 +184,7 @@ public class ElevatorSubSystem {
 	/**
 	 * @param packet
 	 */
-	public void packetSend(DatagramPacket packet) {
+	public static void packetSend(DatagramPacket packet) {
 		try {
 			sendReceiveSocket.send(packet);
 			
@@ -201,7 +204,7 @@ public class ElevatorSubSystem {
 	 * @Description: Create Datagram packet containing byte array of event list
 	 *               information
 	 */
-	public DatagramPacket packetCreator(Pair pair) {
+	public static DatagramPacket packetCreator(Pair pair) {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
@@ -210,7 +213,7 @@ public class ElevatorSubSystem {
 		} catch (UnknownHostException e) {
 			System.out.print("sendPacket creation Error, Retrying creation \n");
 			e.printStackTrace();
-			this.packetCreator(pair);
+			packetCreator(pair);
 			//System.exit(1);
 		}
 		return sendPacket;
