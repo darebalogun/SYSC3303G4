@@ -8,7 +8,7 @@ Member:-
 	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java., InputEvent.txt, 
 						ElevatorInputEvent.txt
 	2. Sama Adil Sheikh | 101060020
-	Responsiblities: Sequence Diagram, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
+	Responsiblities: Sequence Diagram for error scenarios, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
 	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
 	4. Dare Balogun | 101062340
