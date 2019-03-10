@@ -75,7 +75,9 @@ public class FloorSubsystem {
 	 * 
 	 */
 	public FloorSubsystem() {
-		ready = false;
+
+	ready = false;
+		
 
 		// Initialize the current line being read on the input file to zero
 		this.currentLine = 0;
