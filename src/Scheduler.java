@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +41,7 @@ import java.util.Set;
 public class  Scheduler{
 
 	// Number of elevators to keep track of
-	private final int ELEVATOR_COUNT = 4;
+	private int ELEVATOR_COUNT = 4;
 
 	// List of input events received from Floor Subsystem to be handled
 	private Queue<InputEvent> eventList;
@@ -191,7 +192,7 @@ public class  Scheduler{
 
 		for (InputEvent event : eventList) {
 			System.out.print(
-					"Received request from floor " + event.getCurrentFloor());
+					event.getTime() + " Received request from floor " + event.getCurrentFloor());
 			if (event.getUp()) {
 				System.out.println(" going up");
 			} else {
@@ -427,13 +428,25 @@ public class  Scheduler{
 		
 		Boolean up;
 		
+		if (userInput.getDestination() == 0) {
+			System.out.println("Elevator " + userInput.getElevator() + " door stuck. Retrying...");
+			return;
+		} else if (userInput.getDestination() == -1) {
+			System.out.println("Elevator " + userInput.getElevator() + " hard fault. Disabling elevator...");
+			for (int i = 0; i < ELEVATOR_COUNT; i++) {
+				if (elevatorStates.get(i).getNumber() == userInput.getElevator()) {
+					elevatorStates.remove(i);
+					ELEVATOR_COUNT--;
+					return;
+				}
+			}
+		}
+		
 		if (elevatorStates.get(userInput.getElevator() - 1).getCurrentFloor() > userInput.getDestination() ) {
 			up = false;
 		} else {
 			up = true;
 		}
-		
-		System.out.println(userInput.getDestination());
 		
 		InputEvent event = new InputEvent(userInput.getString(), userInput.getDestination(), up);
 		synchronized(this) {
@@ -474,7 +487,7 @@ public class  Scheduler{
 				elevatorStates.get(0).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 1 going has arrived at floor: " + arrival.getInteger());
+			System.out.println(LocalTime.now() + " Elevator 1 has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5249:
 			//currentPositionList.set(1, arrival.getInteger());
@@ -490,7 +503,7 @@ public class  Scheduler{
 				elevatorStates.get(1).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 2 has arrived at floor: " + arrival.getInteger());
+			System.out.println(LocalTime.now() + " Elevator 2 has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5250:
 			//currentPositionList.set(2, arrival.getInteger());
@@ -506,7 +519,7 @@ public class  Scheduler{
 				elevatorStates.get(2).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 3 has arrived at floor: " + arrival.getInteger());
+			System.out.println(LocalTime.now() + " Elevator 3 has arrived at floor: " + arrival.getInteger());
 			break;
 		case 5251:
 			
@@ -523,7 +536,7 @@ public class  Scheduler{
 				elevatorStates.get(3).setDirection(Direction.IDLE);
 			}
 			
-			System.out.println("Elevator 4 has arrived at floor: " + arrival.getInteger());
+			System.out.println(LocalTime.now() + " Elevator 4 has arrived at floor: " + arrival.getInteger());
 			break;
 		}
 

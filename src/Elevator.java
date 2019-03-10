@@ -33,7 +33,7 @@ import java.time.LocalTime;
  * @author Muhammad Tarequzzaman |100954008| responsible for <b> Class Elevator
  *         </b>
  * @Coauthor Dare Balogun | 101062340| responsible for methods:
- *           <b>PairToByteArray, byteArrayToList 
+ *           <b>PairToByteArray, byteArrayToList
  */
 
 public class Elevator extends Thread {
@@ -75,7 +75,7 @@ public class Elevator extends Thread {
 	 * @param startFloor           : Default Staring Floor
 	 */
 	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
-		this.numberofFloorbuttons= numberofFloorbuttons;
+		this.numberofFloorbuttons = numberofFloorbuttons;
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[numberofFloorbuttons]));
 		Collections.fill(buttonList, Boolean.FALSE);
@@ -130,7 +130,7 @@ public class Elevator extends Thread {
 
 	/*---------------------------------------------------------------*/
 	public enum State {
-		READY, STANDBY, UPDATE, RUN, FINISH;
+		READY, STANDBY, UPDATE, RUN, FINISH, DOOR_ERROR, ELEVATOR_ERROR;
 
 	}
 
@@ -144,6 +144,17 @@ public class Elevator extends Thread {
 		while (ACTIVE) {
 
 			switch (state) {
+			
+			case DOOR_ERROR:
+				openDoor();
+				System.out.println(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n");
+				break;
+			case ELEVATOR_ERROR:
+
+				ACTIVE = false;
+				System.out.println(LocalTime.now().toString() + " Elevator#: %d Elevator Stuck \n");
+
+				break;
 
 			case READY: // READY state
 				System.out.printf(LocalTime.now().toString() + " Elevator#: %d READY \n", getElevatorNumber());
@@ -152,15 +163,22 @@ public class Elevator extends Thread {
 				break; // end READY
 
 			case STANDBY:// STANDBY state
-				
+
 				if (dooropen == true) {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
-				
-				/*rand*/
+
+				/* rand */
 				Random r = new Random();
-				Integer dest = r.nextInt(numberofFloorbuttons);
+
+				Integer dest = r.nextInt(numberofFloorbuttons + 1) - 1;
 				generateInput(this.elevatorNumber, dest);
+
+				if (dest == 0) {
+					state = State.DOOR_ERROR;
+				} else if (dest < 0) {
+					state = State.ELEVATOR_ERROR;
+				}
 
 				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					updateNextFloor();
@@ -505,12 +523,9 @@ public class Elevator extends Thread {
 		}
 		sendPacket = packetCreator(pair);
 		packetSend(sendPacket);
-		
 
 	}
 
-	
-	
 	/**
 	 * @param packet
 	 */
@@ -523,15 +538,15 @@ public class Elevator extends Thread {
 			System.out.print("Packet Sending Error, Retrying \n");
 			e.printStackTrace();
 			packetSend(packet);
-			//System.exit(1);
+			// System.exit(1);
 		}
 
-		
 	}
+
 	/**
 	 * @author Muhammad Tarequzzaman
 	 * @param pair
-	 * @return 
+	 * @return
 	 * @Description: Create Datagram packet containing byte array of event list
 	 *               information
 	 */
@@ -539,49 +554,47 @@ public class Elevator extends Thread {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try { 
+		try {
 			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(),
 					Elevator.SCHEDULER_SEND_PORT);
 		} catch (UnknownHostException e) {
 			System.out.print("sendPacket creation Error, Retrying creation \n");
 			e.printStackTrace();
 			this.packetCreator(pair);
-			//System.exit(1);
+			// System.exit(1);
 		}
 		return sendPacket;
 	}
 	/*-------------------------------------------------------------------------*/
-	
+
 	public DatagramPacket packetCreator2(Pair pair) {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try { 
-			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(), MAINTENANCE_PORT
-					);
+		try {
+			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(), MAINTENANCE_PORT);
 		} catch (UnknownHostException e) {
 			System.out.print("sendPacket creation Error, Retrying creation \n");
 			e.printStackTrace();
 			this.packetCreator(pair);
-			//System.exit(1);
+			// System.exit(1);
 		}
 		return sendPacket;
 	}
-	
-	
+
 	public void generateInput(Integer elevatorNum, Integer dest) {
 		String time = LocalTime.now().toString();
-		
+
 		elevatorNum = getElevatorNumber();
 		Integer destination = dest;
 		String request = time + " " + elevatorNum + " " + destination;
-		
+
 		Pair pair = new Pair(time, elevatorNum, destination);
-		
+
 		DatagramPacket pac = packetCreator2(pair);
-		
+
 		packetSend(pac);
-		
+
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter("src/ElevatorInputEvents.txt", true));
 			out.newLine();
@@ -705,55 +718,40 @@ public class Elevator extends Thread {
 	public void setElevatorNumber(int elevatorNumber) {
 		this.elevatorNumber = elevatorNumber;
 	}
-	
-	//------------------------------------------------------------------------------------------------------//
+
+	// ------------------------------------------------------------------------------------------------------//
 	/*
-	private static final String INPUT_PATH = "src/InputEvents.txt";
-	private int currentLine = 0;
-	private boolean moreToRead;
-	
-	public synchronized void ElevatorInputRead () {
-		
-		//get text file path
-		Path path = Paths.get(INPUT_PATH);
-		
-		ArrayList<String> 	inputArrayList = new ArrayList<String>();
-		moreToRead = true;
-		
-		
-		//iterate through the file and read each line
-		while (moreToRead) {
-			try (Stream<String> lines = Files.lines(path)) {
-				try {
-					inputArrayList.add(lines.skip(currentLine).findFirst().get());				
-				}catch (NoSuchElementException e) {
-					moreToRead = false;
-					lines.close();
-					break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			currentLine++;
-		}
-		
-		for (int i = 0; i < inputArrayList.size(); i++) {
-			
-		}
-		
-		for (int i = 0; i < inputArrayList.size(); i++) {
-			String inputElevatorEvent = inputArrayList.get(i);
-			String[] inputEvents = inputElevatorEvent.split(" ");
-			
-			if ("e" + String.valueOf(elevatorNumber) == inputEvents [1]) {
-					ArrayList <Integer> userDest = new ArrayList<Integer>(1);
-					userDest.add(Integer.parseInt(inputEvents[2]));
-					setNextFloorList(userDest);
-				}
-			}
-		
-		notifyAll();
-		return;
-		
-	}*/
+	 * private static final String INPUT_PATH = "src/InputEvents.txt"; private int
+	 * currentLine = 0; private boolean moreToRead;
+	 * 
+	 * public synchronized void ElevatorInputRead () {
+	 * 
+	 * //get text file path Path path = Paths.get(INPUT_PATH);
+	 * 
+	 * ArrayList<String> inputArrayList = new ArrayList<String>(); moreToRead =
+	 * true;
+	 * 
+	 * 
+	 * //iterate through the file and read each line while (moreToRead) { try
+	 * (Stream<String> lines = Files.lines(path)) { try {
+	 * inputArrayList.add(lines.skip(currentLine).findFirst().get()); }catch
+	 * (NoSuchElementException e) { moreToRead = false; lines.close(); break; } }
+	 * catch (IOException e) { e.printStackTrace(); } currentLine++; }
+	 * 
+	 * for (int i = 0; i < inputArrayList.size(); i++) {
+	 * 
+	 * }
+	 * 
+	 * for (int i = 0; i < inputArrayList.size(); i++) { String inputElevatorEvent =
+	 * inputArrayList.get(i); String[] inputEvents = inputElevatorEvent.split(" ");
+	 * 
+	 * if ("e" + String.valueOf(elevatorNumber) == inputEvents [1]) { ArrayList
+	 * <Integer> userDest = new ArrayList<Integer>(1);
+	 * userDest.add(Integer.parseInt(inputEvents[2])); setNextFloorList(userDest); }
+	 * }
+	 * 
+	 * notifyAll(); return;
+	 * 
+	 * }
+	 */
 }
