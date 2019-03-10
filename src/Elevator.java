@@ -147,13 +147,14 @@ public class Elevator extends Thread {
 			
 			case DOOR_ERROR:
 				openDoor();
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n");
+				System.out.printf(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n",getElevatorNumber() );
+				state = State.READY;
 				break;
 			case ELEVATOR_ERROR:
 
 				ACTIVE = false;
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d Elevator Stuck \n");
-
+				System.out.printf(LocalTime.now().toString() + " Elevator#: %d Elevator Stuck \n", getElevatorNumber());
+				state = State.READY;
 				break;
 
 			case READY: // READY state

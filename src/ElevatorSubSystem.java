@@ -55,13 +55,7 @@ public class ElevatorSubSystem {
 
 		}
 		
-		try {
-			sendReceiveSocket = new DatagramSocket();
-		} catch (SocketException se) {
-			System.out.println("Error in receiveSocketPort creation \n");
-			se.printStackTrace();
-			System.exit(1);
-		}
+		
 		
 		
 	}

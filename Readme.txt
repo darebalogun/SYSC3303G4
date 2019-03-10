@@ -5,8 +5,7 @@ L5G4_milestone_3
 Member:-
 
 	1. Muhammad Tarequzzaman | 100954008
-	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java., InputEvent.txt, 
-						ElevatorInputEvent.txt
+	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java., ElevatorInputEvent.txt
 	2. Sama Adil Sheikh | 101060020
 	Responsiblities: Sequence Diagram, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
@@ -21,7 +20,7 @@ Member:-
 SetUp Instructions:-
 
 	-> Open eclipse-java
-	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_2.zip"
+	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_3.zip"
 	-> Click Finish
 	-> Run ElevatorSubSystem as Java Application
 	-> Wait for the class to execute
