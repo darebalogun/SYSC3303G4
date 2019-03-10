@@ -63,17 +63,7 @@ public class ElevatorSubSystem {
 			System.exit(1);
 		}
 		
-		Thread sendtoSch = new Thread(){
-			public void run() {
-				while(true) {
-					ElevatorInputRead();
-				}
-			}
-		};
 		
-		sendtoSch.start();
-		
-
 	}
 
 	public static int getReceivePort1() {

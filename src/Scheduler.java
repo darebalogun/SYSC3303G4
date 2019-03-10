@@ -238,7 +238,7 @@ public class  Scheduler{
 	/**
 	 * Processing request
 	 */
-	public void processRequests() {
+	public synchronized void processRequests() {
 
 		int diff = 0;
 
@@ -249,15 +249,16 @@ public class  Scheduler{
 			//Iterator<InputEvent> iter = eventList.iterator();
 			InputEvent event = eventList.peek();
 
-			while (!eventList.isEmpty()){
-				for (int i = 0; i < ELEVATOR_COUNT; i++) {
-					if (elevatorStates.get(i).getTaskList().contains(event.getCurrentFloor())) {
-						System.out.println("Elevator: " + elevatorStates.get(i).getNumber() + "is already assigned this floor");
-						eventList.remove();
-						event = eventList.peek();
-						break;
-					}
+			for (int i = 0; i < ELEVATOR_COUNT; i++) {
+				if (elevatorStates.get(i).getTaskList().contains(event.getCurrentFloor())) {
+					System.out.println("Elevator: " + elevatorStates.get(i).getNumber() + "is already assigned this floor");
+					eventList.remove();
+					event = eventList.peek();
+					break;
 				}
+			}
+			
+			while (!eventList.isEmpty()){
 				for (int i = 0; i < ELEVATOR_COUNT; i++) {
 					if (elevatorStates.get(i).getDirection() == Direction.UP) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
@@ -432,11 +433,13 @@ public class  Scheduler{
 			up = true;
 		}
 		
+		System.out.println(userInput.getDestination());
+		
 		InputEvent event = new InputEvent(userInput.getString(), userInput.getDestination(), up);
 		synchronized(this) {
 			eventList.add(event);
 		}
-		System.out.println("User pressed floor " + userInput.getDestination() + " in Elevator " + userInput.getElevator());
+		System.out.println(userInput.getTime() + " user pressed floor " + userInput.getDestination() + " in Elevator " + userInput.getElevator());
 	}
 
 	/**

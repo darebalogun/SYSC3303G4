@@ -42,6 +42,7 @@ public class Elevator extends Thread {
 	private static final int BYTE_SIZE = 6400;
 	static private int timeBtwFloors = 4; // time as Canal building main Elevators
 	static private int doorDelay = 2;
+	private static final int MAINTENANCE_PORT = 60009;
 
 	// private static int RECEIVE_PORT = 50002;
 
@@ -551,6 +552,22 @@ public class Elevator extends Thread {
 	}
 	/*-------------------------------------------------------------------------*/
 	
+	public DatagramPacket packetCreator2(Pair pair) {
+		// Create Datagram packet containing byte array of event list information
+		byte[] byteArr = PairToByteArray(pair);
+
+		try { 
+			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(), MAINTENANCE_PORT
+					);
+		} catch (UnknownHostException e) {
+			System.out.print("sendPacket creation Error, Retrying creation \n");
+			e.printStackTrace();
+			this.packetCreator(pair);
+			//System.exit(1);
+		}
+		return sendPacket;
+	}
+	
 	
 	public void generateInput(Integer elevatorNum, Integer dest) {
 		String time = LocalTime.now().toString();
@@ -558,6 +575,12 @@ public class Elevator extends Thread {
 		elevatorNum = getElevatorNumber();
 		Integer destination = dest;
 		String request = time + " " + elevatorNum + " " + destination;
+		
+		Pair pair = new Pair(time, elevatorNum, destination);
+		
+		DatagramPacket pac = packetCreator2(pair);
+		
+		packetSend(pac);
 		
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter("src/ElevatorInputEvents.txt", true));
