@@ -56,7 +56,7 @@ public class FloorSubsystem {
 	private static final int BYTE_SIZE = 6400;
 
 	// Provides the floor number
-	public static final int FLOOR_COUNT = 5;
+	public static final int FLOOR_COUNT = 22;
 
 	// Button indicate which direction requests have been made for
 	public ArrayList<Boolean> upButton, downButton;
@@ -337,27 +337,20 @@ public class FloorSubsystem {
 		return null;
 	}
 	
-	public synchronized void addRandomInput() {
-		while (!ready) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+	public void addRandomInput() {
 		
 		String time = java.time.LocalTime.now().toString();
 		
 		Random rand = new Random();
 		
-		Integer n = rand.nextInt(5) + 1;
+		Integer n = rand.nextInt(FLOOR_COUNT) + 1;
 		
 		String from = n.toString();
 		
-		Integer m = rand.nextInt(5) + 1;
+		Integer m = rand.nextInt(FLOOR_COUNT) + 1;
 		
 		while (n == m) {
-			m = rand.nextInt(5) + 1;
+			m = rand.nextInt(FLOOR_COUNT) + 1;
 		}
 		
 		String to = m.toString();
@@ -372,18 +365,27 @@ public class FloorSubsystem {
 		
 		String request = time + " " + from + " " + direction + " " + to;
 		
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/InputEvents.txt", true));
-			out.newLine();
-			out.write(request);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		synchronized(this) {
+			while (!ready) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				BufferedWriter out = new BufferedWriter(new FileWriter("src/InputEvents.txt", true));
+				out.newLine();
+				out.write(request);
+				out.flush();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			ready = false;
+			notifyAll();
 		}
-		
-		ready = false;
-		notifyAll();
 	}
 
 	
@@ -439,7 +441,7 @@ public class FloorSubsystem {
 				for (int i = 0; i < 5; i++) {
 					s.addRandomInput();
 					Random rand = new Random();
-					int n = rand.nextInt(10);
+					int n = rand.nextInt(30);
 					try {
 						TimeUnit.SECONDS.sleep(n);
 					} catch (InterruptedException e) {
