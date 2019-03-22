@@ -282,22 +282,7 @@ public class Elevator extends Thread {
 
 		} while (currentFloor != nextFloor);
 		// running until next floor
-		/*
-		 * while (currentFloor != nextFloor) {
-		 * 
-		 * updateGoing_UPorDOWN(); System.out.printf(LocalTime.now().toString()+
-		 * " Elevator#: %d Currently at floor: %d \n", getElevatorNumber(),
-		 * currentFloor);
-		 * 
-		 * // System.out.printf(" Next Floor %d \n", nextFloor);
-		 * 
-		 * if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) { runMotor();
-		 * currentFloor++; // System.out.printf(" Current Floor %d \n", currentFloor); }
-		 * else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
-		 * runMotor(); currentFloor--; // System.out.printf(" Current Floor %d \n",
-		 * currentFloor); } updateNextFloor(); }
-		 */
-
+	
 	}
 
 	//
