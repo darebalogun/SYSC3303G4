@@ -96,6 +96,8 @@ public class Elevator extends Thread {
 		System.out.printf(
 				LocalTime.now().toString() + " Elevator E%d...Waiting for the requests from the Scheduler at Time \n",
 				elevatorNumber);
+		
+		nextFloorList = new ArrayList<Integer>();
 
 	}
 
@@ -137,9 +139,19 @@ public class Elevator extends Thread {
 	/**
 	 * This method implants FSM Using State condition to change state
 	 */
-	public synchronized void elevatorState() {
+	public void elevatorState() {
 
 		State state = State.READY;
+		
+		Thread receiveTasks = new Thread() {
+			public void run() {
+				while (true) {
+					receiveTaskList();
+				}
+			}
+		};
+		
+		receiveTasks.start();
 
 		while (ACTIVE) {
 
@@ -259,7 +271,7 @@ public class Elevator extends Thread {
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
-	public synchronized void runToNextFloor() {
+	public void runToNextFloor() {
 		// Prepare to run for target floor
 
 		do {
@@ -271,11 +283,15 @@ public class Elevator extends Thread {
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
-				currentFloor++;
+				synchronized(this) {
+					currentFloor++;
+				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
-				currentFloor--;
+				synchronized(this) {
+					currentFloor--;
+				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
 			updateNextFloor();
@@ -331,7 +347,7 @@ public class Elevator extends Thread {
 	/**
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
-	public void updateNextFloor() {// change accordingly
+	public synchronized void updateNextFloor() {// change accordingly
 		if (nextFloorList.size() > 0) {
 			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
 			// packet command
@@ -489,7 +505,7 @@ public class Elevator extends Thread {
 	 * Send and receive data from Scheduler system.
 	 */
 
-	public synchronized void receiveTaskList() { // Re factor by @author
+	public void receiveTaskList() { // Re factor by @author
 		byte[] data = new byte[Elevator.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
@@ -500,8 +516,12 @@ public class Elevator extends Thread {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		// update next floor
-		nextFloorList = byteArrayToList(data);
+		
+		synchronized(this) {
+			// update next floor
+			nextFloorList.addAll(byteArrayToList(data));
+			Collections.sort(nextFloorList);
+		}
 
 	}
 
