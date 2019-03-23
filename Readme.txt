@@ -62,7 +62,7 @@ Elevator.java:-
 	-> It receives and send Datagram packets to the Scheduler using UDP communication
 	-> Runs as an individual thread for each instance and receive information from schedulers. 	
 	-> It's functional features include opening/closing the door, buttons and lamps for floors,
-	time delay between the opening/closing of the door and time delay in between floors.
+		time delay between the opening/closing of the door and time delay in between floors.
 	-> TearDown after test 
 
 ElevatorSubSystemTest.java:-
@@ -72,14 +72,21 @@ ElevatorSubSystemTest.java:-
 	-> It tests if the ElevatorSubsystem constructor creates the appropriate object
 
 ElevatorState.java:-
+
 	-> This file contains the states of the elevator
 	-> Used as a data structure
 
 ElevatorTest.java:-
+
 	-> A JUnit test for Elevator.java 
 	-> It tests precondition for elevator's multiple successful instance 
 	-> Tests for all precondition to initiate thread 
 	-> TearDown after test  
+	
+ElevatorButtons.java:-
+	
+	-> This class contains GUI imlementation for the buttons
+	-> The buttons are located inside the elevator
 	
 InputEvent.java:-
 
