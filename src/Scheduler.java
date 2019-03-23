@@ -428,12 +428,23 @@ public class  Scheduler{
 				up = true;
 			}
 		}
-		
-		InputEvent event = new InputEvent(userInput.getString(), userInput.getDestination(), up);
-		synchronized(this) {
-			eventList.add(event);
+
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			if (elevatorStates.get(i).getNumber() == userInput.getElevator()) {
+				elevatorStates.get(i).addTask(userInput.getDestination());
+				if(up) {
+					elevatorStates.get(i).setDirection(Direction.UP);
+				} else {
+					elevatorStates.get(i).setDirection(Direction.DOWN);
+				}
+				break;
+			}
 		}
+		
 		System.out.println(userInput.getTime() + " user pressed floor " + userInput.getDestination() + " in Elevator " + userInput.getElevator());
+		
+		sendTask(userInput.getElevator() - 1);
+		
 	}
 
 	/**
