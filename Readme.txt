@@ -106,13 +106,13 @@ InputEvents.txt:-
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
 	-> Change this file to change test cases in the system
 
-UML_DIAGRAM_ITERATION:-
+UML_CLASS_DIAGRAM:-
 
 	-> Contains the UML class diagrams for the system
 
-Timing_Diagram:-
+Timing_Diagram_And_Analysis:-
 
-	-> Contains the timing diagram for the system
+	-> Contains the timing diagram and time measurnment analysis for the system
 
 
 
