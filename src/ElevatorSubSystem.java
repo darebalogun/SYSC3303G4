@@ -33,7 +33,7 @@ public class ElevatorSubSystem {
 	private static final int RECEIVE_PORT2 = 5249;
 	private static final int RECEIVE_PORT3 = 5250;
 	private static final int RECEIVE_PORT4 = 5251;
-	private static final int Floors = 5;
+	private static final int Floors = 22;
 	private static final int MAINTENANCE_PORT = 6009;
 
 	public static void main(String[] args) {

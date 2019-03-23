@@ -168,30 +168,20 @@ public class Elevator extends Thread {
 					elevatorCloseDoorAtFloor(currentFloor);
 				}
 
-				/* rand */
-				Random r = new Random();
-
-				Integer dest = r.nextInt(numberofFloorbuttons + 1) - 1;
-				generateInput(this.elevatorNumber, dest);
-
-				if (dest == 0) {
-					state = State.DOOR_ERROR;
-				} else if (dest < 0) {
-					state = State.ELEVATOR_ERROR;
-				}
-
 				if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
 					updateNextFloor();
 					state = State.RUN;
+					break;
 
 				} else {
 					state = State.UPDATE;
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d STANDBY at Floor: %d \n",
 							getElevatorNumber(), currentFloor);
+					break;
 
 				}
 
-				break;// end STANDBY
+				//break;// end STANDBY
 
 			case UPDATE: // UPDATE
 				receiveTaskList();
@@ -229,9 +219,31 @@ public class Elevator extends Thread {
 					sendArrivalInfo();
 					elevatorOpendDoorAtFloor(currentFloor);
 					elevatorCloseDoorAtFloor(currentFloor);
+					
+					
 					if (nextFloorList.size() != 0) {
 						nextFloor = nextFloorList.remove(0);
 
+					}
+					
+					ElevatorButtons e = new ElevatorButtons(this.elevatorNumber);
+					
+					Integer dest = e.getButtonP();
+					
+					while (dest == 0) {
+						dest = e.getButtonP();
+					}
+					
+					e.getFrame().dispose();
+					
+					generateInput(this.elevatorNumber, dest);
+
+					if (dest == 0) {
+						state = State.DOOR_ERROR;
+						break;
+					} else if (dest < 0) {
+						state = State.ELEVATOR_ERROR;
+						break;
 					}
 
 				}
