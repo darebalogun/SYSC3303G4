@@ -39,6 +39,18 @@ public class ElevatorButtons {
 		this.elevatorNumber = elevatorNumber;
 		initialize();
 		this.getFrame().setVisible(true);
+		Thread countDown = new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				buttonPressed(-1);
+			}
+		};
+		countDown.start();
 	}
 	
 	public void buttonPressed(int i) {
@@ -52,7 +64,7 @@ public class ElevatorButtons {
 		setFrame(new JFrame());
 		getFrame().setTitle("Elevator: " + this.elevatorNumber);
 		getFrame().setBounds(100, 100, 425, 406);
-		getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getFrame().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

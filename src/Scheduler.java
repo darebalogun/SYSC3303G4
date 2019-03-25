@@ -89,6 +89,10 @@ public class  Scheduler{
 	private static final int BOTTOM_FLOOR = 1;
 	
 	private static final int TOP_FLOOR = 22;
+	
+	private static InetAddress ELEVATOR_IP;
+	
+	private static InetAddress FLOOR_IP;
 
 	/**
 	 * Constructor
@@ -155,6 +159,13 @@ public class  Scheduler{
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
+		}
+		
+		try {
+			FLOOR_IP = InetAddress.getByName("127.0.0.1");
+			ELEVATOR_IP = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -358,14 +369,8 @@ public class  Scheduler{
 
 			byte[] data = taskListToByteArray(elevatorNumber);
 
-			// Create Datagram packet containing byte array of event list information
-			try {
-				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 
-						elevatorPortList.get(elevatorNumber));
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+			sendPacket = new DatagramPacket(data, data.length, ELEVATOR_IP, 
+					elevatorPortList.get(elevatorNumber));
 
 			try {
 				sendSocket = new DatagramSocket();
@@ -537,13 +542,8 @@ public class  Scheduler{
 
 		byte[] sendData = data;
 
-		try {
-			sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getLocalHost(),
-					Scheduler.FLOOR_SEND_PORT);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		sendPacket = new DatagramPacket(sendData, sendData.length, FLOOR_IP,
+				Scheduler.FLOOR_SEND_PORT);
 
 		try {
 			sendSocket = new DatagramSocket();

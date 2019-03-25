@@ -69,6 +69,8 @@ public class FloorSubsystem {
 
 	// to check if elevator is currently present on the floor
 	public ArrayList<Boolean> elevatorPresent;
+	
+	private static InetAddress SCHEDULER_IP;
 
 	/**
 	 * Constructor for the floor subsystem
@@ -97,6 +99,12 @@ public class FloorSubsystem {
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
+		}
+		
+		try {
+			SCHEDULER_IP = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		}
 
 		// Turn buttons off
@@ -251,13 +259,7 @@ public class FloorSubsystem {
 
 			byte[] data = eventListToByteArray();
 
-			// Create Datagram packet containing byte array of event list information
-			try {
-				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), SEND_PORT);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+			sendPacket = new DatagramPacket(data, data.length, SCHEDULER_IP, SEND_PORT);
 
 			// Send event list to scheduler
 			try {

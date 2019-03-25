@@ -64,6 +64,8 @@ public class Elevator extends Thread {
 
 	private DatagramPacket sendPacket, receivePacket; /* Packet */
 	private DatagramSocket sendReceiveSocket; /* Socket */
+	
+	private static InetAddress SCHEDULER_IP;
 	/*---------------------------------------------------------------*/
 
 	/**
@@ -98,6 +100,12 @@ public class Elevator extends Thread {
 				elevatorNumber);
 		
 		nextFloorList = new ArrayList<Integer>();
+		
+		try {
+			SCHEDULER_IP = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -248,15 +256,12 @@ public class Elevator extends Thread {
 					
 					e.getFrame().dispose();
 					
-					generateInput(this.elevatorNumber, dest);
-
-					if (dest == 0) {
-						state = State.DOOR_ERROR;
-						break;
-					} else if (dest < 0) {
-						state = State.ELEVATOR_ERROR;
+					if (dest == -1) {
+						state = State.STANDBY;
 						break;
 					}
+					
+					generateInput(this.elevatorNumber, dest);
 
 				}
 
@@ -571,15 +576,8 @@ public class Elevator extends Thread {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try {
-			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(),
-					Elevator.SCHEDULER_SEND_PORT);
-		} catch (UnknownHostException e) {
-			System.out.print("sendPacket creation Error, Retrying creation \n");
-			e.printStackTrace();
-			this.packetCreator(pair);
-			// System.exit(1);
-		}
+		sendPacket = new DatagramPacket(byteArr, byteArr.length, SCHEDULER_IP,
+				Elevator.SCHEDULER_SEND_PORT);
 		return sendPacket;
 	}
 	/*-------------------------------------------------------------------------*/
@@ -588,14 +586,7 @@ public class Elevator extends Thread {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try {
-			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(), MAINTENANCE_PORT);
-		} catch (UnknownHostException e) {
-			System.out.print("sendPacket creation Error, Retrying creation \n");
-			e.printStackTrace();
-			this.packetCreator(pair);
-			// System.exit(1);
-		}
+		sendPacket = new DatagramPacket(byteArr, byteArr.length, SCHEDULER_IP, MAINTENANCE_PORT);
 		return sendPacket;
 	}
 
