@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-
+import java.time.Instant;
 /**
  * Scheduler.java SYSC3303G4
  * 
@@ -48,6 +48,7 @@ public class  Scheduler{
 
 	private ArrayList<ElevatorState> elevatorStates;
 
+	
 	private ArrayList<Integer> upList;
 
 	private ArrayList<Integer> upPosition;
@@ -191,7 +192,10 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		
+		//start time for floor button interface
 
+		long startTime3 = System.nanoTime();
+		
 		synchronized (this) {
 			// Store all input events
 			eventList.addAll(byteArrayToList(data));
@@ -208,7 +212,14 @@ public class  Scheduler{
 		}
 
 		processRequests();
-
+		
+		//
+		
+		long endTime3 = System.nanoTime();
+		long timeElapsed3 = endTime3 - startTime3;
+        
+        System.out.println("floor button interface in nanoseconds: " +timeElapsed3);
+        System.out.println("");
 	}
 
 	/**
@@ -406,6 +417,10 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		
+		//time start for elevator button interface
+		
+		long startTime = System.nanoTime();
+		
 		Pair userInput = byteArrayToPair(data);
 		
 		Boolean up;
@@ -450,6 +465,16 @@ public class  Scheduler{
 		
 		sendTask(userInput.getElevator() - 1);
 		
+		//time end for elevator button interface
+		
+		long endTime = System.nanoTime();
+		
+		long timeElapsed = endTime - startTime;
+        
+		System.out.println("");
+        System.out.println("Elevator Button Interface in nanoseconds: " +timeElapsed);
+        System.out.println("");
+		
 	}
 
 	/**
@@ -468,7 +493,11 @@ public class  Scheduler{
 		}
 
 		Pair arrival = byteArrayToPair(data);
-
+		
+		//start time for Arrival sensor interface
+		
+		long startTime2 = System.nanoTime();
+		
 		synchronized (this) {
 			switch(receivePacket.getPort()) {
 			case 5248:
@@ -559,6 +588,13 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		sendSocket.close();
+		
+		//end time for arrival sensor interface
+		long endTime2 = System.nanoTime();
+		long timeElapsed2 = endTime2 - startTime2;
+        
+        System.out.println("Arrival sensor interface in nanoseconds: " +timeElapsed2);
+        System.out.println("");
 	}
 
 	/**

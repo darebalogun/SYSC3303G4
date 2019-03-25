@@ -1,16 +1,16 @@
 Project Group 4
-L5G4_milestone_3
+L5G4_milestone_4
 
 
-Member:-
+Members:-
 
 	1. Muhammad Tarequzzaman | 100954008
 	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java., InputEvent.txt, 
 						ElevatorInputEvent.txt
 	2. Sama Adil Sheikh | 101060020
-	Responsiblities: Sequence Diagram for error scenarios, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
+	Responsiblities: Timing Diagrams, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
-	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
+	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, UML Diagrams, timing analysis.
 	4. Dare Balogun | 101062340
 	Responsiblilities: FloorSubSystem.java, InputEvents.java, Pair.java, ElevatorState.java, ElevatorInputEvent.txt, Scheduler.java and co-author of methods 
 						(PairToByteArray, byteArrayToList and sendArrivalInfo)  in Elevator.
@@ -24,13 +24,14 @@ SetUp Instructions:-
 	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_3.zip"
 	-> Click Finish
 	-> Run ElevatorSubSystem as Java Application
-	-> Wait for the class to execute
+	-> Wait for the class to execute fully
 	-> Open new console
 	-> Run Scheduler as Java Application
 	-> Wait for the class to execute fully
 	-> Open new Console
 	-> Run FloorSubsystem as Java Application
-	-> Open different consoles to check the output.
+	-> wait for the elevator to reach there desired floor
+	-> press the buttons in elevators to direct it to the desired floor
 	
 
 FloorSubsystem.java:-
@@ -105,13 +106,13 @@ InputEvents.txt:-
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
 	-> Change this file to change test cases in the system
 
-UML_DIAGRAM_ITERATION2:-
+UML_CLASS_DIAGRAM:-
 
 	-> Contains the UML class diagrams for the system
 
-SEQUENCE_DIAGRAM:-
+Timing_Diagram_And_Analysis:-
 
-	-> Contains the sequence diagram for the system
+	-> Contains the timing diagram and time measurnment analysis for the system
 
 
 
