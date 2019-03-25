@@ -43,17 +43,35 @@ public class ElevatorSubSystem {
 		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1);
 		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1);
 		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
-		Elevator[] elevators = { E1, E2, E3, E4 };
-
-		for (Elevator E : elevators) { // start all elevator
-			try {
-				E.start();
-			} catch (Exception e5) {
-				// TODO: handle exception
-				e5.printStackTrace();
+		
+		Thread e1_thread = new Thread() {
+			public void run() {
+				E1.run();
 			}
-
-		}
+		};
+		
+		Thread e2_thread = new Thread() {
+			public void run() {
+				E2.run();
+			}
+		};
+		
+		Thread e3_thread = new Thread() {
+			public void run() {
+				E3.run();
+			}
+		};
+		
+		Thread e4_thread = new Thread() {
+			public void run() {
+				E4.run();
+			}
+		};
+		
+		e1_thread.start();
+		e2_thread.start();
+		e3_thread.start();
+		e4_thread.start();
 		
 		try {
 			sendReceiveSocket = new DatagramSocket();

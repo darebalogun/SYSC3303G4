@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.NoSuchElementException;
-
+import java.util.Observable;
 import java.util.Random;
 
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ import java.time.LocalTime;
  *           <b>PairToByteArray, byteArrayToList
  */
 
-public class Elevator extends Thread {
+public class Elevator extends Observable {
 
 	Instant instant;
 	private static final int BYTE_SIZE = 6400;
@@ -55,6 +55,7 @@ public class Elevator extends Thread {
 	private ArrayList<Integer> nextFloorList;
 	private Boolean ACTIVE = true;
 	private Boolean dooropen;
+	private FloorButtons floorButtons;
 
 	private int currentFloor;
 	private int nextFloor, numberofFloorbuttons;
@@ -92,6 +93,12 @@ public class Elevator extends Thread {
 		this.elevatorNumber = elevatorNumber;
 
 		currentFloor = startFloor;
+		setChanged();
+		notifyObservers(currentFloor);
+		
+		floorButtons = new FloorButtons(currentFloor);
+		
+		this.addObserver(floorButtons);
 
 		receiveSocketPortCreation(RECEIVE_PORT);
 
@@ -290,12 +297,16 @@ public class Elevator extends Thread {
 				runMotor();
 				synchronized(this) {
 					currentFloor++;
+					setChanged();
+					notifyObservers(currentFloor);
 				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				synchronized(this) {
 					currentFloor--;
+					setChanged();
+					notifyObservers(currentFloor);
 				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
@@ -613,6 +624,7 @@ public class Elevator extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
 
 	/* GET AND SET from here */
 	public ArrayList<Boolean> getButtonList() {
