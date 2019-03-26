@@ -39,12 +39,12 @@ public class ElevatorSubSystem {
 
 	public static void main(String[] args) {
 
-		floorButtons = new FloorButtons(1, 1, 1, 5);
+		floorButtons = new FloorButtons(1, 1, 1, 22);
 		
 		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1, floorButtons);
 		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1, floorButtons);
 		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1, floorButtons);
-		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5, floorButtons);
+		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 22, floorButtons);
 		
 		Thread e1_thread = new Thread() {
 			public void run() {

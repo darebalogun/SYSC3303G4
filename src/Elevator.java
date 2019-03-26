@@ -255,7 +255,6 @@ public class Elevator extends Observable {
 
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d Arrived at floor: %d \n",
 							getElevatorNumber(), currentFloor);
-					sendArrivalInfo();
 					
 					status = new String[] {String.valueOf(elevatorNumber), "Door opening"};
 					synchronized (this) {
@@ -273,7 +272,6 @@ public class Elevator extends Observable {
 					
 					if (nextFloorList.size() != 0) {
 						nextFloor = nextFloorList.remove(0);
-
 					}
 					
 					status = new String[] {String.valueOf(elevatorNumber), "Please enter destination!"};
@@ -290,14 +288,7 @@ public class Elevator extends Observable {
 						dest = floorButtons.getButtonP(this.elevatorNumber);
 					}
 					
-					//floorButtons.disable(elevatorNumber);
-					
 					floorButtons.setButtonP(elevatorNumber, 0);
-					
-					if (dest == -1) {
-						state = State.STANDBY;
-						break;
-					}
 					
 					generateInput(this.elevatorNumber, dest);
 
@@ -331,7 +322,8 @@ public class Elevator extends Observable {
 					setChanged();
 					int[] posInfo = {elevatorNumber,currentFloor};
 					notifyObservers(posInfo);
-				}
+					sendArrivalInfo();
+				}		
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
@@ -340,10 +332,11 @@ public class Elevator extends Observable {
 					setChanged();
 					int[] posInfo = {elevatorNumber,currentFloor};
 					notifyObservers(posInfo);
+					sendArrivalInfo();
 				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
-			updateNextFloor();
+			//updateNextFloor();
 
 		} while (currentFloor != nextFloor);
 		// running until next floor
@@ -401,6 +394,7 @@ public class Elevator extends Observable {
 			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
 			// packet command
 			nextFloor = nextFloorList.get(0);
+			nextFloorList.remove(0);
 			// System.out.printf(" NEXT Floor %d \n", nextFloor);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.

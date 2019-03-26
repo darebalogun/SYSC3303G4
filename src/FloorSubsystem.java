@@ -440,7 +440,7 @@ public class FloorSubsystem {
 				}
 				pw.close();
 				
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < 10; i++) {
 					s.addRandomInput();
 					Random rand = new Random();
 					int n = rand.nextInt(30);
