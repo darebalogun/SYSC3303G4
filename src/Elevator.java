@@ -292,7 +292,7 @@ public class Elevator extends Observable {
 					
 					//floorButtons.disable(elevatorNumber);
 					
-					//floorButtons.setButtonP(0);
+					floorButtons.setButtonP(elevatorNumber, 0);
 					
 					if (dest == -1) {
 						state = State.STANDBY;
