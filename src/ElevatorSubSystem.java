@@ -35,14 +35,16 @@ public class ElevatorSubSystem {
 	private static final int RECEIVE_PORT4 = 5251;
 	private static final int Floors = 22;
 	private static final int MAINTENANCE_PORT = 6009;
+	private static FloorButtons floorButtons;
 
 	public static void main(String[] args) {
 
+		floorButtons = new FloorButtons(1, 1, 1, 5);
 		
-		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1);
-		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1);
-		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1);
-		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5);
+		Elevator E1 = new Elevator(1, Floors, RECEIVE_PORT1, 1, floorButtons);
+		Elevator E2 = new Elevator(2, Floors, RECEIVE_PORT2, 1, floorButtons);
+		Elevator E3 = new Elevator(3, Floors, RECEIVE_PORT3, 1, floorButtons);
+		Elevator E4 = new Elevator(4, Floors, RECEIVE_PORT4, 5, floorButtons);
 		
 		Thread e1_thread = new Thread() {
 			public void run() {

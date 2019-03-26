@@ -55,7 +55,7 @@ public class Elevator extends Observable {
 	private ArrayList<Integer> nextFloorList;
 	private Boolean ACTIVE = true;
 	private Boolean dooropen;
-	private FloorButtons floorButtons;
+	FloorButtons floorButtons;
 
 	private int currentFloor;
 	private int nextFloor, numberofFloorbuttons;
@@ -77,7 +77,7 @@ public class Elevator extends Observable {
 	 * @param RECEIVE_PORT         : Unique Port Number
 	 * @param startFloor           : Default Staring Floor
 	 */
-	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
+	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor, FloorButtons buttons) {
 		this.numberofFloorbuttons = numberofFloorbuttons;
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[numberofFloorbuttons]));
@@ -91,13 +91,13 @@ public class Elevator extends Observable {
 		dooropen = false;
 
 		this.elevatorNumber = elevatorNumber;
+		
+		this.floorButtons = buttons;
 
 		currentFloor = startFloor;
-		setChanged();
-		notifyObservers(currentFloor);
-		
-		floorButtons = new FloorButtons(currentFloor);
-		
+		int[] posInfo = {elevatorNumber,currentFloor};
+		notifyObservers(posInfo);
+				
 		this.addObserver(floorButtons);
 
 		receiveSocketPortCreation(RECEIVE_PORT);
@@ -253,15 +253,17 @@ public class Elevator extends Observable {
 
 					}
 					
-					ElevatorButtons e = new ElevatorButtons(this.elevatorNumber);
+					floorButtons.enable(elevatorNumber);
 					
-					Integer dest = e.getButtonP();
+					Integer dest = floorButtons.getButtonP(this.elevatorNumber);
 					
 					while (dest == 0) {
-						dest = e.getButtonP();
+						dest = floorButtons.getButtonP(this.elevatorNumber);
 					}
 					
-					e.getFrame().dispose();
+					floorButtons.disable(elevatorNumber);
+					
+					//floorButtons.setButtonP(0);
 					
 					if (dest == -1) {
 						state = State.STANDBY;
@@ -298,15 +300,16 @@ public class Elevator extends Observable {
 				synchronized(this) {
 					currentFloor++;
 					setChanged();
-					notifyObservers(currentFloor);
+					int[] posInfo = {elevatorNumber,currentFloor};
+					notifyObservers(posInfo);
 				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				synchronized(this) {
 					currentFloor--;
-					setChanged();
-					notifyObservers(currentFloor);
+					int[] posInfo = {elevatorNumber,currentFloor};
+					notifyObservers(posInfo);
 				}
 				// System.out.printf(" Current Floor %d \n", currentFloor);
 			}
