@@ -29,6 +29,10 @@ public class FloorButtons implements Observer {
 	private JTextField[][] floorArray; 
 	private GridBagConstraints[][] constArray;
 	private JButton[][] buttonArray;
+	private JTextField[] titles;
+	private JTextField[] status;
+	private GridBagConstraints[] statusConst;
+	private GridBagConstraints[] titleConstraints;
 	private GridBagConstraints[][] buttonConstArray;
 	private int[] buttonP;
 
@@ -60,6 +64,10 @@ public class FloorButtons implements Observer {
 		buttonArray = new JButton[22][4];
 		buttonConstArray = new GridBagConstraints[22][4];
 		buttonP = new int[] {0,0,0,0};
+		titles = new JTextField[4];
+		titleConstraints = new GridBagConstraints[4];
+		status = new JTextField[4];
+		statusConst = new GridBagConstraints[4];
 
 		initialize();
 		frame.setVisible(true);
@@ -132,21 +140,64 @@ public class FloorButtons implements Observer {
 				
 			}
 		}
+		
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			titles[i] = new JTextField();
+			titles[i].setHorizontalAlignment(SwingConstants.CENTER);
+			titles[i].setFont(new Font("Arial", Font.PLAIN, 20));
+			titles[i].setText("Elevator: " + (i + 1));
+			titles[i].setBackground(Color.CYAN);
+			titleConstraints[i] = new GridBagConstraints();
+			titleConstraints[i].gridwidth = 3;
+			titleConstraints[i].insets = new Insets(0, 0, 5, 5);
+			titleConstraints[i].fill = GridBagConstraints.HORIZONTAL;
+			titleConstraints[i].gridy = 1;
+			titleConstraints[i].gridx = 2 + 4*i;
+			frame.getContentPane().add(titles[i], titleConstraints[i]);
+		}
+		
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			status[i] = new JTextField();
+			status[i].setHorizontalAlignment(SwingConstants.CENTER);
+			status[i].setFont(new Font("Arial", Font.PLAIN, 14));
+			status[i].setText("");
+			statusConst[i] = new GridBagConstraints();
+			statusConst[i].gridwidth = 3;
+			statusConst[i].gridheight = 3;
+			statusConst[i].insets = new Insets(0, 0, 5, 5);
+			statusConst[i].fill = GridBagConstraints.HORIZONTAL;
+			statusConst[i].gridy = 33;
+			statusConst[i].gridx = 2 + 4*i;
+			frame.getContentPane().add(status[i], statusConst[i]);
+		}
+		
+		
 
 	}
 
 	@Override
 	public void update(Observable arg0, Object currentFloor) {
-		int[] position = (int[]) currentFloor;
-		// Array of elevator number and position
-		
-		int elevator_index = position[0] - 1;
-		int floor = position[1];
-		
-		floorArray[22 - currFloor.get(elevator_index)][elevator_index].setBackground(Color.WHITE);
-		currFloor.set(elevator_index, floor);
-		floorArray[22 - floor][elevator_index].setBackground(Color.YELLOW);
-		//rePaint();
+		if (currentFloor instanceof int[]) {
+			int[] position = (int[]) currentFloor;
+			// Array of elevator number and position
+			
+			int elevator_index = position[0] - 1;
+			int floor = position[1];
+			
+			floorArray[22 - currFloor.get(elevator_index)][elevator_index].setBackground(Color.WHITE);
+			currFloor.set(elevator_index, floor);
+			floorArray[22 - floor][elevator_index].setBackground(Color.YELLOW);
+			
+		} else if (currentFloor instanceof String[]){
+			String[] statusUpdate = (String[]) currentFloor;
+			
+			int elevator_index = Integer.parseInt(statusUpdate[0]) - 1;
+			String message = statusUpdate[1];
+			
+			status[elevator_index].setText(message);
+			
+		}
+
 	}
 
 	public int getButtonP(int elevator) {

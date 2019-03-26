@@ -187,6 +187,8 @@ public class Elevator extends Observable {
 				System.out.printf(LocalTime.now().toString() + " Elevator#: %d READY \n", getElevatorNumber());
 				ACTIVE = true;
 				state = State.STANDBY;
+				
+				
 				break; // end READY
 
 			case STANDBY:// STANDBY state
@@ -201,6 +203,11 @@ public class Elevator extends Observable {
 					break;
 
 				} else {
+					String[] status = new String[] {String.valueOf(elevatorNumber), "Elevator idle"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					state = State.UPDATE;
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d STANDBY at Floor: %d \n",
 							getElevatorNumber(), currentFloor);
@@ -228,6 +235,11 @@ public class Elevator extends Observable {
 				break;// end UPDATE
 
 			case RUN: // RUN
+				String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
 
 				System.out.printf(LocalTime.now().toString() + " Elevator#: %d Next Destination is : %d\n",
 						getElevatorNumber(), nextFloor);
@@ -244,7 +256,18 @@ public class Elevator extends Observable {
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d Arrived at floor: %d \n",
 							getElevatorNumber(), currentFloor);
 					sendArrivalInfo();
+					
+					status = new String[] {String.valueOf(elevatorNumber), "Door opening"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					elevatorOpendDoorAtFloor(currentFloor);
+					status = new String[] {String.valueOf(elevatorNumber), "Door closing"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					elevatorCloseDoorAtFloor(currentFloor);
 					
 					
@@ -253,7 +276,13 @@ public class Elevator extends Observable {
 
 					}
 					
-					floorButtons.enable(elevatorNumber);
+					status = new String[] {String.valueOf(elevatorNumber), "Please enter destination!"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
+					
+					//floorButtons.enable(elevatorNumber);
 					
 					Integer dest = floorButtons.getButtonP(this.elevatorNumber);
 					
@@ -261,7 +290,7 @@ public class Elevator extends Observable {
 						dest = floorButtons.getButtonP(this.elevatorNumber);
 					}
 					
-					floorButtons.disable(elevatorNumber);
+					//floorButtons.disable(elevatorNumber);
 					
 					//floorButtons.setButtonP(0);
 					
@@ -308,6 +337,7 @@ public class Elevator extends Observable {
 				runMotor();
 				synchronized(this) {
 					currentFloor--;
+					setChanged();
 					int[] posInfo = {elevatorNumber,currentFloor};
 					notifyObservers(posInfo);
 				}
