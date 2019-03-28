@@ -380,7 +380,6 @@ public class  Scheduler{
 						}
 					}
 				}
-				System.out.println(diff);
 				diff++;
 				if (diff == 21) {
 					diff = 0;
