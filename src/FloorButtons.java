@@ -130,6 +130,7 @@ public class FloorButtons implements Observer {
 				buttonArray[i][j].addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						buttonPressed(y + 1,x + 1);
+						buttonArray[x][y].setEnabled(false);
 					}
 				});
 				buttonConstArray[i][j] = new GridBagConstraints();
@@ -214,9 +215,9 @@ public class FloorButtons implements Observer {
 		}
 	}
 	
-	public void enable(int elevator) {
+	public void enable(int elevator, int floor) {
 		for (int i = 0; i < FLOOR_COUNT; i++) {
-			buttonArray[i][elevator - 1].setEnabled(true);
+			buttonArray[floor - 1][elevator - 1].setEnabled(true);
 		}
 	}
 

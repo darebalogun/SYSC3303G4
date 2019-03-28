@@ -158,6 +158,23 @@ public class Elevator extends Observable {
 
 		State state = State.READY;
 		
+		Thread readButtonInput = new Thread() {
+			public void run() {
+				while (true) {
+					Integer dest = floorButtons.getButtonP(elevatorNumber);
+					
+					if (dest > 0) {
+						System.out.println("User pressed " + dest + " in elevator " + elevatorNumber);
+						generateInput(elevatorNumber, dest);
+						floorButtons.setButtonP(elevatorNumber, 0);
+					}
+
+				}
+			}
+		};
+		
+		readButtonInput.start();
+		
 		Thread receiveTasks = new Thread() {
 			public void run() {
 				while (true) {
@@ -201,7 +218,7 @@ public class Elevator extends Observable {
 					updateNextFloor();
 					state = State.RUN;
 					break;
-
+					
 				} else {
 					String[] status = new String[] {String.valueOf(elevatorNumber), "Elevator idle"};
 					synchronized (this) {
@@ -218,21 +235,17 @@ public class Elevator extends Observable {
 				//break;// end STANDBY
 
 			case UPDATE: // UPDATE
-				receiveTaskList();
-
+				synchronized(this) {
+					while (nextFloorList.isEmpty()) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 				state = State.STANDBY;
-
-				/*
-				 * if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
-				 * 
-				 * state = State.RUN;
-				 * 
-				 * } else { receiveTaskList();
-				 * 
-				 * state = State.STANDBY; }
-				 */
-
-				break;// end UPDATE
+				break;
 
 			case RUN: // RUN
 				String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
@@ -248,7 +261,7 @@ public class Elevator extends Observable {
 
 				state = State.FINISH;
 
-				break; // end RUN
+				break;
 
 			case FINISH: // FINISH
 				if (currentFloor == nextFloor) {
@@ -267,30 +280,9 @@ public class Elevator extends Observable {
 						setChanged();
 						notifyObservers(status);
 					}
-					elevatorCloseDoorAtFloor(currentFloor);
+					elevatorCloseDoorAtFloor(currentFloor);	
 					
-					
-					if (nextFloorList.size() != 0) {
-						nextFloor = nextFloorList.remove(0);
-					}
-					
-					status = new String[] {String.valueOf(elevatorNumber), "Please enter destination!"};
-					synchronized (this) {
-						setChanged();
-						notifyObservers(status);
-					}
-					
-					//floorButtons.enable(elevatorNumber);
-					
-					Integer dest = floorButtons.getButtonP(this.elevatorNumber);
-					
-					while (dest == 0) {
-						dest = floorButtons.getButtonP(this.elevatorNumber);
-					}
-					
-					floorButtons.setButtonP(elevatorNumber, 0);
-					
-					generateInput(this.elevatorNumber, dest);
+					floorButtons.enable(elevatorNumber, currentFloor);
 
 				}
 
@@ -313,8 +305,6 @@ public class Elevator extends Observable {
 			System.out.printf(LocalTime.now().toString() + " Elevator#: %d Currently at floor: %d \n",
 					getElevatorNumber(), currentFloor);
 
-			// System.out.printf(" Next Floor %d \n", nextFloor);
-
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
 				synchronized(this) {
@@ -324,7 +314,7 @@ public class Elevator extends Observable {
 					notifyObservers(posInfo);
 					sendArrivalInfo();
 				}		
-				// System.out.printf(" Current Floor %d \n", currentFloor);
+
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
 				synchronized(this) {
@@ -334,12 +324,14 @@ public class Elevator extends Observable {
 					notifyObservers(posInfo);
 					sendArrivalInfo();
 				}
-				// System.out.printf(" Current Floor %d \n", currentFloor);
+
+			} else {
+				sendArrivalInfo();
 			}
-			//updateNextFloor();
+
 
 		} while (currentFloor != nextFloor);
-		// running until next floor
+
 	
 	}
 
@@ -391,11 +383,8 @@ public class Elevator extends Observable {
 	 */
 	public synchronized void updateNextFloor() {// change accordingly
 		if (nextFloorList.size() > 0) {
-			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
-			// packet command
 			nextFloor = nextFloorList.get(0);
 			nextFloorList.remove(0);
-			// System.out.printf(" NEXT Floor %d \n", nextFloor);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.printf(LocalTime.now().toString() + "Elevator#: %d Cureent Floor Number out of the range \n",
@@ -560,11 +549,10 @@ public class Elevator extends Observable {
 			System.exit(1);
 		}
 		
-		synchronized(this) {
-			// update next floor
-			nextFloorList.addAll(byteArrayToList(data));
-			Collections.sort(nextFloorList);
-		}
+		synchronized (this) {
+			nextFloorList = byteArrayToList(data);
+			notifyAll();
+		}		
 
 	}
 
@@ -633,7 +621,6 @@ public class Elevator extends Observable {
 
 		elevatorNum = getElevatorNumber();
 		Integer destination = dest;
-		String request = time + " " + elevatorNum + " " + destination;
 
 		Pair pair = new Pair(time, elevatorNum, destination);
 
@@ -641,15 +628,6 @@ public class Elevator extends Observable {
 
 		packetSend(pac);
 
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/ElevatorInputEvents.txt", true));
-			out.newLine();
-			out.write(request);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 

@@ -81,6 +81,8 @@ public class  Scheduler{
 	// Port list for all elevators in the elevator subsystem
 	private static final ArrayList<Integer> elevatorPortList = new ArrayList<Integer>(Arrays.asList(5248, 5249, 5250, 5251));
 
+	private ArrayList<Integer> userInputList;
+	
 	private static final int ELEVATOR_RECEIVE_PORT = 60006;
 
 	private static final int FLOOR_SEND_PORT = 60004;
@@ -109,13 +111,13 @@ public class  Scheduler{
 		// current position of elevator is 1
 		currentPositionList = new ArrayList<>(ELEVATOR_COUNT);
 
-		currentPositionList.addAll(Arrays.asList(BOTTOM_FLOOR, BOTTOM_FLOOR, BOTTOM_FLOOR, TOP_FLOOR));
+		currentPositionList.addAll(Arrays.asList(BOTTOM_FLOOR, 8, 17, TOP_FLOOR));
 
 		eventList = new LinkedList<InputEvent>();
 
 		directionList = new ArrayList<>(ELEVATOR_COUNT);
 
-		directionList.addAll(Arrays.asList(Direction.UP, Direction.UP, Direction.UP, Direction.DOWN));
+		directionList.addAll(Arrays.asList(Direction.IDLE, Direction.IDLE, Direction.IDLE, Direction.IDLE));
 
 		upList = new ArrayList<Integer>();
 
@@ -136,11 +138,15 @@ public class  Scheduler{
 		downPosition.add(5);
 
 		elevatorStates = new ArrayList<ElevatorState>();
+		
+		userInputList = new ArrayList<Integer>(Arrays.asList(null, null, null, null));
 
 		for (int i = 0; i < ELEVATOR_COUNT; i++) {
 			elevatorStates.add(new ElevatorState(i + 1));
-			elevatorStates.get(i).setCurrentFloor(BOTTOM_FLOOR);
 		}
+		elevatorStates.get(0).setCurrentFloor(BOTTOM_FLOOR);
+		elevatorStates.get(1).setCurrentFloor(8);
+		elevatorStates.get(2).setCurrentFloor(15);
 		elevatorStates.get(3).setCurrentFloor(TOP_FLOOR);
 
 		try {
@@ -237,7 +243,6 @@ public class  Scheduler{
 		try {
 			objStream = new ObjectInputStream(byteStream);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -264,42 +269,45 @@ public class  Scheduler{
 
 		if (!eventList.isEmpty()) {
 
-			Collections.shuffle(elevatorStates);
+			//Collections.shuffle(elevatorStates);
 			
 			//Iterator<InputEvent> iter = eventList.iterator();
 			InputEvent event = eventList.peek();
-
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				if (elevatorStates.get(i).getTaskList().contains(event.getCurrentFloor()) || elevatorTaskQueue.get(i).contains(event.getCurrentFloor())) {
-					System.out.println("Elevator: " + elevatorStates.get(i).getNumber() + "is already assigned this floor");
-					eventList.remove();
-					event = eventList.peek();
-					break;
-				}
-			}
 			
-			while (!eventList.isEmpty()){
+			while (!eventList.isEmpty()) {
+				
 				for (int i = 0; i < ELEVATOR_COUNT; i++) {
-					if (elevatorTaskQueue.get(elevatorStates.get(i).getNumber() - 1).size() > 2) {
-						break;
+					if (elevatorStates.get(i).getTaskList().contains(event.getCurrentFloor())) {
+						if ((event.getUp() && elevatorStates.get(i).getDirection() == Direction.UP) || (!event.getUp() && elevatorStates.get(i).getDirection() == Direction.DOWN)) {
+							System.out.println("Elevator: " + elevatorStates.get(i).getNumber() + " is already assigned this floor");
+							eventList.remove();
+							event = eventList.peek();
+							break;
+						}
 					}
-					if (event.getUp() && elevatorStates.get(i).getDirection() == Direction.UP) {
+					
+					if (event.getUp() && elevatorStates.get(i).getDirection() == Direction.UP && (event.getCurrentFloor() > elevatorStates.get(i).getCurrentFloor())) {
 						if ((event.getCurrentFloor() - diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
 							eventList.remove();
 							event = eventList.peek();
 							break;
 						}
-					} else if (!event.getUp() && elevatorStates.get(i).getDirection() == Direction.DOWN) {
+					} else if (!event.getUp() && elevatorStates.get(i).getDirection() == Direction.DOWN && (event.getCurrentFloor() < elevatorStates.get(i).getCurrentFloor())) {
 						if ((event.getCurrentFloor() + diff) == elevatorStates.get(i).getCurrentFloor()) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
 							eventList.remove();
 							event = eventList.peek();
 							break;
 						}
-					} else {
+					} else if (elevatorStates.get(i).getDirection() == Direction.IDLE) {
 						if (Math.abs(event.getCurrentFloor() - elevatorStates.get(i).getCurrentFloor()) == diff) {
 							elevatorStates.get(i).addTask(event.getCurrentFloor());
+							if (event.getCurrentFloor() > elevatorStates.get(i).getCurrentFloor()) {
+								elevatorStates.get(i).setDirection(Direction.UP);
+							} else if (event.getCurrentFloor() < elevatorStates.get(i).getCurrentFloor()) {
+								elevatorStates.get(i).setDirection(Direction.DOWN);
+							} 
 							eventList.remove();
 							event = eventList.peek();
 							break;
@@ -323,20 +331,13 @@ public class  Scheduler{
 	public byte[] taskListToByteArray(int elevatorNumber) {
 
 		ArrayList<Integer> list = new ArrayList<>();
-		for (Integer integer : elevatorTaskQueue.get(elevatorNumber)) {
-			if (!list.contains(integer)) {
-				list.add(integer);
+		synchronized (this) {
+			for (Integer integer : elevatorTaskQueue.get(elevatorNumber)) {
+				if (!list.contains(integer)) {
+					list.add(integer);
+				}
 			}
 		}
-
-		Collections.sort(list);
-
-		if (elevatorStates.get(elevatorNumber).getDirection() == Direction.DOWN) {
-			Collections.reverse(list);
-		}
-
-		elevatorTaskQueue.get(elevatorNumber).clear();
-		elevatorTaskQueue.get(elevatorNumber).addAll(list);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(Scheduler.BYTE_SIZE);
 
@@ -356,9 +357,6 @@ public class  Scheduler{
 			e.printStackTrace();
 		}
 
-		System.out.println("Sending Elevator " + (elevatorNumber + 1) + " to floors: "+ elevatorTaskQueue.get(elevatorNumber));
-
-
 		return baos.toByteArray();
 
 	}
@@ -369,7 +367,7 @@ public class  Scheduler{
 	 * @param elevatorNumber
 	 */
 	public synchronized void sendTask(int elevatorNumber) {
-		if (elevatorStates.get(elevatorNumber).getTaskList().size() > 0) {
+		if (elevatorStates.get(elevatorNumber).getTaskList().size() > 0 || userInputList.get(elevatorNumber) != null) {
 			
 			ArrayList<Integer> alist = new ArrayList<Integer>();
 			
@@ -377,12 +375,21 @@ public class  Scheduler{
 				alist.add(task);
 			}
 			
-			Collections.sort(alist);
-			
 			for (int i = 0; i < alist.size(); i++) {
 				if (!elevatorTaskQueue.get(elevatorNumber).contains(alist.get(i))) {
 					elevatorTaskQueue.get(elevatorNumber).add(alist.get(i));
 				}
+			}
+			
+			Collections.sort(elevatorTaskQueue.get(elevatorNumber));
+			
+			if (elevatorStates.get(elevatorNumber).getDirection() == Direction.DOWN) {
+				Collections.reverse(elevatorTaskQueue.get(elevatorNumber));
+			}
+			
+			if (userInputList.get(elevatorNumber) != null) {
+				elevatorTaskQueue.get(elevatorNumber).add(userInputList.get(elevatorNumber));
+				userInputList.set(elevatorNumber, null);
 			}
 			
 
@@ -406,6 +413,8 @@ public class  Scheduler{
 			}
 			sendSocket.close();
 			
+			System.out.println("Sending Elevator " + (elevatorNumber + 1) + " going " + elevatorStates.get(elevatorNumber).getDirection() + " to floors: "+ elevatorTaskQueue.get(elevatorNumber));
+			
 
 			elevatorStates.get(elevatorNumber).getTaskList().clear();
 			
@@ -424,29 +433,9 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		
-		//time start for elevator button interface
-		
-		//long startTime = System.nanoTime();
-		
 		Pair userInput = byteArrayToPair(data);
 		
 		Boolean up;
-		
-		if (userInput.getDestination() == 0) {
-			System.out.println("Elevator " + userInput.getElevator() + " door stuck. Retrying...");
-			return;
-		} else if (userInput.getDestination() == -1) {
-			System.out.println("Elevator " + userInput.getElevator() + " hard fault. Disabling elevator...");
-			for (int i = 0; i < ELEVATOR_COUNT; i++) {
-				synchronized (this) {
-					if (elevatorStates.get(i).getNumber() == userInput.getElevator()) {
-						elevatorStates.remove(i);
-						ELEVATOR_COUNT--;
-						return;
-					}
-				}
-			}
-		}
 		
 		synchronized (this) {
 			if (elevatorStates.get(userInput.getElevator() - 1).getCurrentFloor() > userInput.getDestination() ) {
@@ -454,17 +443,16 @@ public class  Scheduler{
 			} else {
 				up = true;
 			}
-		}
 
-		for (int i = 0; i < ELEVATOR_COUNT; i++) {
-			if (elevatorStates.get(i).getNumber() == userInput.getElevator()) {
-				elevatorTaskQueue.get(i).add(userInput.getDestination());
-				if(up) {
-					elevatorStates.get(i).setDirection(Direction.UP);
-				} else {
-					elevatorStates.get(i).setDirection(Direction.DOWN);
+			for (int i = 0; i < ELEVATOR_COUNT; i++) {
+				if (elevatorStates.get(i).getNumber() == userInput.getElevator()) {
+					if(elevatorStates.get(i).getDirection() == Direction.IDLE || (up && elevatorStates.get(i).getDirection() == Direction.UP) || (!up && elevatorStates.get(i).getDirection() == Direction.DOWN)) {
+						elevatorStates.get(i).addTask(userInput.getDestination());;
+					} else {
+						userInputList.set(i,userInput.getDestination());
+					}
+					break;
 				}
-				break;
 			}
 		}
 		
@@ -472,15 +460,6 @@ public class  Scheduler{
 		
 		sendTask(userInput.getElevator() - 1);
 		
-		//time end for elevator button interface
-		
-		//long endTime = System.nanoTime();
-		
-		//long timeElapsed = endTime - startTime;
-        
-		//System.out.println("");
-        //System.out.println("Elevator Button Interface in nanoseconds: " +timeElapsed);
-        //System.out.println("");
 		
 	}
 
@@ -511,19 +490,17 @@ public class  Scheduler{
 				//currentPositionList.set(0, arrival.getInteger());
 				
 				elevatorStates.get(0).setCurrentFloor(arrival.getInteger());
+				
+				if (elevatorTaskQueue.get(0).isEmpty() || arrival.getInteger() == elevatorTaskQueue.get(0).get(0)) {
+					elevatorStates.get(0).setDirection(Direction.IDLE);
+				} else if (arrival.getInteger() > elevatorTaskQueue.get(0).get(0)) {
+					elevatorStates.get(0).setDirection(Direction.DOWN);
+				} else if (arrival.getInteger() < elevatorTaskQueue.get(0).get(0)){
+					elevatorStates.get(0).setDirection(Direction.UP);
+				}
+				
 				if (elevatorTaskQueue.get(0).contains(arrival.getInteger())) {
 					elevatorTaskQueue.get(0).remove(arrival.getInteger());
-					
-					if (arrival.getString() == "up") {
-						elevatorStates.get(0).setDirection(Direction.UP);
-					} else if (arrival.getString() == "down") {
-						elevatorStates.get(0).setDirection(Direction.DOWN);
-					} else {
-						elevatorStates.get(0).setDirection(Direction.IDLE);
-					}
-					
-					
-					
 					System.out.println(LocalTime.now() + " Elevator 1 has arrived at floor: " + arrival.getInteger());
 				}
 				break;
@@ -531,17 +508,17 @@ public class  Scheduler{
 				//currentPositionList.set(1, arrival.getInteger());
 				
 				elevatorStates.get(1).setCurrentFloor(arrival.getInteger());
+				
+				if (elevatorTaskQueue.get(1).isEmpty() || arrival.getInteger() == elevatorTaskQueue.get(1).get(0)) {
+					elevatorStates.get(1).setDirection(Direction.IDLE);
+				} else if (arrival.getInteger() > elevatorTaskQueue.get(1).get(0)) {
+					elevatorStates.get(1).setDirection(Direction.DOWN);
+				} else if (arrival.getInteger() < elevatorTaskQueue.get(1).get(0)){
+					elevatorStates.get(1).setDirection(Direction.UP);
+				}
+				
 				if (elevatorTaskQueue.get(1).contains(arrival.getInteger())) {
 					elevatorTaskQueue.get(1).remove(arrival.getInteger());
-					
-					if (arrival.getString() == "up") {
-						elevatorStates.get(1).setDirection(Direction.UP);
-					} else if (arrival.getString() == "down") {
-						elevatorStates.get(1).setDirection(Direction.DOWN);
-					} else {
-						elevatorStates.get(1).setDirection(Direction.IDLE);
-					}
-					
 					System.out.println(LocalTime.now() + " Elevator 2 has arrived at floor: " + arrival.getInteger());
 				}
 				break;
@@ -549,16 +526,17 @@ public class  Scheduler{
 				//currentPositionList.set(2, arrival.getInteger());
 				
 				elevatorStates.get(2).setCurrentFloor(arrival.getInteger());
+				
+				if (elevatorTaskQueue.get(2).isEmpty() || arrival.getInteger() == elevatorTaskQueue.get(2).get(0)) {
+					elevatorStates.get(2).setDirection(Direction.IDLE);
+				} else if (arrival.getInteger() > elevatorTaskQueue.get(2).get(0)) {
+					elevatorStates.get(2).setDirection(Direction.DOWN);
+				} else if (arrival.getInteger() < elevatorTaskQueue.get(2).get(0)) {
+					elevatorStates.get(2).setDirection(Direction.UP);
+				}
+				
 				if (elevatorTaskQueue.get(2).contains(arrival.getInteger())) {
 					elevatorTaskQueue.get(2).remove(arrival.getInteger());
-					
-					if (arrival.getString() == "up") {
-						elevatorStates.get(2).setDirection(Direction.UP);
-					} else if (arrival.getString() == "down") {
-						elevatorStates.get(2).setDirection(Direction.DOWN);
-					} else {
-						elevatorStates.get(2).setDirection(Direction.IDLE);
-					}
 					
 					System.out.println(LocalTime.now() + " Elevator 3 has arrived at floor: " + arrival.getInteger());
 				}
@@ -568,17 +546,17 @@ public class  Scheduler{
 				//currentPositionList.set(3, arrival.getInteger());
 				
 				elevatorStates.get(3).setCurrentFloor(arrival.getInteger());
+				
+				if (elevatorTaskQueue.get(3).isEmpty() || arrival.getInteger() == elevatorTaskQueue.get(3).get(0)) {
+					elevatorStates.get(3).setDirection(Direction.IDLE);
+				} else if (arrival.getInteger() > elevatorTaskQueue.get(3).get(0)) {
+					elevatorStates.get(3).setDirection(Direction.DOWN);
+				} else if (arrival.getInteger() < elevatorTaskQueue.get(3).get(0)) {
+					elevatorStates.get(3).setDirection(Direction.UP);
+				} 
+				
 				if (elevatorTaskQueue.get(3).contains(arrival.getInteger())) {
-					elevatorTaskQueue.get(3).remove(arrival.getInteger());
-					
-					if (arrival.getString() == "up") {
-						elevatorStates.get(3).setDirection(Direction.UP);
-					} else if (arrival.getString() == "down") {
-						elevatorStates.get(3).setDirection(Direction.DOWN);
-					} else {
-						elevatorStates.get(3).setDirection(Direction.IDLE);
-					}
-					
+					elevatorTaskQueue.get(3).remove(arrival.getInteger());					
 					System.out.println(LocalTime.now() + " Elevator 4 has arrived at floor: " + arrival.getInteger());
 				}
 				break;
@@ -626,7 +604,6 @@ public class  Scheduler{
 		try {
 			objStream = new ObjectInputStream(byteStream);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -672,6 +649,13 @@ public class  Scheduler{
 			public void run() {
 				while (true) {
 					s.receiveInputEventList();
+				}
+			}
+		};
+		
+		Thread sendTasks = new Thread(){
+			public void run() {
+				while(true) {
 					for (int i = 0; i < s.ELEVATOR_COUNT; i++) {
 						s.sendTask(i);
 					}
@@ -682,6 +666,7 @@ public class  Scheduler{
 		runScheduler.start();
 		receiveFromElevator.start();
 		receiveFromES.start();
+		sendTasks.start();
 
 	}
 
