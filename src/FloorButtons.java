@@ -35,7 +35,18 @@ public class FloorButtons implements Observer {
 	private GridBagConstraints[] titleConstraints;
 	private GridBagConstraints[][] buttonConstArray;
 	private int[] buttonP;
+	private JButton[] doorStuckButtons;
+	private GridBagConstraints[] doorStuckConstr;
+	private int doorStuckTag[];
 
+
+	public int getDoorStuckTag(int elevatorNumber) {
+		return doorStuckTag[elevatorNumber - 1];
+	}
+
+	public void setDoorStuckTag(int elevatorNumber, int code) {
+		this.doorStuckTag[elevatorNumber - 1] = code;
+	}
 
 	/**
 	 * Launch the application.
@@ -68,6 +79,9 @@ public class FloorButtons implements Observer {
 		titleConstraints = new GridBagConstraints[4];
 		status = new JTextField[4];
 		statusConst = new GridBagConstraints[4];
+		doorStuckButtons = new JButton[4];
+		doorStuckConstr = new GridBagConstraints[4];
+		doorStuckTag = new int[] {0, 0, 0, 0};
 
 		initialize();
 		frame.setVisible(true);
@@ -140,6 +154,29 @@ public class FloorButtons implements Observer {
 				frame.getContentPane().add(buttonArray[i][j], buttonConstArray[i][j]);
 				
 			}
+		}
+		
+		for (int i = 0; i < ELEVATOR_COUNT; i++) {
+			if (i % 2 == 0) {
+				doorStuckButtons[i] = new JButton("Block Door");
+			} else {
+				doorStuckButtons[i] = new JButton("Block Elevator");
+			}
+			final Integer x = new Integer(i);
+			doorStuckButtons[i].addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					doorStuckTag[x] = 2; // Block Elevator
+					if (x % 2 == 0) // Block Door
+						doorStuckTag[x] = 1;
+					doorStuckButtons[x].setEnabled(false);
+				}
+			});
+			doorStuckConstr[i] = new GridBagConstraints();
+			doorStuckConstr[i].insets = new Insets(0, 0, 0, 5);
+			doorStuckConstr[i].gridx = 3 + 4*i;
+			doorStuckConstr[i].gridwidth = 2;
+			doorStuckConstr[i].gridy = 31;
+			frame.getContentPane().add(doorStuckButtons[i], doorStuckConstr[i]);
 		}
 		
 		for (int i = 0; i < ELEVATOR_COUNT; i++) {

@@ -274,6 +274,18 @@ public class Elevator extends Observable {
 						setChanged();
 						notifyObservers(status);
 					}
+					
+					if (floorButtons.getDoorStuckTag(elevatorNumber) == 1) {
+						status = new String[] {String.valueOf(elevatorNumber), "Door Stuck"};
+						synchronized (this) {
+							setChanged();
+							notifyObservers(status);
+						}
+						
+						state = State.DOOR_ERROR;
+						break;
+					}
+					
 					elevatorOpendDoorAtFloor(currentFloor);
 					status = new String[] {String.valueOf(elevatorNumber), "Door closing"};
 					synchronized (this) {
@@ -284,6 +296,9 @@ public class Elevator extends Observable {
 					
 					floorButtons.enable(elevatorNumber, currentFloor);
 
+				} else {
+					state = State.ELEVATOR_ERROR;
+					break;
 				}
 
 				state = State.STANDBY;
@@ -304,6 +319,16 @@ public class Elevator extends Observable {
 			updateGoing_UPorDOWN();
 			System.out.printf(LocalTime.now().toString() + " Elevator#: %d Currently at floor: %d \n",
 					getElevatorNumber(), currentFloor);
+			
+			if (floorButtons.getDoorStuckTag(elevatorNumber) == 2) {
+				String[] status = new String[] {String.valueOf(elevatorNumber), "Elevator Stuck"};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
+				
+				return;
+			}
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
@@ -328,7 +353,6 @@ public class Elevator extends Observable {
 			} else {
 				sendArrivalInfo();
 			}
-
 
 		} while (currentFloor != nextFloor);
 
