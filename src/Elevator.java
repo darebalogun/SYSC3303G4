@@ -190,8 +190,19 @@ public class Elevator extends Observable {
 			switch (state) {
 			
 			case DOOR_ERROR:
-				openDoor();
 				System.out.println(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n");
+				
+				System.out.println(LocalTime.now() + " Retrying...");
+				
+				try {
+					TimeUnit.SECONDS.sleep(5);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				state = State.FINISH;
+				
 				break;
 			case ELEVATOR_ERROR:
 
