@@ -57,7 +57,7 @@ public class Elevator extends Observable {
 	private Boolean dooropen;
 	FloorButtons floorButtons;
 
-	private int currentFloor;
+	private Integer currentFloor;
 	private int nextFloor, numberofFloorbuttons;
 
 	private Boolean goingUP = false;
@@ -207,7 +207,7 @@ public class Elevator extends Observable {
 			case ELEVATOR_ERROR:
 
 				ACTIVE = false;
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d Elevator Stuck \n");
+				System.out.println(LocalTime.now().toString() + " Elevator#: " + getElevatorNumber() + " Elevator Stuck \n");
 
 				break;
 
@@ -276,6 +276,9 @@ public class Elevator extends Observable {
 
 			case FINISH: // FINISH
 				if (currentFloor == nextFloor) {
+					if (!nextFloorList.isEmpty()) {
+						nextFloorList.remove(currentFloor);
+					}
 
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d Arrived at floor: %d \n",
 							getElevatorNumber(), currentFloor);
@@ -345,6 +348,12 @@ public class Elevator extends Observable {
 				runMotor();
 				synchronized(this) {
 					currentFloor++;
+					updateNextFloor();
+					String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					setChanged();
 					int[] posInfo = {elevatorNumber,currentFloor};
 					notifyObservers(posInfo);
@@ -355,6 +364,12 @@ public class Elevator extends Observable {
 				runMotor();
 				synchronized(this) {
 					currentFloor--;
+					updateNextFloor();
+					String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					setChanged();
 					int[] posInfo = {elevatorNumber,currentFloor};
 					notifyObservers(posInfo);
@@ -362,6 +377,7 @@ public class Elevator extends Observable {
 				}
 
 			} else {
+				updateNextFloor();
 				sendArrivalInfo();
 			}
 
@@ -419,7 +435,6 @@ public class Elevator extends Observable {
 	public synchronized void updateNextFloor() {// change accordingly
 		if (nextFloorList.size() > 0) {
 			nextFloor = nextFloorList.get(0);
-			nextFloorList.remove(0);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.printf(LocalTime.now().toString() + "Elevator#: %d Cureent Floor Number out of the range \n",
