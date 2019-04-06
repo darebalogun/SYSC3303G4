@@ -450,15 +450,15 @@ public class  Scheduler{
 				}
 			}
 
+			if (userInputList.get(elevatorNumber) != null) {
+				elevatorTaskQueue.get(elevatorNumber).add(userInputList.get(elevatorNumber));
+				userInputList.set(elevatorNumber, null);
+			}
+			
 			Collections.sort(elevatorTaskQueue.get(elevatorNumber));
 
 			if (elevatorStates.get(elevatorNumber).getDirection() == Direction.DOWN) {
 				Collections.reverse(elevatorTaskQueue.get(elevatorNumber));
-			}
-
-			if (userInputList.get(elevatorNumber) != null) {
-				elevatorTaskQueue.get(elevatorNumber).add(userInputList.get(elevatorNumber));
-				userInputList.set(elevatorNumber, null);
 			}
 
 
