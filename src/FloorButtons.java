@@ -46,6 +46,7 @@ public class FloorButtons implements Observer {
 
 	public void setDoorStuckTag(int elevatorNumber, int code) {
 		this.doorStuckTag[elevatorNumber - 1] = code;
+		this.doorStuckButtons[elevatorNumber - 1].setEnabled(true);
 	}
 
 	/**

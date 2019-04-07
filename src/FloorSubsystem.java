@@ -348,23 +348,17 @@ public class FloorSubsystem {
 		
 		String from = n.toString();
 		
-		Integer m = rand.nextInt(FLOOR_COUNT) + 1;
-		
-		while (n == m) {
-			m = rand.nextInt(FLOOR_COUNT) + 1;
-		}
-		
-		String to = m.toString();
+		Boolean m = rand.nextBoolean();
 		
 		String direction;
 		
-		if (n > m) {
+		if (m) {
 			direction = "down";
 		} else {
 			direction = "up";
 		}
 		
-		String request = time + " " + from + " " + direction + " " + to;
+		String request = time + " " + from + " " + direction;
 		
 		synchronized(this) {
 			while (!ready) {
@@ -388,23 +382,6 @@ public class FloorSubsystem {
 			notifyAll();
 		}
 	}
-
-	
-//	public boolean isUpLamp() {
-//		return upLamp;
-//	}
-//
-//	public void setUpLamp(boolean upLamp) {
-//		this.upLamp = upLamp;
-//	}
-//
-//	public boolean isDownLamp() {
-//		return downLamp;
-//	}
-//
-//	public void setDownLamp(boolean downLamp) {
-//		this.downLamp = downLamp;
-//	}
 
 	public static void main(String[] args) {
 

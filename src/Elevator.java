@@ -190,16 +190,25 @@ public class Elevator extends Observable {
 			switch (state) {
 			
 			case DOOR_ERROR:
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n");
+				System.out.println(LocalTime.now().toString() + " Elevator#: " + elevatorNumber + " DOOR STUCK \n");
 				
-				System.out.println(LocalTime.now() + " Retrying...");
+				System.out.println(LocalTime.now() + " Elevator#: " + elevatorNumber + " Retrying...");
 				
 				try {
-					TimeUnit.SECONDS.sleep(5);
+					TimeUnit.SECONDS.sleep(10);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				
+				floorButtons.setDoorStuckTag(elevatorNumber,0);
+				String[] status = new String[] {String.valueOf(elevatorNumber), "Door Fixed"};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
+				
+				System.out.println(LocalTime.now() + " Elevator#: " + elevatorNumber + " Door fixed!");
 				
 				state = State.FINISH;
 				
@@ -231,7 +240,7 @@ public class Elevator extends Observable {
 					break;
 					
 				} else {
-					String[] status = new String[] {String.valueOf(elevatorNumber), "Elevator idle"};
+					status = new String[] {String.valueOf(elevatorNumber), "Elevator idle"};
 					synchronized (this) {
 						setChanged();
 						notifyObservers(status);
@@ -259,7 +268,7 @@ public class Elevator extends Observable {
 				break;
 
 			case RUN: // RUN
-				String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+				status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
 				synchronized (this) {
 					setChanged();
 					notifyObservers(status);
