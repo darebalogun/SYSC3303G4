@@ -1,5 +1,5 @@
 Project Group 4
-L5G4_milestone_4
+L5G4_milestone_Final_Project
 
 
 Members:-
@@ -106,13 +106,7 @@ InputEvents.txt:-
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
 	-> Change this file to change test cases in the system
 
-UML_CLASS_DIAGRAM:-
 
-	-> Contains the UML class diagrams for the system
-
-Timing_Diagram_And_Analysis:-
-
-	-> Contains the timing diagram and time measurnment analysis for the system
 
 
 

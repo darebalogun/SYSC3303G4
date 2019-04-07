@@ -190,6 +190,7 @@ public class Elevator extends Observable {
 			switch (state) {
 			
 			case DOOR_ERROR:
+
 				System.out.println(LocalTime.now().toString() + " Elevator#: " + elevatorNumber + " DOOR STUCK \n");
 				
 				System.out.println(LocalTime.now() + " Elevator#: " + elevatorNumber + " Retrying...");

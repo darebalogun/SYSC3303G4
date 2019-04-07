@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 
 /**
  * FloorSubSystem.java SYSC3303G4
@@ -109,7 +110,7 @@ public class FloorSubsystem {
 		// Turn buttons off
 
 
-		System.out.println("\nStarting " + FLOOR_COUNT + " floors");
+		System.out.println(LocalTime.now().toString() + " Starting " + FLOOR_COUNT + " floors");
 
 	}
 
@@ -182,7 +183,7 @@ public class FloorSubsystem {
 					} else if (inputEvents[2].equalsIgnoreCase("down")) {
 						up = false;
 					} else {
-						throw new IllegalArgumentException("Floor button read form input file is not valid");
+						throw new IllegalArgumentException(LocalTime.now().toString() + "Floor button read form input file is not valid");
 					}
 
 					// Finally an integer representing the requested destination
@@ -194,12 +195,12 @@ public class FloorSubsystem {
 					// Add to event object list
 					eventList.add(event);
 
-					System.out.print("Time: " + time);
-					System.out.print(" From: " + currentFloor);
+					System.out.print(LocalTime.now().toString() + " InputEvent Time: " + time + " From: " + currentFloor);
+					//System.out.print(" From: " + currentFloor);
 					if (up) {
-						System.out.println(" Direction: " + "up");
+						System.out.println(LocalTime.now().toString() +  " Direction: " + "up");
 					} else {
-						System.out.println(" Direction: " + "down");
+						System.out.println(LocalTime.now().toString() +  " Direction: " + "down");
 					}
 				}
 				
@@ -240,7 +241,7 @@ public class FloorSubsystem {
 
 			return data;
 		} else {
-			throw new IllegalArgumentException("The eventlist must not be empty before being converted to byte array");
+			throw new IllegalArgumentException(LocalTime.now().toString() + " The eventlist must not be empty before being converted to byte array");
 		}
 	}
 
@@ -268,7 +269,7 @@ public class FloorSubsystem {
 				System.exit(1);
 			}
 
-			System.out.println("\nFloorSubsystem: Sent " + this.eventList.size() + " requests to scheduler");
+			System.out.println(LocalTime.now().toString() +  " FloorSubsystem: Sent " + this.eventList.size() + " requests to scheduler");
 		}
 
 		this.eventList.clear();
@@ -304,7 +305,7 @@ public class FloorSubsystem {
 //					this.setDownLamp(false);
 //				}
 
-				System.out.println("An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
+				System.out.println(LocalTime.now().toString() +  " An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
 			}
 		}
 
