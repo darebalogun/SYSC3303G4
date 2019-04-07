@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.NoSuchElementException;
-
+import java.util.Observable;
 import java.util.Random;
 
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ import java.time.LocalTime;
  *           <b>PairToByteArray, byteArrayToList
  */
 
-public class Elevator extends Thread {
+public class Elevator extends Observable {
 
 	Instant instant;
 	private static final int BYTE_SIZE = 6400;
@@ -55,8 +55,9 @@ public class Elevator extends Thread {
 	private ArrayList<Integer> nextFloorList;
 	private Boolean ACTIVE = true;
 	private Boolean dooropen;
+	FloorButtons floorButtons;
 
-	private int currentFloor;
+	private Integer currentFloor;
 	private int nextFloor, numberofFloorbuttons;
 
 	private Boolean goingUP = false;
@@ -64,6 +65,8 @@ public class Elevator extends Thread {
 
 	private DatagramPacket sendPacket, receivePacket; /* Packet */
 	private DatagramSocket sendReceiveSocket; /* Socket */
+	
+	private static InetAddress SCHEDULER_IP;
 	/*---------------------------------------------------------------*/
 
 	/**
@@ -74,7 +77,7 @@ public class Elevator extends Thread {
 	 * @param RECEIVE_PORT         : Unique Port Number
 	 * @param startFloor           : Default Staring Floor
 	 */
-	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor) {
+	public Elevator(int elevatorNumber, int numberofFloorbuttons, int RECEIVE_PORT, int startFloor, FloorButtons buttons) {
 		this.numberofFloorbuttons = numberofFloorbuttons;
 		// create buttonList for buttons floor and Initialize as FALSE
 		buttonList = new ArrayList<>(Arrays.asList(new Boolean[numberofFloorbuttons]));
@@ -88,14 +91,28 @@ public class Elevator extends Thread {
 		dooropen = false;
 
 		this.elevatorNumber = elevatorNumber;
+		
+		this.floorButtons = buttons;
 
 		currentFloor = startFloor;
+		int[] posInfo = {elevatorNumber,currentFloor};
+		notifyObservers(posInfo);
+				
+		this.addObserver(floorButtons);
 
 		receiveSocketPortCreation(RECEIVE_PORT);
 
 		System.out.printf(
 				LocalTime.now().toString() + " Elevator E%d...Waiting for the requests from the Scheduler at Time \n",
 				elevatorNumber);
+		
+		nextFloorList = new ArrayList<Integer>();
+		
+		try {
+			SCHEDULER_IP = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -137,22 +154,70 @@ public class Elevator extends Thread {
 	/**
 	 * This method implants FSM Using State condition to change state
 	 */
-	public synchronized void elevatorState() {
+	public void elevatorState() {
 
 		State state = State.READY;
+		
+		Thread readButtonInput = new Thread() {
+			public void run() {
+				while (true) {
+					Integer dest = floorButtons.getButtonP(elevatorNumber);
+					
+					if (dest > 0) {
+						System.out.println("User pressed " + dest + " in elevator " + elevatorNumber);
+						generateInput(elevatorNumber, dest);
+						floorButtons.setButtonP(elevatorNumber, 0);
+					}
+
+				}
+			}
+		};
+		
+		readButtonInput.start();
+		
+		Thread receiveTasks = new Thread() {
+			public void run() {
+				while (true) {
+					receiveTaskList();
+				}
+			}
+		};
+		
+		receiveTasks.start();
 
 		while (ACTIVE) {
 
 			switch (state) {
 			
 			case DOOR_ERROR:
-				openDoor();
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d DOOR STUCK \n");
+
+				System.out.println(LocalTime.now().toString() + " Elevator#: " + elevatorNumber + " DOOR STUCK \n");
+				
+				System.out.println(LocalTime.now() + " Elevator#: " + elevatorNumber + " Retrying...");
+				
+				try {
+					TimeUnit.SECONDS.sleep(10);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				floorButtons.setDoorStuckTag(elevatorNumber,0);
+				String[] status = new String[] {String.valueOf(elevatorNumber), "Door Fixed"};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
+				
+				System.out.println(LocalTime.now() + " Elevator#: " + elevatorNumber + " Door fixed!");
+				
+				state = State.FINISH;
+				
 				break;
 			case ELEVATOR_ERROR:
 
 				ACTIVE = false;
-				System.out.println(LocalTime.now().toString() + " Elevator#: %d Elevator Stuck \n");
+				System.out.println(LocalTime.now().toString() + " Elevator#: " + getElevatorNumber() + " Elevator Stuck \n");
 
 				break;
 
@@ -160,6 +225,8 @@ public class Elevator extends Thread {
 				System.out.printf(LocalTime.now().toString() + " Elevator#: %d READY \n", getElevatorNumber());
 				ACTIVE = true;
 				state = State.STANDBY;
+				
+				
 				break; // end READY
 
 			case STANDBY:// STANDBY state
@@ -172,8 +239,13 @@ public class Elevator extends Thread {
 					updateNextFloor();
 					state = State.RUN;
 					break;
-
+					
 				} else {
+					status = new String[] {String.valueOf(elevatorNumber), "Elevator idle"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
 					state = State.UPDATE;
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d STANDBY at Floor: %d \n",
 							getElevatorNumber(), currentFloor);
@@ -184,23 +256,24 @@ public class Elevator extends Thread {
 				//break;// end STANDBY
 
 			case UPDATE: // UPDATE
-				receiveTaskList();
-
+				synchronized(this) {
+					while (nextFloorList.isEmpty()) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 				state = State.STANDBY;
-
-				/*
-				 * if ((nextFloorList.size() > 0) || (currentFloor != nextFloor)) {
-				 * 
-				 * state = State.RUN;
-				 * 
-				 * } else { receiveTaskList();
-				 * 
-				 * state = State.STANDBY; }
-				 */
-
-				break;// end UPDATE
+				break;
 
 			case RUN: // RUN
+				status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
 
 				System.out.printf(LocalTime.now().toString() + " Elevator#: %d Next Destination is : %d\n",
 						getElevatorNumber(), nextFloor);
@@ -209,43 +282,47 @@ public class Elevator extends Thread {
 
 				state = State.FINISH;
 
-				break; // end RUN
+				break;
 
 			case FINISH: // FINISH
 				if (currentFloor == nextFloor) {
+					if (!nextFloorList.isEmpty()) {
+						nextFloorList.remove(currentFloor);
+					}
 
 					System.out.printf(LocalTime.now().toString() + " Elevator#: %d Arrived at floor: %d \n",
 							getElevatorNumber(), currentFloor);
-					sendArrivalInfo();
-					elevatorOpendDoorAtFloor(currentFloor);
-					elevatorCloseDoorAtFloor(currentFloor);
 					
-					
-					if (nextFloorList.size() != 0) {
-						nextFloor = nextFloorList.remove(0);
-
+					status = new String[] {String.valueOf(elevatorNumber), "Door opening"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
 					}
 					
-					ElevatorButtons e = new ElevatorButtons(this.elevatorNumber);
-					
-					Integer dest = e.getButtonP();
-					
-					while (dest == 0) {
-						dest = e.getButtonP();
-					}
-					
-					e.getFrame().dispose();
-					
-					generateInput(this.elevatorNumber, dest);
-
-					if (dest == 0) {
+					if (floorButtons.getDoorStuckTag(elevatorNumber) == 1) {
+						status = new String[] {String.valueOf(elevatorNumber), "Door Stuck"};
+						synchronized (this) {
+							setChanged();
+							notifyObservers(status);
+						}
+						
 						state = State.DOOR_ERROR;
 						break;
-					} else if (dest < 0) {
-						state = State.ELEVATOR_ERROR;
-						break;
 					}
+					
+					elevatorOpendDoorAtFloor(currentFloor);
+					status = new String[] {String.valueOf(elevatorNumber), "Door closing"};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
+					elevatorCloseDoorAtFloor(currentFloor);	
+					
+					floorButtons.enable(elevatorNumber, currentFloor);
 
+				} else {
+					state = State.ELEVATOR_ERROR;
+					break;
 				}
 
 				state = State.STANDBY;
@@ -259,29 +336,63 @@ public class Elevator extends Thread {
 	/**
 	 * @ElevatorRun Use this Function to run the elevator
 	 */
-	public synchronized void runToNextFloor() {
+	public void runToNextFloor() {
 		// Prepare to run for target floor
 
 		do {
 			updateGoing_UPorDOWN();
 			System.out.printf(LocalTime.now().toString() + " Elevator#: %d Currently at floor: %d \n",
 					getElevatorNumber(), currentFloor);
-
-			// System.out.printf(" Next Floor %d \n", nextFloor);
+			
+			if (floorButtons.getDoorStuckTag(elevatorNumber) == 2) {
+				String[] status = new String[] {String.valueOf(elevatorNumber), "Elevator Stuck"};
+				synchronized (this) {
+					setChanged();
+					notifyObservers(status);
+				}
+				
+				return;
+			}
 
 			if (isGoingUP().equals(true) && isGoingDOWN().equals(false)) {
 				runMotor();
-				currentFloor++;
-				// System.out.printf(" Current Floor %d \n", currentFloor);
+				synchronized(this) {
+					currentFloor++;
+					updateNextFloor();
+					String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
+					setChanged();
+					int[] posInfo = {elevatorNumber,currentFloor};
+					notifyObservers(posInfo);
+					sendArrivalInfo();
+				}		
+
 			} else if (isGoingDOWN().equals(true) && isGoingUP().equals(false)) {
 				runMotor();
-				currentFloor--;
-				// System.out.printf(" Current Floor %d \n", currentFloor);
+				synchronized(this) {
+					currentFloor--;
+					updateNextFloor();
+					String[] status = new String[] {String.valueOf(elevatorNumber), "Destination: " + nextFloor};
+					synchronized (this) {
+						setChanged();
+						notifyObservers(status);
+					}
+					setChanged();
+					int[] posInfo = {elevatorNumber,currentFloor};
+					notifyObservers(posInfo);
+					sendArrivalInfo();
+				}
+
+			} else {
+				updateNextFloor();
+				sendArrivalInfo();
 			}
-			updateNextFloor();
 
 		} while (currentFloor != nextFloor);
-		// running until next floor
+
 	
 	}
 
@@ -331,12 +442,9 @@ public class Elevator extends Thread {
 	/**
 	 * @updateNextFloor update nextFloor using this function from Schedulers command
 	 */
-	public void updateNextFloor() {// change accordingly
+	public synchronized void updateNextFloor() {// change accordingly
 		if (nextFloorList.size() > 0) {
-			// setNextFloor(nextFloorList.get(0));// <-- here use schedulers sent next floor
-			// packet command
 			nextFloor = nextFloorList.get(0);
-			// System.out.printf(" NEXT Floor %d \n", nextFloor);
 		}
 		if ((currentFloor < 0) || (buttonList.size() < currentFloor)) { // check current floor is valid or not.
 			System.out.printf(LocalTime.now().toString() + "Elevator#: %d Cureent Floor Number out of the range \n",
@@ -489,7 +597,7 @@ public class Elevator extends Thread {
 	 * Send and receive data from Scheduler system.
 	 */
 
-	public synchronized void receiveTaskList() { // Re factor by @author
+	public void receiveTaskList() { // Re factor by @author
 		byte[] data = new byte[Elevator.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 
@@ -500,8 +608,11 @@ public class Elevator extends Thread {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		// update next floor
-		nextFloorList = byteArrayToList(data);
+		
+		synchronized (this) {
+			nextFloorList = byteArrayToList(data);
+			notifyAll();
+		}		
 
 	}
 
@@ -551,15 +662,8 @@ public class Elevator extends Thread {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try {
-			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(),
-					Elevator.SCHEDULER_SEND_PORT);
-		} catch (UnknownHostException e) {
-			System.out.print("sendPacket creation Error, Retrying creation \n");
-			e.printStackTrace();
-			this.packetCreator(pair);
-			// System.exit(1);
-		}
+		sendPacket = new DatagramPacket(byteArr, byteArr.length, SCHEDULER_IP,
+				Elevator.SCHEDULER_SEND_PORT);
 		return sendPacket;
 	}
 	/*-------------------------------------------------------------------------*/
@@ -568,14 +672,7 @@ public class Elevator extends Thread {
 		// Create Datagram packet containing byte array of event list information
 		byte[] byteArr = PairToByteArray(pair);
 
-		try {
-			sendPacket = new DatagramPacket(byteArr, byteArr.length, InetAddress.getLocalHost(), MAINTENANCE_PORT);
-		} catch (UnknownHostException e) {
-			System.out.print("sendPacket creation Error, Retrying creation \n");
-			e.printStackTrace();
-			this.packetCreator(pair);
-			// System.exit(1);
-		}
+		sendPacket = new DatagramPacket(byteArr, byteArr.length, SCHEDULER_IP, MAINTENANCE_PORT);
 		return sendPacket;
 	}
 
@@ -584,7 +681,6 @@ public class Elevator extends Thread {
 
 		elevatorNum = getElevatorNumber();
 		Integer destination = dest;
-		String request = time + " " + elevatorNum + " " + destination;
 
 		Pair pair = new Pair(time, elevatorNum, destination);
 
@@ -592,16 +688,8 @@ public class Elevator extends Thread {
 
 		packetSend(pac);
 
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/ElevatorInputEvents.txt", true));
-			out.newLine();
-			out.write(request);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
+	
 
 	/* GET AND SET from here */
 	public ArrayList<Boolean> getButtonList() {

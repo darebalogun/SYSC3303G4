@@ -12,14 +12,18 @@ public class ElevatorState implements Comparable<ElevatorState>{
 	
 	private ConcurrentSkipListSet<Integer> taskList;
 	
+	private boolean active;
+	
 	public ElevatorState(int number) {
 		this.number = number;
 		
 		this.direction = Scheduler.Direction.IDLE;
 		
-		this.currentFloor = 1;
+		this.setActive(true);
 		
 		taskList = new ConcurrentSkipListSet<Integer>();
+		
+		
 	}
 
 	public int getNumber() {
@@ -97,6 +101,14 @@ public class ElevatorState implements Comparable<ElevatorState>{
 	@Override
 	public int compareTo(ElevatorState o) {
 		return this.getNumber() - o.getNumber();
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 	

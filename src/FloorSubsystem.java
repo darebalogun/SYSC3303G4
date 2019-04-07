@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -19,6 +18,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 
 /**
  * FloorSubSystem.java SYSC3303G4
@@ -69,6 +69,8 @@ public class FloorSubsystem {
 
 	// to check if elevator is currently present on the floor
 	public ArrayList<Boolean> elevatorPresent;
+	
+	private static InetAddress SCHEDULER_IP;
 
 	/**
 	 * Constructor for the floor subsystem
@@ -98,11 +100,17 @@ public class FloorSubsystem {
 			se.printStackTrace();
 			System.exit(1);
 		}
+		
+		try {
+			SCHEDULER_IP = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 
 		// Turn buttons off
 
 
-		System.out.println("\nStarting " + FLOOR_COUNT + " floors");
+		System.out.println(LocalTime.now().toString() + " Starting " + FLOOR_COUNT + " floors");
 
 	}
 
@@ -175,7 +183,7 @@ public class FloorSubsystem {
 					} else if (inputEvents[2].equalsIgnoreCase("down")) {
 						up = false;
 					} else {
-						throw new IllegalArgumentException("Floor button read form input file is not valid");
+						throw new IllegalArgumentException(LocalTime.now().toString() + "Floor button read form input file is not valid");
 					}
 
 					// Finally an integer representing the requested destination
@@ -187,12 +195,12 @@ public class FloorSubsystem {
 					// Add to event object list
 					eventList.add(event);
 
-					System.out.print("Time: " + time);
-					System.out.print(" From: " + currentFloor);
+					System.out.print(LocalTime.now().toString() + " InputEvent Time: " + time + " From: " + currentFloor);
+					//System.out.print(" From: " + currentFloor);
 					if (up) {
-						System.out.println(" Direction: " + "up");
+						System.out.println(LocalTime.now().toString() +  " Direction: " + "up");
 					} else {
-						System.out.println(" Direction: " + "down");
+						System.out.println(LocalTime.now().toString() +  " Direction: " + "down");
 					}
 				}
 				
@@ -233,7 +241,7 @@ public class FloorSubsystem {
 
 			return data;
 		} else {
-			throw new IllegalArgumentException("The eventlist must not be empty before being converted to byte array");
+			throw new IllegalArgumentException(LocalTime.now().toString() + " The eventlist must not be empty before being converted to byte array");
 		}
 	}
 
@@ -251,13 +259,7 @@ public class FloorSubsystem {
 
 			byte[] data = eventListToByteArray();
 
-			// Create Datagram packet containing byte array of event list information
-			try {
-				sendPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), SEND_PORT);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+			sendPacket = new DatagramPacket(data, data.length, SCHEDULER_IP, SEND_PORT);
 
 			// Send event list to scheduler
 			try {
@@ -267,7 +269,7 @@ public class FloorSubsystem {
 				System.exit(1);
 			}
 
-			System.out.println("\nFloorSubsystem: Sent " + this.eventList.size() + " requests to scheduler");
+			System.out.println(LocalTime.now().toString() +  " FloorSubsystem: Sent " + this.eventList.size() + " requests to scheduler");
 		}
 
 		this.eventList.clear();
@@ -303,7 +305,7 @@ public class FloorSubsystem {
 //					this.setDownLamp(false);
 //				}
 
-				System.out.println("An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
+				System.out.println(LocalTime.now().toString() +  " An elevator going " + s + " has arrived at floor: " + floorNum + "\n");
 			}
 		}
 
@@ -347,23 +349,17 @@ public class FloorSubsystem {
 		
 		String from = n.toString();
 		
-		Integer m = rand.nextInt(FLOOR_COUNT) + 1;
-		
-		while (n == m) {
-			m = rand.nextInt(FLOOR_COUNT) + 1;
-		}
-		
-		String to = m.toString();
+		Boolean m = rand.nextBoolean();
 		
 		String direction;
 		
-		if (n > m) {
+		if (m) {
 			direction = "down";
 		} else {
 			direction = "up";
 		}
 		
-		String request = time + " " + from + " " + direction + " " + to;
+		String request = time + " " + from + " " + direction;
 		
 		synchronized(this) {
 			while (!ready) {
@@ -387,23 +383,6 @@ public class FloorSubsystem {
 			notifyAll();
 		}
 	}
-
-	
-//	public boolean isUpLamp() {
-//		return upLamp;
-//	}
-//
-//	public void setUpLamp(boolean upLamp) {
-//		this.upLamp = upLamp;
-//	}
-//
-//	public boolean isDownLamp() {
-//		return downLamp;
-//	}
-//
-//	public void setDownLamp(boolean downLamp) {
-//		this.downLamp = downLamp;
-//	}
 
 	public static void main(String[] args) {
 
@@ -438,7 +417,7 @@ public class FloorSubsystem {
 				}
 				pw.close();
 				
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < 10; i++) {
 					s.addRandomInput();
 					Random rand = new Random();
 					int n = rand.nextInt(30);

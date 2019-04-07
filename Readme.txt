@@ -1,16 +1,16 @@
 Project Group 4
-L5G4_milestone_3
+L5G4_milestone_Final_Project
 
 
-Member:-
+Members:-
 
 	1. Muhammad Tarequzzaman | 100954008
 	Responsiblities: ElevatorSubSystem.java, Elevator.java, ElevatorTest.java and ElevatorSubSystemTest.java., InputEvent.txt, 
 						ElevatorInputEvent.txt
 	2. Sama Adil Sheikh | 101060020
-	Responsiblities: Sequence Diagram for error scenarios, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
+	Responsiblities: Timing Diagrams, Readme.txt, co-author of FloorSubSystem.java and Java doc comments.
 	3. Anannya Bhatia | 100989250
-	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, along with UML Diagrams.
+	Responsibilites: UDP communication for FloorSubSystem.java, Scheduler.java and ElevatorSubSystem, UML Diagrams, timing analysis.
 	4. Dare Balogun | 101062340
 	Responsiblilities: FloorSubSystem.java, InputEvents.java, Pair.java, ElevatorState.java, ElevatorInputEvent.txt, Scheduler.java and co-author of methods 
 						(PairToByteArray, byteArrayToList and sendArrivalInfo)  in Elevator.
@@ -24,13 +24,14 @@ SetUp Instructions:-
 	-> Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_3.zip"
 	-> Click Finish
 	-> Run ElevatorSubSystem as Java Application
-	-> Wait for the class to execute
+	-> Wait for the class to execute fully
 	-> Open new console
 	-> Run Scheduler as Java Application
 	-> Wait for the class to execute fully
 	-> Open new Console
 	-> Run FloorSubsystem as Java Application
-	-> Open different consoles to check the output.
+	-> wait for the elevator to reach there desired floor
+	-> press the buttons in elevators to direct it to the desired floor
 	
 
 FloorSubsystem.java:-
@@ -62,7 +63,7 @@ Elevator.java:-
 	-> It receives and send Datagram packets to the Scheduler using UDP communication
 	-> Runs as an individual thread for each instance and receive information from schedulers. 	
 	-> It's functional features include opening/closing the door, buttons and lamps for floors,
-	time delay between the opening/closing of the door and time delay in between floors.
+		time delay between the opening/closing of the door and time delay in between floors.
 	-> TearDown after test 
 
 ElevatorSubSystemTest.java:-
@@ -72,14 +73,21 @@ ElevatorSubSystemTest.java:-
 	-> It tests if the ElevatorSubsystem constructor creates the appropriate object
 
 ElevatorState.java:-
+
 	-> This file contains the states of the elevator
 	-> Used as a data structure
 
 ElevatorTest.java:-
+
 	-> A JUnit test for Elevator.java 
 	-> It tests precondition for elevator's multiple successful instance 
 	-> Tests for all precondition to initiate thread 
 	-> TearDown after test  
+	
+ElevatorButtons.java:-
+	
+	-> This class contains GUI imlementation for the buttons
+	-> The buttons are located inside the elevator
 	
 InputEvent.java:-
 
@@ -98,13 +106,7 @@ InputEvents.txt:-
 	-> Contains test cases/requests from the FloorSubsystem for the ElevatorSubSystem 
 	-> Change this file to change test cases in the system
 
-UML_DIAGRAM_ITERATION2:-
 
-	-> Contains the UML class diagrams for the system
-
-SEQUENCE_DIAGRAM:-
-
-	-> Contains the sequence diagram for the system
 
 
 
