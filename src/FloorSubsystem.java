@@ -110,7 +110,7 @@ public class FloorSubsystem {
 		// Turn buttons off
 
 
-		System.out.println(LocalTime.now().toString() +"Starting " + FLOOR_COUNT + " floors");
+		System.out.println(LocalTime.now().toString() + " Starting " + FLOOR_COUNT + " floors");
 
 	}
 
