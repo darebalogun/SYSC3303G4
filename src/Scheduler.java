@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.lang.*;
 
 /**
  * Scheduler.java SYSC3303G4
@@ -62,6 +63,11 @@ public class  Scheduler{
 
 	private DatagramPacket sendPacket;
 
+	private int timecounter = 0; 
+	private int timecounter1 = 0;
+	private long elapsedTime = 0;
+	private long elapsedTime1 = 0;
+	
 	// Posible elevator directions
 	public enum Direction {
 		UP, DOWN, IDLE
@@ -131,6 +137,7 @@ public class  Scheduler{
 		downPosition.add(5);
 
 		elevatorStates = new ArrayList<ElevatorState>();
+		
 
 		for (int i = 0; i < ELEVATOR_COUNT; i++) {
 			elevatorStates.add(new ElevatorState(i + 1));
@@ -180,12 +187,13 @@ public class  Scheduler{
 			System.exit(1);
 		}
 		
-
+		long startTime = System.nanoTime();
 		synchronized (this) {
 			// Store all input events
 			eventList.addAll(byteArrayToList(data));
 		}
 
+		
 		for (InputEvent event : eventList) {
 			System.out.print(
 					LocalTime.now() + " Received request from floor " + event.getCurrentFloor());
@@ -194,10 +202,13 @@ public class  Scheduler{
 			} else {
 				System.out.println(" going down");
 			}
+			timecounter++;
 		}
 
 		processRequests();
-
+		long endTime = System.nanoTime();
+		elapsedTime = (endTime - startTime) + elapsedTime;
+		long avgTime = (elapsedTime/timecounter);
 	}
 
 	/**
@@ -392,7 +403,7 @@ public class  Scheduler{
 	public void receiveFromES() {
 		byte[] data = new byte[Scheduler.BYTE_SIZE];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
-
+		
 		// Receive datagram socket from floor subsystem
 		try {
 			esReceiveSocket.receive(receivePacket);
@@ -421,6 +432,7 @@ public class  Scheduler{
 			}
 		}
 		
+		long startTime1 = System.nanoTime();
 		synchronized (this) {
 			if (elevatorStates.get(userInput.getElevator() - 1).getCurrentFloor() > userInput.getDestination() ) {
 				up = false;
@@ -430,10 +442,14 @@ public class  Scheduler{
 		}
 		
 		InputEvent event = new InputEvent(userInput.getString(), userInput.getDestination(), up);
+
 		synchronized(this) {
 			eventList.add(event);
 		}
 		System.out.println(userInput.getTime() + " user pressed floor " + userInput.getDestination() + " in Elevator " + userInput.getElevator());
+		long endTime1 = System.nanoTime();
+		elapsedTime1 = (endTime1 - startTime1) + elapsedTime1;
+		long avgTime1 = (elapsedTime1/timecounter1);
 	}
 
 	/**
@@ -587,7 +603,6 @@ public class  Scheduler{
 	 */
 	public static void main(String[] args) {
 		Scheduler s = new Scheduler();
-
 		Thread receiveFromElevator = new Thread() {
 			public void run() {
 				while (true) {
