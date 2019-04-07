@@ -217,7 +217,7 @@ public class  Scheduler{
 					deactivating = false;
 					deactivating.notifyAll();
 					System.out.print(LocalTime.now() + " Elevator: " + (elevatorNumber + 1) + " is non-responsive, it will be deactivated");
-					System.out.println(" and maintenance will be contated");
+					System.out.println(" and maintenance will be contacted");
 					int smallest = 10;
 					int j = 0;
 					for (int i = 0; i < ELEVATOR_COUNT; i++) {
