@@ -1,25 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="11206315-d0cb-47bf-8df6-2d84e1c75bd2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/UML/UML_irteration5_field .jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UML/UML_irteration5_methode.bmp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UML_CLASS_DIAGRAM.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UML_CLASS_DIAGRAM.ucls" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FloorButtons.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" afterPath="$PROJECT_DIR$/.project" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/InputEvents.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/InputEvents.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/UML_DIAGRAM.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Elevator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Elevator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ElevatorButtons.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ElevatorState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ElevatorState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ElevatorSubSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ElevatorSubSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ElevatorTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FloorSubsystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FloorSubsystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InputEvents.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/InputEvents.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scheduler.java" afterDir="false" />
-    </list>
+    <list default="true" id="11206315-d0cb-47bf-8df6-2d84e1c75bd2" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,7 +13,7 @@
     <session id="902155123">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.opened" value="2" />
         </counts>
@@ -132,7 +114,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-10" />
     <option name="y" value="-10" />
     <option name="width" value="1384" />
@@ -203,16 +185,15 @@
       <workItem from="1550298791390" duration="1009000" />
       <workItem from="1550299986148" duration="1056000" />
       <workItem from="1552174423098" duration="4000" />
-      <workItem from="1554672503079" duration="46000" />
+      <workItem from="1554672503079" duration="240000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3661000" />
+    <option name="totallyTimeSpent" value="3855000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21006711" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
