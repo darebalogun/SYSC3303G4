@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class InputEvent implements Serializable,Comparable<InputEvent> {
+public class InputEvent implements Serializable {
 	/** 
 	 * InputEvent.java
 	 * SYSC3303G4
@@ -23,18 +23,14 @@ public class InputEvent implements Serializable,Comparable<InputEvent> {
 	// Up or down
 	private final Boolean up;
 	
-	// Car button
-	private final Integer destinationFloor;
 
-	public InputEvent(String time, Integer currentFloor, Boolean up, Integer destinationFloor) {
+	public InputEvent(String time, Integer currentFloor, Boolean up) {
 		
 		this.time = time;
 		
 		this.currentFloor = currentFloor;
 		
 		this.up = up;
-		
-		this.destinationFloor = destinationFloor;
 		
 	}
 
@@ -45,14 +41,17 @@ public class InputEvent implements Serializable,Comparable<InputEvent> {
 	public Boolean getUp() {
 		return up;
 	}
-	
-	public Integer getDestinationFloor() {
-		return destinationFloor;
-	}
 
+
+	
 	@Override
-	public int compareTo(InputEvent event) {
-		return (this.getDestinationFloor() < event.getDestinationFloor() ? -1 : (this.getDestinationFloor() == event.getDestinationFloor() ? 0 : 1));
+	public boolean equals (Object o) {
+		if (o == null) return false;
+		if (o == this) return true;
+		if (!(o instanceof InputEvent)) return false;
+		InputEvent e = (InputEvent) o;
+		return (this.getCurrentFloor() == e.getCurrentFloor());
+		
 	}
 
 	public Integer getCurrentFloor() {
