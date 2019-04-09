@@ -32,7 +32,7 @@ SetUp Instructions:-
 	-> Run FloorSubsystem as Java Application
 	-> wait for the elevator to reach there desired floor
 	-> press the buttons in elevators to direct it to the desired floor
-	
+	-> Please see the Video on "SYSC3303G4/Demo Video/" for the demo.
 
 FloorSubsystem.java:-
 
