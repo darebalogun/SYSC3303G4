@@ -11,8 +11,7 @@ Group Members:
 
 ## Set-up Instructions:
 
-### Download repo as a zip file (or clone)
----
+* Download repo as a zip file (or clone)
 * Open eclipse-java
 * Click File->Open Projects from File System->Archive then select the zip file "L5G4_milestone_3.zip"
 * Click Finish
