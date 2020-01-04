@@ -3,11 +3,11 @@ This is an elevator controller that controls 4 independent elevator cars which s
 
 Group Members:
 
-* Muhammad Tarequzzaman | 100954008
-* Sama Adil Sheikh 	| 101060020
-* Anannya Bhatia 	| 100989250
-* Dare Balogun 		| 101062340
-* Mrunal Patel 		| 101001748
+* Muhammad Tarequzzaman
+* Sama Adil Sheikh
+* Anannya Bhatia
+* Dare Balogun
+* Mrunal Patel
 
 ## Set-up Instructions:
 
