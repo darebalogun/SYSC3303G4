@@ -26,6 +26,8 @@ Group Members:
 * Press the buttons in elevator (using the GUI) to direct it to the desired floor
 * Please see the Video on "SYSC3303G4/Demo Video/" for a demo.
 
+![Screenshot of GUI](https://raw.githubusercontent.com/darebalogun/SYSC3303G4/master/ghpages-docs/GUIscreenshot.PNG)
+
 ## Source Files
 
 #### FloorSubsystem.java:-
